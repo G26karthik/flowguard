@@ -13,17 +13,20 @@ All measured results: README.md. This file: state and next steps only.
 - Serving: models.json registry (broad default + PDEBench specialist), torch-free NumPy path, Pyodide browser
   runtime, FastAPI + Docker (verified). ui_check.py passes on server, static and live URL.
 
-## Running (background)
-- data/cache/adapt_train_harm_face.npz generation -> fno_hf_adapt_s0 fine-tune (40 epochs from fno_hf_s0, ~35 min).
+- Served pair switched to harmonic/face: fno_hf_adapt_s0 (broad, default) and fno_hf_s0 (specialist); live and
+  checked with ui_check.py. Grid transfer 2.9%/1.6% -> 0.64%/0.58% (64²/256²) with the consistent scheme.
+- Fixed: eval_reliability used PDEBench-scheme truth for val/test regardless of model (flowguard/data.py + test).
+
+## Running
+- Nothing.
 
 ## Next
-1. Export + eval_reliability for fno_hf_adapt_s0 (and fno_hf_s0); eval_physical for the adapted pair.
-2. If it holds: switch models.json to the harmonic/face pair; update Evidence text ("2.6%" reference error -> 0.21%),
-   README section 3; rebuild, ui_check, push.
-3. LLM arm of the agent study once credentials exist (`ANTHROPIC_API_KEY` or `ant auth login`):
+1. LLM arm of the agent study once credentials exist (`ANTHROPIC_API_KEY` or `ant auth login`):
    `python scripts/agent_study.py runs/fno_steady_s0/weights.npz --llm claude-opus-5-5`.
-4. Known gaps: no indicator detects grid changes (input flag only); contrast > 1000x still fails; served NumPy network
-   is slower than the direct solver (GPU torch is 39-148x faster).
+2. Known gaps: contrast > 1000x still fails (39%); held-out layers 4.6%; the residual estimate ranks poorly on the
+   broad model's held-out sets (Spearman 0.16 / 0.25); served NumPy network is slower than the direct solver
+   (GPU torch is 39-148x faster). Agent study was run on the PDEBench-scheme model only.
+3. Video walkthrough and the application form are the user's to do.
 
 ## Gotchas
 - PowerShell: `$env:CUDA_VISIBLE_DEVICES=""` deletes the variable; use "-1" to hide the GPU.
