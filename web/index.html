@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FlowGuard</title>
+<link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -12,7 +13,8 @@
   --ok: #0F7480; --bad: #B0144F; --clay: #7D5E4A; --sand: #E2C772;
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.5 "Schibsted Grotesk", system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.5 "Schibsted Grotesk", system-ui, sans-serif; }
+.stats b, td, .ticks, output, figcaption span { font-variant-numeric: tabular-nums; }
 header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 28px; padding: 18px 24px 14px; border-bottom: 1px solid var(--line); }
 h1 { font-size: 26px; font-weight: 700; margin: 0; letter-spacing: -0.02em; }
 header p { margin: 0; color: var(--muted); flex: 1 1 320px; }
@@ -60,11 +62,15 @@ h2 { font-size: 19px; margin: 6px 0 6px; }
 .err { color: var(--bad); }
 svg text { font: 12px "Schibsted Grotesk", sans-serif; fill: var(--muted); }
 @media (max-width: 760px) {
-  main { grid-template-columns: 1fr; }
-  aside { border-right: 0; border-bottom: 1px solid var(--line); padding: 16px; }
-  section.view { padding: 16px; }
-  .maps { grid-template-columns: 1fr 1fr; gap: 14px; }
+  main { grid-template-columns: minmax(0, 1fr); }
+  section.view { order: -1; min-width: 0; padding: 16px; }
+  aside { border-right: 0; border-top: 1px solid var(--line); padding: 16px; }
+  .maps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
   header { padding: 14px 16px; }
+  #ev table, #btable table { display: block; overflow-x: auto; }
+}
+@media (max-width: 520px) {
+  .maps { grid-template-columns: minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: no-preference) { .verdict { transition: border-color .3s; } }
 </style>
@@ -72,7 +78,7 @@ svg text { font: 12px "Schibsted Grotesk", sans-serif; fill: var(--muted); }
 <body>
 <header>
   <h1>FlowGuard</h1>
-  <p>Steady Darcy flow from a neural operator, checked against an independent finite-volume solver.</p>
+  <p>Steady Darcy flow from a neural operator, checked against an independent finite-volume solver on the same grid.</p>
   <nav role="tablist">
     <button role="tab" aria-selected="true" data-view="single">Single field</button>
     <button role="tab" aria-selected="false" data-view="batch">Batch study</button>
@@ -106,7 +112,7 @@ svg text { font: 12px "Schibsted Grotesk", sans-serif; fill: var(--muted); }
       </div>
       <label for="brush">Brush radius <output id="brushv">4</output> cells</label>
       <input id="brush" type="range" min="1" max="16" value="4">
-      <p class="hint">Each stroke re-runs the network and the exact solver.</p>
+      <p class="hint">Each stroke re-runs the network and the reference solver.</p>
     </fieldset>
     <fieldset>
       <legend>Source</legend>
@@ -127,14 +133,14 @@ svg text { font: 12px "Schibsted Grotesk", sans-serif; fill: var(--muted); }
       <input id="balow" type="range" min="-3" max="-0.3" step="0.1" value="-1">
       <label for="bcount">Number of fields</label>
       <input id="bcount" type="number" value="128" min="1" max="256">
-      <label for="brisky">Exact solves on the riskiest</label>
+      <label for="brisky">Reference solves on the riskiest</label>
       <input id="brisky" type="number" value="8" min="0" max="32">
-      <label for="baudit">Exact solves on a random audit</label>
+      <label for="baudit">Reference solves on a random audit</label>
       <input id="baudit" type="number" value="8" min="0" max="32">
       <label for="bseed">Seed</label>
       <input id="bseed" type="number" value="1" min="0">
       <button class="primary" id="runbatch">Run study</button>
-      <p class="hint">The network predicts every field. A residual-based estimate ranks them; exact solves go to the riskiest, plus a random audit that estimates the error of the rest without bias.</p>
+      <p class="hint">The network predicts every field. A residual-based estimate ranks them; reference solves go to the riskiest, plus a random audit that estimates the error of the rest without bias.</p>
     </fieldset>
   </div>
   <div data-for="evidence" class="hidden">
@@ -146,11 +152,11 @@ svg text { font: 12px "Schibsted Grotesk", sans-serif; fill: var(--muted); }
   <div class="maps">
     <figure><figcaption>Permeability a(x) <span id="acap"></span></figcaption><canvas class="map paint" id="ca" aria-label="Permeability field, paintable"></canvas><div class="bar" id="abar"></div><div class="ticks" id="aticks"></div></figure>
     <figure><figcaption>Network prediction <span id="nncap"></span></figcaption><canvas class="map" id="cp" aria-label="Neural operator prediction"></canvas><div class="bar" id="ubar"></div><div class="ticks" id="uticks"></div></figure>
-    <figure><figcaption>Exact solution <span id="excap"></span></figcaption><canvas class="map" id="ce" aria-label="Finite-volume solution"></canvas><div class="bar" id="ubar2"></div><div class="ticks" id="uticks2"></div></figure>
+    <figure><figcaption>Reference solver <span id="excap"></span></figcaption><canvas class="map" id="ce" aria-label="Finite-volume reference solution"></canvas><div class="bar" id="ubar2"></div><div class="ticks" id="uticks2"></div></figure>
     <figure><figcaption>
-      <span style="color:inherit;font-size:14px">Error, prediction minus exact</span>
+      <span style="color:inherit;font-size:14px">Prediction minus reference</span>
       <div class="seg" role="group" aria-label="Error map source" style="width:150px">
-        <button aria-pressed="true" data-err="true">True</button><button aria-pressed="false" data-err="est">Estimated</button>
+        <button aria-pressed="true" data-err="true">Measured</button><button aria-pressed="false" data-err="est">Estimated</button>
       </div></figcaption>
       <canvas class="map" id="cerr" aria-label="Error map"></canvas><div class="bar" id="ebar"></div><div class="ticks" id="eticks"></div></figure>
   </div>
@@ -213,12 +219,37 @@ const fmt = (x) => Math.abs(x) >= 100 || (Math.abs(x) < 0.01 && x !== 0) ? x.toE
 function dec(s) { const b = atob(s), u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return new Float32Array(u.buffer); }
 function enc(f) { const u = new Uint8Array(f.buffer); let s = ""; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); }
 
+// --- backend: the FastAPI server when present, otherwise the same Python code in the browser (Pyodide) ---
 async function post(path, body) {
   const r = await fetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   const j = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(j.detail ? (typeof j.detail === "string" ? j.detail : JSON.stringify(j.detail)) : `Request failed with status ${r.status}`);
   return j;
 }
+function workerBackend() {
+  const w = new Worker("worker.js"), pending = new Map();
+  let seq = 0;
+  w.onmessage = (ev) => {
+    const { id, result, error, progress } = ev.data;
+    if (progress) { setStatus(`${progress}. First load downloads about 40 MB and runs entirely in your browser.`); return; }
+    const p = pending.get(id); pending.delete(id);
+    if (error) p.reject(new Error(error));
+    else if (result && result.error) p.reject(new Error(result.error));
+    else p.resolve(result);
+  };
+  const call = (method, payload) => new Promise((resolve, reject) => { const id = ++seq; pending.set(id, { resolve, reject }); w.postMessage({ id, method, payload }); });
+  return { kind: "browser", solve: b => call("solve", b), batch: b => call("batch", b), evidence: () => call("evidence") };
+}
+const backendReady = (async () => {
+  try {
+    const r = await fetch("api/health", { cache: "no-store" });
+    if (r.ok && (await r.json()).models > 0)
+      return { kind: "server", solve: b => post("api/solve", b), batch: b => post("api/batch", b),
+               evidence: async () => { const e = await fetch("api/evidence"); if (!e.ok) throw new Error("No reliability study has been run on this deployment yet."); return e.json(); } };
+  } catch (e) { /* static hosting: no server */ }
+  return workerBackend();
+})();
+const setStatus = (msg) => { $("verdict").className = "verdict"; $("verdict").textContent = msg; };
 
 // --- tabs ------------------------------------------------------------------
 document.querySelectorAll("nav button").forEach(b => b.onclick = () => {
@@ -241,7 +272,7 @@ async function run(body) {
   if (state.busy) { state.queued = true; return; }
   state.busy = true; $("gen").disabled = true;
   try {
-    const j = await post("/api/solve", body);
+    const j = await (await backendReady).solve(body);
     state.a = dec(j.a); state.n = j.n; state.last = j;
     render(j);
   } catch (e) {
@@ -257,7 +288,7 @@ $("gen").onclick = generate;
 $("beta").onchange = solveCurrent;
 
 function render(j) {
-  const n = j.n, a = dec(j.a), up = dec(j.u_pred), ue = dec(j.u_exact);
+  const n = j.n, a = dec(j.a), up = dec(j.u_pred), ue = dec(j.u_ref);
   const la = Array.from(a, Math.log10), [amin, amax] = extent(la);
   draw($("ca"), la, n, perm, Math.min(amin, -1), Math.max(amax, 0));
   bar($("abar"), $("aticks"), perm, [fmt(Math.pow(10, Math.min(amin, -1))), "log scale", fmt(Math.pow(10, Math.max(amax, 0)))]);
@@ -271,17 +302,19 @@ function render(j) {
   bar($("ebar"), $("eticks"), diverging, [fmt(-m), "0", fmt(m)]);
   $("acap").textContent = `${n}×${n}`;
   $("nncap").textContent = `${j.ms.nn.toFixed(0)} ms`;
-  $("excap").textContent = `${j.ms.exact.toFixed(0)} ms`;
-  const bad = j.true_rel_err > 0.05;
+  $("excap").textContent = `${j.ms.reference.toFixed(0)} ms`;
+  const bad = j.rel_err_vs_ref > 0.05;
+  const d = j.reference_discretization_err;
   $("verdict").className = "verdict" + (bad ? " bad" : "");
-  $("verdict").innerHTML = `<strong>${bad ? "Do not use the network answer" : "Network answer verified"}</strong>
-    <div>Measured error against the exact solve: ${pct(j.true_rel_err)} (relative L2). ${j.bound90 != null ? `Before solving, the residual-based bound said at most ${pct(j.bound90)} with 90% coverage${j.flags.length ? ", but that calibration only holds on the training distribution" : ""}.` : ""}</div>
+  $("verdict").innerHTML = `<strong>${bad ? "Do not use the network answer" : "Network agrees with the reference solver"}</strong>
+    <div>Difference from the finite-volume reference: ${pct(j.rel_err_vs_ref)} (relative L2). ${j.bound90 != null ? `Before solving, the residual-based bound said at most ${pct(j.bound90)} with 90% coverage${j.flags.length ? ", but that calibration only holds on the training distribution" : ""}.` : ""}</div>
+    ${d != null ? `<div class="hint">The reference is itself an approximation: on ${j.n === 128 ? "this" : "the 128×128"} grid it differs from a 4× finer solve by about ${pct(d)} on typical fields.</div>` : ""}
     ${j.flags.length ? `<ul class="flags">${j.flags.map(f => `<li>${f.msg}${f.measured_median_err != null ? ` Median error on such inputs in our tests: ${pct(f.measured_median_err)}.` : ""}</li>`).join("")}</ul>` : ""}`;
   $("stats").innerHTML = [
     ["Residual-based estimate", pct(j.fft_err_rel), "from the network output alone"],
     ["Ensemble disagreement", pct(j.ensemble_spread), "spread across independently trained networks"],
-    ["Mean pressure", `${fmt(j.qoi.mean_pred)} vs ${fmt(j.qoi.mean_exact)}`, "network vs exact"],
-    ["Peak pressure", `${fmt(j.qoi.max_pred)} vs ${fmt(j.qoi.max_exact)}`, "network vs exact"],
+    ["Mean pressure", `${fmt(j.qoi.mean_pred)} vs ${fmt(j.qoi.mean_ref)}`, "network vs reference"],
+    ["Peak pressure", `${fmt(j.qoi.max_pred)} vs ${fmt(j.qoi.max_ref)}`, "network vs reference"],
   ].map(([t, v, s]) => `<div><small>${t}</small><b>${v}</b><small>${s}</small></div>`).join("");
 }
 
@@ -306,7 +339,7 @@ $("ca").addEventListener("pointerup", () => { if (painting) { painting = false; 
 $("runbatch").onclick = async () => {
   $("runbatch").disabled = true; $("bsummary").textContent = "Running.";
   try {
-    const j = await post("/api/batch", { field: { family: $("bfamily").value, seed: +$("bseed").value, a_low: Math.pow(10, +$("balow").value), a_high: 1 },
+    const j = await (await backendReady).batch({ field: { family: $("bfamily").value, seed: +$("bseed").value, a_low: Math.pow(10, +$("balow").value), a_high: 1 },
       count: +$("bcount").value, verify_risky: +$("brisky").value, verify_random: +$("baudit").value, beta: 1 });
     renderBatch(j);
   } catch (e) { $("bsummary").innerHTML = `<span class="err">${e.message}</span>`; }
@@ -314,29 +347,29 @@ $("runbatch").onclick = async () => {
 };
 
 function renderBatch(j) {
-  const rows = j.rows, ver = rows.filter(r => r.true_rel_err != null);
+  const rows = j.rows, ver = rows.filter(r => r.rel_err_vs_ref != null).map(r => ({ ...r, err: r.rel_err_vs_ref }));
   const risky = ver.filter(r => r.role === "risky"), audit = ver.filter(r => r.role === "audit");
-  const caught = risky.filter(r => r.true_rel_err > 0.05).length;
+  const caught = risky.filter(r => r.err > 0.05).length;
   $("bsummary").innerHTML = `${rows.length} fields predicted. Of the ${risky.length} flagged as riskiest, ${caught} had error above 5%.
     The random audit of ${audit.length} other fields found median error ${pct(j.audit.median)} and worst ${pct(j.audit.max)}; that is the estimate for the ${rows.length - risky.length} fields not ranked riskiest.
     ${j.flags.length ? `<br><span class="err">${j.flags.map(f => f.msg).join(" ")}</span>` : ""}`;
   // scatter: estimate (x) vs true (y), log-log
-  const W = 640, H = 300, P = 44, xs = ver.map(r => r.fft_err_rel), ys = ver.map(r => r.true_rel_err);
+  const W = 640, H = 300, P = 44, xs = ver.map(r => r.fft_err_rel), ys = ver.map(r => r.err);
   const [mn, mx] = extent(xs.concat(ys).filter(v => v > 0)), lo = Math.log10(mn) - 0.2, hi = Math.log10(mx) + 0.2;
   const X = v => P + (Math.log10(v) - lo) / (hi - lo) * (W - P - 10), Y = v => H - P + 10 - (Math.log10(v) - lo) / (hi - lo) * (H - P);
   let s = `<svg viewBox="0 0 ${W} ${H + 10}" width="100%" style="max-width:${W}px" role="img" aria-label="Estimated versus true error of verified fields">`;
   s += `<line x1="${X(10 ** lo)}" y1="${Y(10 ** lo)}" x2="${X(10 ** hi)}" y2="${Y(10 ** hi)}" stroke="#C9D2D7"/>`;
   s += `<line x1="${P}" y1="${Y(0.05)}" x2="${W - 10}" y2="${Y(0.05)}" stroke="#B0144F" stroke-dasharray="4 4"/><text x="${W - 120}" y="${Y(0.05) - 6}">5% error</text>`;
-  for (const r of ver) s += `<circle cx="${X(r.fft_err_rel)}" cy="${Y(r.true_rel_err)}" r="5" fill="${r.role === "risky" ? "#B0144F" : "#0F7480"}" fill-opacity=".8"><title>field ${r.i}: estimate ${pct(r.fft_err_rel)}, true ${pct(r.true_rel_err)}</title></circle>`;
-  s += `<text x="${P}" y="${H + 6}">residual-based estimate (log)</text><text x="4" y="14">true error (log)</text>`;
+  for (const r of ver) s += `<circle cx="${X(r.fft_err_rel)}" cy="${Y(r.err)}" r="5" fill="${r.role === "risky" ? "#B0144F" : "#0F7480"}" fill-opacity=".8"><title>field ${r.i}: estimate ${pct(r.fft_err_rel)}, measured ${pct(r.err)}</title></circle>`;
+  s += `<text x="${P}" y="${H + 6}">residual-based estimate (log)</text><text x="4" y="14">measured error vs reference (log)</text>`;
   s += `<circle cx="${W - 230}" cy="16" r="5" fill="#B0144F"/><text x="${W - 220}" y="20">ranked riskiest</text><circle cx="${W - 120}" cy="16" r="5" fill="#0F7480"/><text x="${W - 110}" y="20">random audit</text></svg>`;
   $("bplot").innerHTML = s;
   $("bstats").innerHTML = [
     ["Network, all fields", `${j.ms.nn_total.toFixed(0)} ms`], ["Estimates, all fields", `${j.ms.indicators_total.toFixed(0)} ms`],
-    ["Exact solves", `${j.ms.exact_total.toFixed(0)} ms`], ["Per exact solve", `${j.ms.exact_per_solve.toFixed(0)} ms`],
+    ["Reference solves", `${j.ms.reference_total.toFixed(0)} ms`], ["Per reference solve", `${j.ms.reference_per_solve.toFixed(0)} ms`],
   ].map(([t, v]) => `<div><small>${t}</small><b>${v}</b></div>`).join("");
-  $("btable").innerHTML = `<table><thead><tr><th>Field</th><th>Chosen as</th><th>Estimate</th><th>True error</th></tr></thead><tbody>${
-    ver.sort((a, b) => b.true_rel_err - a.true_rel_err).map(r => `<tr><td>${r.i}</td><td>${r.role === "risky" ? "riskiest" : "audit"}</td><td>${pct(r.fft_err_rel)}</td><td class="${r.true_rel_err > 0.05 ? "err" : ""}">${pct(r.true_rel_err)}</td></tr>`).join("")}</tbody></table>`;
+  $("btable").innerHTML = `<table><thead><tr><th>Field</th><th>Chosen as</th><th>Estimate</th><th>Measured error</th></tr></thead><tbody>${
+    ver.sort((a, b) => b.err - a.err).map(r => `<tr><td>${r.i}</td><td>${r.role === "risky" ? "riskiest" : "audit"}</td><td>${pct(r.fft_err_rel)}</td><td class="${r.err > 0.05 ? "err" : ""}">${pct(r.err)}</td></tr>`).join("")}</tbody></table>`;
 }
 
 // --- evidence --------------------------------------------------------------
@@ -344,17 +377,18 @@ let evLoaded = false;
 async function loadEvidence() {
   if (evLoaded) return;
   try {
-    const r = await fetch("/api/evidence"); if (!r.ok) throw new Error("No reliability study has been run on this deployment yet.");
-    const ev = await r.json(); evLoaded = true;
+    const ev = await (await backendReady).evidence();
+    if (!ev) throw new Error("No reliability study has been run on this deployment yet.");
+    evLoaded = true;
     const names = { pdebench_test: "PDEBench test split", replica: "Fresh PDEBench-style fields", contrast100: "Contrast 100× (low = 0.01)", grf: "Smooth log-normal", channels: "Thin channels", res64: "64×64 grid", res256: "256×256 grid" };
     const rows = Object.entries(names).filter(([k]) => ev.sets[k]).map(([k, label]) => { const s = ev.sets[k];
       return `<tr><td>${label}</td><td>${s.n}</td><td>${pct(s.err.median)}</td><td>${pct(s.err.p90)}</td><td>${s.spearman.fft_err_rel.toFixed(2)}</td><td>${s.spearman.ens_spread == null ? "n/a" : s.spearman.ens_spread.toFixed(2)}</td><td>${pct(s.conformal_coverage_fft)}</td></tr>`; }).join("");
     const t = ev.triage, tr = Object.entries(t).filter(([k]) => k.startsWith("recall")).map(([k, v]) =>
       `<tr><td>${k.replace("recall_at_", "").replace("pct", "% of fields")}</td><td>${pct(v.random_expected)}</td><td>${pct(v.fft_err_rel)}</td><td>${pct(v.residual_rel)}</td><td>${v.ens_spread == null ? "n/a" : pct(v.ens_spread)}</td><td>${pct(v.oracle)}</td></tr>`).join("");
     $("ev").innerHTML = `<h2>How accurate is the network, and do the checks know when it is wrong?</h2>
-      <p>Error is relative L2 against the exact finite-volume solution. Rank correlation compares each cheap indicator with the true error. Coverage is how often the 90% bound held; it was calibrated on the PDEBench validation split, so it is only promised there.</p>
+      <p>Error is relative L2 against the finite-volume reference on the same grid, with the discretization the network was trained on. Rank correlation compares each cheap indicator with the true error. Coverage is how often the 90% bound held; it was calibrated on the PDEBench validation split, so it is only promised there.</p>
       <table><thead><tr><th>Input set</th><th>Fields</th><th>Median error</th><th>90th pct.</th><th>Rank corr., residual estimate</th><th>Rank corr., ensemble</th><th>Bound coverage</th></tr></thead><tbody>${rows}</tbody></table>
-      <h2>Spending a budget of exact solves</h2>
+      <h2>Spending a budget of reference solves</h2>
       <p>All test sets pooled: ${t.n} fields, ${t.n_bad_over_5pct} with error above 5%. The table shows the share of those found when solving the top fraction ranked by each indicator.</p>
       <table><thead><tr><th>Budget</th><th>Random</th><th>Residual estimate</th><th>Raw residual</th><th>Ensemble</th><th>Perfect ranking</th></tr></thead><tbody>${tr}</tbody></table>`;
   } catch (e) { $("ev").innerHTML = `<p class="err">${e.message}</p>`; }

@@ -50,11 +50,11 @@ def rel(x, y):
 per = {}
 for name, (a, u) in sets.items():
     a = np.asarray(a, dtype=np.float64)
-    u = np.stack([solve(x, 1.0, "arith", "ghost") for x in a]) if u is None else np.asarray(u, dtype=np.float64)
+    u = np.stack([solve(x, 1.0, pred.face, pred.bc) for x in a]) if u is None else np.asarray(u, dtype=np.float64)
     m = pred.predict(a)  # (M, B, N, N)
     u_hat = m[0]
-    ind, e_fft = fft_estimates(a, 1.0, u_hat)
-    gal = [indicators(x, 1.0, y) for x, y in zip(a, u_hat)]
+    ind, e_fft = fft_estimates(a, 1.0, u_hat, pred.face, pred.bc)
+    gal = [indicators(x, 1.0, y, pred.face, pred.bc) for x, y in zip(a, u_hat)]
     per[name] = {
         "err": rel(u_hat, u),
         "err_ens_mean": rel(m.mean(0), u),

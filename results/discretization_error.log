@@ -1,0 +1,40 @@
+done 128
+done 256
+done 512
+pixel arith ghost {'rel_128_vs_512_median': 0.025756620434175453, 'observed_order': 1.0081532615469553}
+pixel arith face {'rel_128_vs_512_median': 0.005693983084178268, 'observed_order': 0.9641545519364805}
+pixel harm ghost {'rel_128_vs_512_median': 0.029676958803138368, 'observed_order': 0.9977056108413533}
+pixel harm face {'rel_128_vs_512_median': 0.002094974647101752, 'observed_order': 1.328576689514587}
+{
+  "n_fields": 12,
+  "arith": {
+    "rel_128_vs_512_median": 0.024875241983853075,
+    "rel_128_vs_512_max": 0.03189111710082214,
+    "rel_256_vs_512_median": 0.008154367140488108,
+    "observed_order": 1.0222051087381923
+  },
+  "harm": {
+    "rel_128_vs_512_median": 0.029610661288956473,
+    "rel_128_vs_512_max": 0.05653075267343044,
+    "rel_256_vs_512_median": 0.010142185948514649,
+    "observed_order": 0.9942494834986603
+  },
+  "pixel_arith_ghost": {
+    "rel_128_vs_512_median": 0.025756620434175453,
+    "observed_order": 1.0081532615469553
+  },
+  "pixel_arith_face": {
+    "rel_128_vs_512_median": 0.005693983084178268,
+    "observed_order": 0.9641545519364805
+  },
+  "pixel_harm_ghost": {
+    "rel_128_vs_512_median": 0.029676958803138368,
+    "observed_order": 0.9977056108413533
+  },
+  "pixel_harm_face": {
+    "rel_128_vs_512_median": 0.002094974647101752,
+    "observed_order": 1.328576689514587
+  },
+  "arith_vs_harm_at_128_median": 0.009082321055805396,
+  "arith_vs_harm_at_512_median": 0.00237038414260002
+}

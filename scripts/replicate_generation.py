@@ -43,7 +43,7 @@ if __name__ == "__main__":
         with h5py.File(f"data/raw/2D_DarcyFlow_beta{b}_Train.hdf5", "r") as h:
             nu = h["nu"][idx].astype(np.float64)
             labels[b] = h["tensor"][idx, 0].astype(np.float64)
-    with Pool(6) as pool:
+    with Pool(3) as pool:
         prop = pool.map(_work, list(zip(nu, u1)))
 
     out = {"n": k, "times": TIMES, "per_beta": {}}

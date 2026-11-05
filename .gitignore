@@ -9,3 +9,4 @@ node_modules/
 .env
 runs_*.log
 runs_*.err
+_site/

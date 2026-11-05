@@ -1,5 +1,6 @@
 import base64
 import importlib
+import json
 
 import numpy as np
 import pytest
@@ -17,9 +18,11 @@ def client(tmp_path_factory):
     for s in (0, 1):
         torch.manual_seed(s)
         m = FNO2d(modes=12, width=8)
-        torch.save({"state_dict": m.state_dict(), "cfg": m.cfg, "y_scale": 0.05}, d / f"m{s}.pt")
+        sd = {k: v.numpy() for k, v in m.state_dict().items()}
+        (d / f"m{s}").mkdir()
+        np.savez(d / f"m{s}" / "weights.npz", meta=json.dumps({"cfg": m.cfg, "y_scale": 0.05, "discretisation": ["arith", "ghost"]}), **sd)
     mp = pytest.MonkeyPatch()
-    mp.setenv("FLOWGUARD_MODELS", str(d / "m*.pt"))
+    mp.setenv("FLOWGUARD_MODELS", str(d / "m*" / "weights.npz"))
     import flowguard.api as api
     api = importlib.reload(api)
     yield TestClient(api.app)
@@ -34,9 +37,9 @@ def test_solve_returns_exact_solution_and_consistent_error(client):
     r = client.post("/api/solve", json={"field": {"family": "pdebench", "seed": 3}, "beta": 2.0})
     assert r.status_code == 200, r.text
     j = r.json()
-    a, u, up = dec(j["a"], 128), dec(j["u_exact"], 128), dec(j["u_pred"], 128)
+    a, u, up = dec(j["a"], 128), dec(j["u_ref"], 128), dec(j["u_pred"], 128)
     np.testing.assert_allclose(u, solve(a.astype(np.float64), 2.0, "arith", "ghost"), rtol=1e-5, atol=1e-7)
-    assert abs(j["true_rel_err"] - np.linalg.norm(up - u) / np.linalg.norm(u)) < 1e-4
+    assert abs(j["rel_err_vs_ref"] - np.linalg.norm(up - u) / np.linalg.norm(u)) < 1e-4
     assert j["ensemble_spread"] is not None
 
 
@@ -66,7 +69,7 @@ def test_batch_verifies_budget(client):
     assert r.status_code == 200, r.text
     rows = r.json()["rows"]
     assert sum(x["role"] == "risky" for x in rows) == 3 and sum(x["role"] == "audit" for x in rows) == 4
-    assert sum(x["true_rel_err"] is not None for x in rows) == 7
+    assert sum(x["rel_err_vs_ref"] is not None for x in rows) == 7
     risky_est = min(x["fft_err_rel"] for x in rows if x["role"] == "risky")
     assert all(x["fft_err_rel"] <= risky_est for x in rows if x["role"] != "risky")
     assert client.post("/api/batch", json={"field": {"family": "grf"}, "count": 5, "verify_risky": 5, "verify_random": 1}).status_code == 400

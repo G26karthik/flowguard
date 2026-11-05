@@ -15,22 +15,24 @@ from scipy.sparse.linalg import splu
 from flowguard.solver import apply_operator, assemble, residual
 
 
-def fft_estimates(a, f, u_hat):
-    """~1 ms batch indicators: residual norm and a constant-coefficient preconditioned error estimate.
+def fft_estimates(a, f, u_hat, face="arith", bc="ghost"):
+    """~2 ms batch indicators: residual norm and a constant-coefficient preconditioned error estimate.
 
-    With the ghost-centre Dirichlet condition the constant-coefficient 5-point operator is diagonalised
-    exactly by DST-I, eigenvalues 4 N^2 (sin^2(pi k / 2(N+1)) + sin^2(pi l / 2(N+1))). The coefficient
-    is replaced by its geometric mean (effective conductivity of a 2D statistically symmetric medium).
+    The constant-coefficient 5-point operator is diagonalised exactly by a sine transform: DST-I for the
+    ghost-centre condition (eigenvalues 4 N^2 sum sin^2(pi k / 2(N+1))), DST-II for the face condition
+    (4 N^2 sum sin^2(pi k / 2N)). The coefficient is replaced by its geometric mean (effective
+    conductivity of a 2D statistically symmetric medium).
     a, u_hat: (B, N, N). Returns dict of (B,) arrays and the error-estimate fields.
     """
     a = np.asarray(a, dtype=np.float64)
     u_hat = np.asarray(u_hat, dtype=np.float64)
     n = a.shape[-1]
-    r = np.asarray(f, dtype=np.float64) - apply_operator(a, u_hat, "arith", "ghost")
-    s = np.sin(np.pi * np.arange(1, n + 1) / (2 * (n + 1))) ** 2
+    r = np.asarray(f, dtype=np.float64) - apply_operator(a, u_hat, face, bc)
+    kind, denom = (1, n + 1) if bc == "ghost" else (2, n)
+    s = np.sin(np.pi * np.arange(1, n + 1) / (2 * denom)) ** 2
     lam = 4 * n * n * (s[:, None] + s[None, :])
     a_eff = np.exp(np.log(a).mean(axis=(-2, -1)))[..., None, None]
-    e = idstn(dstn(r, type=1, axes=(-2, -1)) / lam, type=1, axes=(-2, -1)) / a_eff
+    e = idstn(dstn(r, type=kind, axes=(-2, -1)) / lam, type=kind, axes=(-2, -1)) / a_eff
     un = np.linalg.norm(u_hat, axis=(-2, -1))
     fn = np.linalg.norm(np.broadcast_to(f, u_hat.shape), axis=(-2, -1))
     return {"residual_rel": np.linalg.norm(r, axis=(-2, -1)) / fn,

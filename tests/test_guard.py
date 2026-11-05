@@ -1,16 +1,18 @@
 import numpy as np
+import pytest
 
 from flowguard.fields import pdebench
 from flowguard.guard import fft_estimates, indicators
 from flowguard.solver import assemble, solve
 
 
-def test_fft_estimate_is_exact_for_constant_coefficient():
+@pytest.mark.parametrize("bc", ["ghost", "face"])
+def test_fft_estimate_is_exact_for_constant_coefficient(bc):
     n = 32
     a = np.full((1, n, n), 0.4)
-    u = solve(a[0], 1.0, "arith", "ghost")[None]
+    u = solve(a[0], 1.0, "harm", bc)[None]
     delta = np.random.default_rng(0).standard_normal((1, n, n)) * 1e-3
-    ind, e = fft_estimates(a, 1.0, u + delta)
+    ind, e = fft_estimates(a, 1.0, u + delta, "harm", bc)
     np.testing.assert_allclose(e, -delta, atol=1e-10)
     np.testing.assert_allclose(ind["fft_err_rel"], np.linalg.norm(delta) / np.linalg.norm(u + delta))
 

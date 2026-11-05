@@ -32,7 +32,7 @@ if __name__ == "__main__":
         n = h["nu"].shape[0]
     chunks = [(str(path), lo, min(lo + 250, n), beta) for lo in range(0, n, 250)]
     steady = np.empty((n, 128, 128), np.float32)
-    with Pool(6) as pool:
+    with Pool(3) as pool:
         for lo, s in pool.imap_unordered(_work, chunks):
             steady[lo:lo + len(s)] = s
             print("done", lo, flush=True)
