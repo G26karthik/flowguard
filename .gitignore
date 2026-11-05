@@ -7,3 +7,5 @@ runs/**/*.pt
 !runs/**/model.pt
 node_modules/
 .env
+runs_*.log
+runs_*.err
