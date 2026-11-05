@@ -23,7 +23,7 @@ from flowguard.solver import solve
 ROOT = Path(__file__).resolve().parents[1]
 MODELS = sorted(glob(os.environ.get("FLOWGUARD_MODELS", str(ROOT / "runs/fno_steady_s*/model.pt"))))
 predictor = Predictor(MODELS) if MODELS else None
-_rel = sorted(glob(str(ROOT / "results/reliability_*_ens*.json")))
+_rel = sorted(glob(str(ROOT / "results/reliability_*_ens*.json"))) or sorted(glob(str(ROOT / "results/reliability_*.json")))
 RELIABILITY = json.loads(Path(_rel[0]).read_text()) if _rel else None
 MAX_N, MAX_BATCH, MAX_VERIFY = 256, 256, 64
 
