@@ -1,0 +1,8 @@
+pool 1800 fields (no contrast/grid change), 643 with err>2%
+  budget 10%: fft 0.28  ens 0.28  residual 0.28  galerkin 0.28  err 0.28  random 0.10
+  budget 20%: fft 0.56  ens 0.56  residual 0.49  galerkin 0.56  err 0.56  random 0.20
+  budget 30%: fft 0.84  ens 0.84  residual 0.61  galerkin 0.84  err 0.84  random 0.30
+pool 1800 fields (no contrast/grid change), 534 with err>5%
+  budget 10%: fft 0.33  ens 0.32  residual 0.30  galerkin 0.34  err 0.34  random 0.10
+  budget 20%: fft 0.63  ens 0.64  residual 0.49  galerkin 0.67  err 0.67  random 0.20
+  budget 30%: fft 0.91  ens 0.93  residual 0.58  galerkin 1.00  err 1.00  random 0.30
