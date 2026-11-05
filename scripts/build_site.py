@@ -16,7 +16,7 @@ if out.exists():
 shutil.copytree(ROOT / "web", out)
 
 registry = json.loads((ROOT / "models.json").read_text())
-MODULES = ["__init__", "core", "fields", "guard", "infer", "npfno", "solver"]  # no torch, no FastAPI
+MODULES = ["__init__", "core", "diagnose", "fields", "guard", "infer", "npfno", "solver"]  # no torch, no FastAPI
 files = [f"flowguard/{m}.py" for m in MODULES]
 for v in registry.values():
     files += v["weights"] + ([v["reliability"]] if v.get("reliability") else [])

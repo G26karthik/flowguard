@@ -73,3 +73,29 @@ def test_batch_verifies_budget(client):
     risky_est = min(x["fft_err_rel"] for x in rows if x["role"] == "risky")
     assert all(x["fft_err_rel"] <= risky_est for x in rows if x["role"] != "risky")
     assert client.post("/api/batch", json={"field": {"family": "grf"}, "count": 5, "verify_risky": 5, "verify_random": 1}).status_code == 400
+
+
+def test_cache_reuses_unit_source_results_and_stays_linear_in_beta(client):
+    body = {"field": {"family": "channels", "seed": 11}, "beta": 1.0}
+    r1 = client.post("/api/solve", json=body).json()
+    r2 = client.post("/api/solve", json={**body, "beta": -3.0}).json()
+    assert r2["cached"] == {"nn": True, "reference": True}
+    np.testing.assert_allclose(dec(r2["u_ref"], 128), -3.0 * dec(r1["u_ref"], 128), rtol=1e-6)
+    np.testing.assert_allclose(dec(r2["u_pred"], 128), -3.0 * dec(r1["u_pred"], 128), rtol=1e-6)
+    assert abs(r2["rel_err_vs_ref"] - r1["rel_err_vs_ref"]) < 1e-9
+    # a field the client sent is not echoed back; a generated one is
+    sent = client.post("/api/solve", json={"field": {"n": 128, "values": r1["a"]}}).json()
+    assert "a" not in sent and "a" in r1 and sent["cached"]["reference"]
+
+
+def test_investigate_returns_measured_experiments(client):
+    n = 64
+    a = np.full((n, n), 1e-3, dtype="<f4")
+    a[:, 20:40] = 1.0
+    r = client.post("/api/investigate", json={"field": {"n": n, "values": base64.b64encode(a.tobytes()).decode()}})
+    assert r.status_code == 200, r.text
+    j = r.json()
+    first = j["evidence"][0]
+    assert first["experiment"] == "all" and set(first["undone"]) == {"grid", "contrast"}
+    assert all("err_after" in e for e in j["evidence"] if e["applicable"])
+    assert set(j["causes"]) <= {"grid", "contrast", "continuous", "geometry"} and j["cost"] >= 3

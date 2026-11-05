@@ -6,10 +6,14 @@ was trained on: an approximation of the PDE, not its exact solution (see results
 Invalid input raises ValueError.
 """
 import base64
+import hashlib
+import threading
 import time
+from collections import OrderedDict
 
 import numpy as np
 
+from flowguard.diagnose import investigate
 from flowguard.fields import FAMILIES
 from flowguard.guard import fft_estimates
 from flowguard.solver import solve
@@ -60,7 +64,8 @@ def make_fields(field, count, rng):
         raise ValueError(f"unknown family {field.get('family')!r}; send 'family' or 'values'")
     if not np.all(np.isfinite(a)) or a.min() <= 0:
         raise ValueError("coefficient must be finite and strictly positive")
-    return a
+    # fields travel as float32: solve exactly the field the client holds, so a round trip hits the cache
+    return a.astype(np.float32).astype(np.float64)
 
 
 PDEBENCH_DOMAIN = {"grid": 128, "contrast_max": 10, "continuous": False, "eval_sets": {"contrast": "contrast100", "continuous": "grf"}}
@@ -90,12 +95,39 @@ def input_flags(a, reliability, domain=PDEBENCH_DOMAIN):
     return flags
 
 
+class _LRU:
+    """Small thread-safe LRU cache. get() returns (value, was_cached); a miss computes outside the lock."""
+
+    def __init__(self, size):
+        self.size, self.d, self.lock = size, OrderedDict(), threading.Lock()
+
+    def get(self, key, make):
+        with self.lock:
+            if key in self.d:
+                self.d.move_to_end(key)
+                return self.d[key], True
+        v = make()
+        with self.lock:
+            self.d[key] = v
+            while len(self.d) > self.size:
+                self.d.popitem(last=False)
+        return v, False
+
+
+def _field_key(a):
+    return hashlib.sha1(np.ascontiguousarray(a, dtype=np.float64).tobytes()).hexdigest() + str(a.shape)
+
+
+_REFERENCE = _LRU(32)  # unit-source reference solutions, shared by models with the same discretisation
+
+
 class Service:
     def __init__(self, predictor, reliability=None, discretization=None, domain=PDEBENCH_DOMAIN):
         self.p = predictor
         self.rel = reliability
         self.disc = discretization  # results/discretization_error.json, shown next to the reference
         self.domain = domain
+        self._pred_cache = _LRU(32)  # unit-source network outputs (members) per field
 
     def _bound(self, est):
         return None if not self.rel else float(self.rel["conformal_q90_fft"] * est)
@@ -110,29 +142,54 @@ class Service:
         return {"models": len(self.p.models), "discretisation": [self.p.face, self.p.bc],
                 "reliability_loaded": self.rel is not None, "discretization_study": self.disc}
 
-    def solve(self, req):
+    def _field(self, req):
         field = req.get("field") or {}
-        beta = self._beta(req)
         a = make_fields(field, 1, np.random.default_rng(_num(field, "seed", 0, 0, 2**32 - 1, int)))[0]
+        return a, field.get("values") is None
+
+    def solve(self, req):
+        """One field. Network and reference results are cached per field at unit source: the problem is linear in
+        beta (u_beta = beta u_1, exactly, for the network as served and for the solver), so a beta change or a model
+        switch does not redo work that does not depend on it. The response omits the coefficient field when the
+        client sent it, and the measured error field (u_pred - u_ref), which the client computes."""
+        a, generated = self._field(req)
+        beta = self._beta(req)
+        key = _field_key(a)
         t = time.perf_counter()
-        members = self.p.predict(a, beta)
+        members, nn_cached = self._pred_cache.get(key, lambda: self.p.predict(a, 1.0))
         t_nn = time.perf_counter() - t
+        t = time.perf_counter()
+        u1, ref_cached = _REFERENCE.get((self.p.face, self.p.bc, key), lambda: solve(a, 1.0, self.p.face, self.p.bc))
+        t_ref = time.perf_counter() - t
+        members, u = members * beta, u1 * beta
         u_hat = members[0]
         ind, e_est = fft_estimates(a[None], beta, u_hat[None], self.p.face, self.p.bc)
-        t = time.perf_counter()
-        u = solve(a, beta, self.p.face, self.p.bc)
-        t_ref = time.perf_counter() - t
         err = float(np.linalg.norm(u_hat - u) / np.linalg.norm(u))
         spread = float(np.linalg.norm(members.std(0)) / np.linalg.norm(members.mean(0))) if len(members) > 1 else None
-        return {
-            "n": a.shape[0], "a": enc(a), "u_pred": enc(u_hat), "u_ref": enc(u), "err_field": enc(u_hat - u),
+        out = {
+            "n": a.shape[0], "beta": beta, "u_pred": enc(u_hat), "u_ref": enc(u),
             "err_est_field": enc(-e_est[0]), "discretisation": [self.p.face, self.p.bc],
             "rel_err_vs_ref": err, "fft_err_rel": float(ind["fft_err_rel"][0]), "residual_rel": float(ind["residual_rel"][0]),
             "ensemble_spread": spread, "bound90": self._bound(float(ind["fft_err_rel"][0])),
-            "flags": input_flags(a, self.rel, self.domain), "ms": {"nn": 1e3 * t_nn, "reference": 1e3 * t_ref},
+            "flags": input_flags(a, self.rel, self.domain),
+            "ms": {"nn": 1e3 * t_nn, "reference": 1e3 * t_ref}, "cached": {"nn": nn_cached, "reference": ref_cached},
             "reference_discretization_err": ((self.disc or {}).get(f"pixel_{self.p.face}_{self.p.bc}") or {}).get("rel_128_vs_512_median"),
             "qoi": {"mean_pred": float(u_hat.mean()), "mean_ref": float(u.mean()), "max_pred": float(u_hat.max()), "max_ref": float(u.max())},
         }
+        if generated:
+            out["a"] = enc(a)
+        return out
+
+    def investigate(self, req):
+        """Counterfactual experiments on this field (flowguard.diagnose): which off-training property of the input
+        explains the network's error. Every conclusion is a measured error on an edited input."""
+        a, _ = self._field(req)
+        test = ((self.rel or {}).get("sets") or {}).get("pdebench_test")
+        id_err = test["err"]["median"] if test else 0.006
+        t = time.perf_counter()
+        r = investigate(self.p, a, domain=self.domain, id_err=id_err, geometry=True)
+        return {**r, "id_err": id_err, "domain": {k: self.domain[k] for k in ("grid", "contrast_max", "continuous")},
+                "ms": 1e3 * (time.perf_counter() - t)}
 
     def batch(self, req):
         """Predict many fields; spend the reference-solve budget on the riskiest plus a random audit sample."""
@@ -202,6 +259,10 @@ class Registry:
     def batch(self, req):
         name, s = self._pick(req)
         return {**s.batch(req), "model": name}
+
+    def investigate(self, req):
+        name, s = self._pick(req)
+        return {**s.investigate(req), "model": name}
 
     def evidence(self, req=None):
         return {"default": self.default,

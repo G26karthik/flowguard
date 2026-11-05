@@ -59,6 +59,11 @@ def batch(req: dict = Body(...)):
     return _call("batch", req)
 
 
+@app.post("/api/investigate")
+def investigate(req: dict = Body(...)):
+    return _call("investigate", req)
+
+
 web = ROOT / "web"
 if web.exists():
     app.mount("/", StaticFiles(directory=web, html=True), name="web")
