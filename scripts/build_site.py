@@ -42,5 +42,10 @@ for key, p in extra.items():
         files.append(r)
         manifest[key] = r
 (out / "manifest.json").write_text(json.dumps(manifest, indent=1))
+index = out / "index.html"
+html = index.read_text(encoding="utf-8")
+if "<title>" not in html:
+    sys.exit("index.html has no <title> to anchor the runtime marker")
+index.write_text(html.replace("<title>", '<meta name="flowguard-runtime" content="browser">\n<title>', 1), encoding="utf-8")
 (out / ".nojekyll").write_text("")
 print("site at", out, "files:", len(files), "weights:", weights)

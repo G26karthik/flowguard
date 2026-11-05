@@ -50,8 +50,10 @@ with sync_playwright() as p:
             page.locator("nav button[data-view=batch]").click()
             page.fill("#bcount", "64")
             page.locator("#runbatch").click()
-            page.wait_for_selector("#btable table", timeout=timeout)
+            page.wait_for_function("document.querySelector('#btable table') || document.querySelector('#bsummary .err')", timeout=timeout)
             page.screenshot(path=out / f"{name}_4_batch.png", full_page=True)
+            if page.locator("#bsummary .err").count():
+                problems.append("batch error: " + page.locator("#bsummary").inner_text())
             rows = page.locator("#btable tbody tr").count()
             if rows != 16:
                 problems.append(f"batch table has {rows} verified rows, expected 16")

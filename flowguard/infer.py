@@ -18,7 +18,7 @@ class Predictor:
             raise ValueError(f"ensemble members disagree on discretisation: {discs}")
         self.face, self.bc = discs.pop()
 
-    def predict(self, a, beta=1.0, batch=32):
+    def predict(self, a, beta=1.0, batch=8):  # 8 keeps peak memory ~64 MiB/temp: fits WebAssembly's heap
         """a: (B, N, N) or (N, N) positive coefficients. Returns members (M, B, N, N) or (M, N, N), float64."""
         a = np.asarray(a, dtype=np.float64)
         single = a.ndim == 2

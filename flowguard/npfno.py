@@ -6,6 +6,7 @@ import json
 
 import numpy as np
 import scipy.fft as sfft
+from scipy.linalg.blas import sgemm
 
 _A = [np.float32(c) for c in (0.254829592, -0.284496736, 1.421413741, -1.453152027, 1.061405429)]
 
@@ -24,8 +25,12 @@ def _gelu(x):
 
 
 def _conv1x1(w, b, x):
+    # BLAS sgemm, not numpy matmul: Pyodide's numpy matmul has no BLAS (67x slower than sgemm there)
+    # (A B)^T = B^T A^T: transposed C-ordered arrays are Fortran-ordered views, so sgemm copies nothing
     bs, c, n, m = x.shape
-    return (w[:, :, 0, 0] @ x.reshape(bs, c, n * m)).reshape(bs, -1, n, m) + b[None, :, None, None]
+    xc = np.ascontiguousarray(x.transpose(1, 0, 2, 3)).reshape(c, bs * n * m)
+    y = sgemm(1.0, xc.T, np.ascontiguousarray(w[:, :, 0, 0]).T).T
+    return y.reshape(-1, bs, n, m).transpose(1, 0, 2, 3) + b[None, :, None, None]
 
 
 def _modes_mul(xf, w):

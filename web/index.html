@@ -14,7 +14,6 @@
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.5 "Schibsted Grotesk", system-ui, sans-serif; }
-.stats b, td, .ticks, output, figcaption span { font-variant-numeric: tabular-nums; }
 header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 28px; padding: 18px 24px 14px; border-bottom: 1px solid var(--line); }
 h1 { font-size: 26px; font-weight: 700; margin: 0; letter-spacing: -0.02em; }
 header p { margin: 0; color: var(--muted); flex: 1 1 320px; }
@@ -61,6 +60,9 @@ h2 { font-size: 19px; margin: 6px 0 6px; }
 .prose { max-width: 68ch; }
 .err { color: var(--bad); }
 svg text { font: 12px "Schibsted Grotesk", sans-serif; fill: var(--muted); }
+.legend { font-size: 13px; margin: 14px 0 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: -8px; }
+.runtime { font-size: 12px; color: var(--muted); padding: 0 24px 16px; }
 @media (max-width: 760px) {
   main { grid-template-columns: minmax(0, 1fr); }
   section.view { order: -1; min-width: 0; padding: 16px; }
@@ -176,6 +178,7 @@ svg text { font: 12px "Schibsted Grotesk", sans-serif; fill: var(--muted); }
   <div id="ev" class="prose">Loading.</div>
 </section>
 </main>
+<footer class="runtime" id="runtime" aria-live="polite"></footer>
 
 <script>
 const $ = (id) => document.getElementById(id);
@@ -241,6 +244,8 @@ function workerBackend() {
   return { kind: "browser", solve: b => call("solve", b), batch: b => call("batch", b), evidence: () => call("evidence") };
 }
 const backendReady = (async () => {
+  // scripts/build_site.py marks the static build; only the FastAPI deployment has /api
+  if (document.querySelector('meta[name="flowguard-runtime"][content="browser"]')) return workerBackend();
   try {
     const r = await fetch("api/health", { cache: "no-store" });
     if (r.ok && (await r.json()).models > 0)
@@ -249,6 +254,12 @@ const backendReady = (async () => {
   } catch (e) { /* static hosting: no server */ }
   return workerBackend();
 })();
+backendReady.then(b => {
+  $("runtime").textContent = b.kind === "server"
+    ? "Computation runs on the FlowGuard server (NumPy network, SciPy sparse solver)."
+    : "Computation runs in your browser: the same Python package, compiled to WebAssembly (Pyodide). The network takes about 0.4 s per field here.";
+  if (b.kind === "browser") { $("bcount").value = 32; $("bcount").max = 128; }
+});
 const setStatus = (msg) => { $("verdict").className = "verdict"; $("verdict").textContent = msg; };
 
 // --- tabs ------------------------------------------------------------------
@@ -353,17 +364,23 @@ function renderBatch(j) {
   $("bsummary").innerHTML = `${rows.length} fields predicted. Of the ${risky.length} flagged as riskiest, ${caught} had error above 5%.
     The random audit of ${audit.length} other fields found median error ${pct(j.audit.median)} and worst ${pct(j.audit.max)}; that is the estimate for the ${rows.length - risky.length} fields not ranked riskiest.
     ${j.flags.length ? `<br><span class="err">${j.flags.map(f => f.msg).join(" ")}</span>` : ""}`;
-  // scatter: estimate (x) vs true (y), log-log
-  const W = 640, H = 300, P = 44, xs = ver.map(r => r.fft_err_rel), ys = ver.map(r => r.err);
-  const [mn, mx] = extent(xs.concat(ys).filter(v => v > 0)), lo = Math.log10(mn) - 0.2, hi = Math.log10(mx) + 0.2;
-  const X = v => P + (Math.log10(v) - lo) / (hi - lo) * (W - P - 10), Y = v => H - P + 10 - (Math.log10(v) - lo) / (hi - lo) * (H - P);
-  let s = `<svg viewBox="0 0 ${W} ${H + 10}" width="100%" style="max-width:${W}px" role="img" aria-label="Estimated versus true error of verified fields">`;
-  s += `<line x1="${X(10 ** lo)}" y1="${Y(10 ** lo)}" x2="${X(10 ** hi)}" y2="${Y(10 ** hi)}" stroke="#C9D2D7"/>`;
-  s += `<line x1="${P}" y1="${Y(0.05)}" x2="${W - 10}" y2="${Y(0.05)}" stroke="#B0144F" stroke-dasharray="4 4"/><text x="${W - 120}" y="${Y(0.05) - 6}">5% error</text>`;
+  // scatter: estimate (x) vs measured error (y), log-log, equal axes
+  const W = 640, H = 320, L = 58, B = 40, T = 12, R = 12, xs = ver.map(r => r.fft_err_rel), ys = ver.map(r => r.err);
+  const [mn, mx] = extent(xs.concat(ys).filter(v => v > 0)), lo = Math.log10(Math.min(mn, 0.05)) - 0.15, hi = Math.log10(Math.max(mx, 0.05)) + 0.15;
+  const X = v => L + (Math.log10(v) - lo) / (hi - lo) * (W - L - R), Y = v => H - B - (Math.log10(v) - lo) / (hi - lo) * (H - B - T);
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px" role="img" aria-label="Residual-based estimate versus measured error for the fields solved with the reference solver">`;
+  s += `<rect x="${L}" y="${T}" width="${W - L - R}" height="${H - B - T}" fill="none" stroke="#C9D2D7"/>`;
+  for (let d = Math.ceil(lo); d <= Math.floor(hi); d++) {
+    const v = 10 ** d, lab = pct(v).replace(".00", "").replace(".0", "");
+    s += `<line x1="${X(v)}" y1="${H - B}" x2="${X(v)}" y2="${H - B + 4}" stroke="#5A6973"/><text x="${X(v)}" y="${H - B + 17}" text-anchor="middle">${lab}</text>`;
+    s += `<line x1="${L - 4}" y1="${Y(v)}" x2="${L}" y2="${Y(v)}" stroke="#5A6973"/><text x="${L - 7}" y="${Y(v) + 4}" text-anchor="end">${lab}</text>`;
+  }
+  s += `<line x1="${X(10 ** lo)}" y1="${Y(10 ** lo)}" x2="${X(10 ** hi)}" y2="${Y(10 ** hi)}" stroke="#C9D2D7" stroke-dasharray="2 3"/>`;
+  s += `<line x1="${L}" y1="${Y(0.05)}" x2="${W - R}" y2="${Y(0.05)}" stroke="#B0144F" stroke-dasharray="4 4"/><text x="${L + 6}" y="${Y(0.05) - 6}">5% error</text>`;
   for (const r of ver) s += `<circle cx="${X(r.fft_err_rel)}" cy="${Y(r.err)}" r="5" fill="${r.role === "risky" ? "#B0144F" : "#0F7480"}" fill-opacity=".8"><title>field ${r.i}: estimate ${pct(r.fft_err_rel)}, measured ${pct(r.err)}</title></circle>`;
-  s += `<text x="${P}" y="${H + 6}">residual-based estimate (log)</text><text x="4" y="14">measured error vs reference (log)</text>`;
-  s += `<circle cx="${W - 230}" cy="16" r="5" fill="#B0144F"/><text x="${W - 220}" y="20">ranked riskiest</text><circle cx="${W - 120}" cy="16" r="5" fill="#0F7480"/><text x="${W - 110}" y="20">random audit</text></svg>`;
-  $("bplot").innerHTML = s;
+  s += `<text x="${(L + W - R) / 2}" y="${H - 6}" text-anchor="middle">residual-based estimate, before solving</text>`;
+  s += `<text transform="translate(14 ${(T + H - B) / 2}) rotate(-90)" text-anchor="middle">measured error vs reference</text></svg>`;
+  $("bplot").innerHTML = `<p class="legend"><span class="dot" style="background:#B0144F"></span>ranked riskiest <span class="dot" style="background:#0F7480"></span>random audit <span class="hint">Dotted diagonal: estimate equals measured error.</span></p>` + s;
   $("bstats").innerHTML = [
     ["Network, all fields", `${j.ms.nn_total.toFixed(0)} ms`], ["Estimates, all fields", `${j.ms.indicators_total.toFixed(0)} ms`],
     ["Reference solves", `${j.ms.reference_total.toFixed(0)} ms`], ["Per reference solve", `${j.ms.reference_per_solve.toFixed(0)} ms`],
