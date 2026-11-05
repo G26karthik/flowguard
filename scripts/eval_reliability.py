@@ -20,11 +20,13 @@ from scipy.stats import spearmanr
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from flowguard.fields import channels, grf, layers, pdebench  # noqa: E402
+from flowguard.diagnose import symmetry_spread  # noqa: E402
 from flowguard.guard import fft_estimates, indicators  # noqa: E402
 from flowguard.infer import Predictor  # noqa: E402
 from flowguard.solver import solve  # noqa: E402
 
 pred = Predictor(sys.argv[1:])
+pred0 = Predictor(sys.argv[1:2])  # the served model alone, for the 8-pass symmetry probe
 split = np.load("results/split.npz")
 steady = np.load("data/cache/2D_DarcyFlow_beta1.0_Train_steady.npy", mmap_mode="r")
 with h5py.File("data/raw/2D_DarcyFlow_beta1.0_Train.hdf5", "r") as h:
@@ -68,6 +70,10 @@ for name, (a, u) in sets.items():
         "err_after_fft_correction": rel(u_hat + e_fft, u),
         "err_after_galerkin_correction": rel(u_hat + np.stack([g[1] for g in gal]), u),
     }
+    # label-free symmetry probe (8 network passes per field): first 40 fields per set only, CPU budget
+    sym = np.full(len(a), np.nan)
+    sym[:40] = [symmetry_spread(pred0, x) for x in a[:40]]
+    per[name]["symmetry_spread"] = sym
     print(name, "median err %.4f" % np.median(per[name]["err"]), flush=True)
 
 # split-conformal factor on validation: P(err <= q * fft_err_rel) >= 0.9 under exchangeability
@@ -82,6 +88,8 @@ for name, d in per.items():
          "err_after_fft_correction": qs(d["err_after_fft_correction"]),
          "err_after_galerkin_correction": qs(d["err_after_galerkin_correction"]),
          "spearman": {k: (None if np.isnan(d[k]).any() else float(spearmanr(d[k], d["err"]).statistic)) for k in INDS},
+         "spearman_first40": {k: float(spearmanr(d[k][:40], d["err"][:40]).statistic) for k in INDS + ["symmetry_spread"]
+                              if not np.isnan(d[k][:40]).any()},
          "fft_ratio_est_over_true_median": float(np.median(d["fft_err_rel"] / d["err"])),
          "conformal_coverage_fft": float(np.mean(d["err"] <= q90 * d["fft_err_rel"]))}
     summary["sets"][name] = s
