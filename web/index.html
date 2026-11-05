@@ -10,19 +10,19 @@
 <style>
 :root {
   --paper: #E9EDEF; --panel: #F6F8F9; --ink: #1D2B34; --muted: #5A6973; --line: #C9D2D7;
-  --ok: #0F7480; --bad: #B0144F; --clay: #7D5E4A; --sand: #E2C772;
+  --ok: #0F7480; --warn: #9A6B00; --bad: #B0144F; --clay: #7D5E4A; --sand: #E2C772;
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.5 "Schibsted Grotesk", system-ui, sans-serif; }
 header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 28px; padding: 18px 24px 14px; border-bottom: 1px solid var(--line); }
 h1 { font-size: 26px; font-weight: 700; margin: 0; letter-spacing: -0.02em; }
-header p { margin: 0; color: var(--muted); flex: 1 1 320px; }
-nav { display: flex; gap: 4px; }
+header p { margin: 0; color: var(--muted); flex: 1 1 320px; max-width: 70ch; }
+nav { display: flex; gap: 4px; flex-wrap: wrap; }
 nav button { font: inherit; border: 1px solid transparent; background: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; color: var(--muted); }
 nav button[aria-selected="true"] { border-color: var(--ink); color: var(--ink); font-weight: 500; }
-main { display: grid; grid-template-columns: 280px 1fr; min-height: calc(100vh - 70px); }
+main { display: grid; grid-template-columns: 290px minmax(0, 1fr); min-height: calc(100vh - 70px); }
 aside { padding: 20px 24px; border-right: 1px solid var(--line); background: var(--panel); }
-section.view { padding: 20px 24px 40px; max-width: 1100px; }
+section.view { padding: 20px 24px 40px; max-width: 1100px; min-width: 0; }
 .hidden { display: none !important; }
 fieldset { border: 0; padding: 0; margin: 0 0 18px; }
 legend { font-weight: 700; margin-bottom: 6px; }
@@ -34,57 +34,82 @@ input[type=range] { width: 100%; accent-color: var(--ink); }
 .seg button[aria-pressed="true"] { background: var(--ink); color: #fff; }
 button.primary { width: 100%; font: inherit; font-weight: 500; padding: 9px; border: 0; border-radius: 6px; background: var(--ink); color: #fff; cursor: pointer; margin-top: 8px; }
 button.primary:disabled { opacity: .5; cursor: wait; }
-button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--ok); outline-offset: 2px; }
+button.secondary { font: inherit; font-size: 14px; padding: 6px 12px; border: 1px solid var(--ink); border-radius: 6px; background: #fff; color: var(--ink); cursor: pointer; }
+button.secondary:disabled { opacity: .5; cursor: wait; }
+button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px solid var(--ok); outline-offset: 2px; }
 .hint { font-size: 13px; color: var(--muted); margin: 6px 0 0; }
+details.intro { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 16px; margin-bottom: 16px; max-width: 788px; }
+details.intro summary { cursor: pointer; font-weight: 500; }
+details.intro p { margin: 8px 0; max-width: 72ch; }
+.examples { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 6px; }
+.examples button { font: inherit; font-size: 14px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--ink); cursor: pointer; }
+.examples button[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: #fff; }
+.excap { font-size: 14px; color: var(--muted); margin: 4px 0 14px; min-height: 1.5em; max-width: 788px; }
+.status { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--muted); min-height: 24px; margin: 0 0 10px; }
+.spin { width: 14px; height: 14px; border: 2px solid var(--line); border-top-color: var(--ink); border-radius: 50%; display: none; }
+.busy .spin { display: inline-block; }
+@media (prefers-reduced-motion: no-preference) { .spin { animation: spin .8s linear infinite; } }
+@keyframes spin { to { transform: rotate(360deg); } }
 .maps { display: grid; grid-template-columns: repeat(2, minmax(0, 380px)); gap: 22px 28px; }
 figure { margin: 0; }
-figcaption { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; margin-bottom: 6px; }
-figcaption span { color: var(--muted); font-size: 13px; }
-canvas.map { width: 100%; aspect-ratio: 1; image-rendering: pixelated; display: block; border: 1px solid var(--ink); background: #fff; touch-action: none; }
+figcaption { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 14px; margin-bottom: 6px; }
+figcaption small { color: var(--muted); font-size: 13px; }
+figcaption .what { display: block; color: var(--muted); font-size: 12px; }
+canvas.map { width: 100%; aspect-ratio: 1; image-rendering: pixelated; display: block; border: 1px solid var(--ink); background: #fff; touch-action: none; transition: opacity .15s; }
 canvas.paint { cursor: crosshair; }
+.stale canvas.out { opacity: .35; }
 .bar { height: 8px; margin-top: 6px; border: 1px solid var(--line); }
 .ticks { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
 .verdict { margin: 26px 0 8px; padding: 14px 18px; border-left: 4px solid var(--ok); background: var(--panel); max-width: 788px; }
+.verdict.warn { border-color: var(--warn); }
 .verdict.bad { border-color: var(--bad); }
 .verdict strong { font-size: 20px; }
+.verdict p { margin: 6px 0 0; }
 .flags { margin: 8px 0 0; padding-left: 18px; color: var(--bad); }
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px 24px; max-width: 788px; margin-top: 14px; }
 .stats div { border-top: 1px solid var(--line); padding-top: 6px; }
 .stats b { display: block; font-size: 18px; font-weight: 500; }
 .stats small { color: var(--muted); }
+.inv { max-width: 788px; margin-top: 18px; }
+.inv ol { padding-left: 20px; margin: 8px 0; }
+.inv li { margin: 6px 0; }
+.inv .concl { border-left: 4px solid var(--ink); padding: 8px 14px; background: var(--panel); margin-top: 10px; }
 table { border-collapse: collapse; font-size: 14px; margin: 10px 0 22px; }
 th, td { padding: 6px 12px 6px 0; text-align: right; border-bottom: 1px solid var(--line); }
 th:first-child, td:first-child { text-align: left; }
 th { font-weight: 500; color: var(--muted); }
 h2 { font-size: 19px; margin: 6px 0 6px; }
-.prose { max-width: 68ch; }
+h3 { font-size: 16px; margin: 18px 0 4px; }
+.prose { max-width: 70ch; }
 .err { color: var(--bad); }
 a { color: var(--ok); }
 svg text { font: 12px "Schibsted Grotesk", sans-serif; fill: var(--muted); }
 .legend { font-size: 13px; margin: 14px 0 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; }
 .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: -8px; }
+details.more { margin: 12px 0; }
+details.more summary { cursor: pointer; font-weight: 500; }
 .runtime { font-size: 12px; color: var(--muted); padding: 0 24px 16px; }
 @media (max-width: 760px) {
   main { grid-template-columns: minmax(0, 1fr); }
-  section.view { order: -1; min-width: 0; padding: 16px; }
+  section.view { order: -1; padding: 16px; }
   aside { border-right: 0; border-top: 1px solid var(--line); padding: 16px; }
   .maps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
   header { padding: 14px 16px; }
+  .runtime { padding: 0 16px 16px; }
   #ev table, #btable table { display: block; overflow-x: auto; }
 }
 @media (max-width: 520px) {
   .maps { grid-template-columns: minmax(0, 1fr); }
 }
-@media (prefers-reduced-motion: no-preference) { .verdict { transition: border-color .3s; } }
 </style>
 </head>
 <body>
 <header>
   <h1>FlowGuard</h1>
-  <p>Steady Darcy flow from a neural operator, checked against an independent finite-volume solver on the same grid.</p>
+  <p>Predicts how pressure builds up in fluid seeping through rock, using a neural network, then checks every answer against a conventional solver and tells you when not to trust it.</p>
   <nav role="tablist">
-    <button role="tab" aria-selected="true" data-view="single">Single field</button>
-    <button role="tab" aria-selected="false" data-view="batch">Batch study</button>
+    <button role="tab" aria-selected="true" data-view="single">Explore one field</button>
+    <button role="tab" aria-selected="false" data-view="batch">Screen many fields</button>
     <button role="tab" aria-selected="false" data-view="evidence">Evidence</button>
   </nav>
 </header>
@@ -97,58 +122,60 @@ svg text { font: 12px "Schibsted Grotesk", sans-serif; fill: var(--muted); }
   </fieldset>
   <div data-for="single">
     <fieldset>
-      <legend>Permeability field</legend>
-      <label for="family">Generator</label>
+      <legend>Rock</legend>
+      <label for="family">Kind of rock</label>
       <select id="family">
-        <option value="pdebench">PDEBench bumps (training distribution)</option>
-        <option value="grf">Smooth log-normal</option>
-        <option value="channels">Thin channels</option>
+        <option value="pdebench">Blobs (PDEBench, the training data)</option>
+        <option value="channels">Thin channels, like fractures</option>
+        <option value="grf">Smoothly varying</option>
+        <option value="layers">Tilted layers (never in training)</option>
       </select>
-      <label for="seed">Seed</label>
+      <label for="contrast">Contrast between the most and least permeable rock <output id="contrastv"></output></label>
+      <input id="contrast" type="range" min="0.3" max="4" step="0.1" value="1">
+      <label for="seed">Random seed</label>
       <input id="seed" type="number" value="7" min="0">
-      <label for="alow">Low permeability <output id="alowv"></output></label>
-      <input id="alow" type="range" min="-3" max="-0.3" step="0.1" value="-1">
       <label for="n">Grid</label>
-      <select id="n"><option>64</option><option selected>128</option><option>256</option></select>
-      <button class="primary" id="gen">Generate field</button>
+      <select id="n"><option value="64">64 × 64</option><option value="128" selected>128 × 128 (training grid)</option><option value="256">256 × 256</option></select>
+      <button class="primary" id="gen">Generate and solve</button>
     </fieldset>
     <fieldset>
-      <legend>Paint on the field</legend>
-      <div class="seg" role="group" aria-label="Brush value">
-        <button aria-pressed="true" data-brush="high">High</button>
-        <button aria-pressed="false" data-brush="low">Low</button>
+      <legend>Paint on the rock</legend>
+      <div class="seg" role="group" aria-label="Brush">
+        <button aria-pressed="true" data-brush="high">Permeable</button>
+        <button aria-pressed="false" data-brush="low">Tight</button>
       </div>
       <label for="brush">Brush radius <output id="brushv">4</output> cells</label>
       <input id="brush" type="range" min="1" max="16" value="4">
-      <p class="hint">Each stroke re-runs the network and the reference solver.</p>
+      <p class="hint">Drag on the rock map. It is re-solved when you let go.</p>
     </fieldset>
     <fieldset>
       <legend>Source</legend>
-      <label for="beta">Constant source &beta;</label>
+      <label for="beta">Injection rate &beta;</label>
       <input id="beta" type="number" value="1" step="0.5">
+      <p class="hint">Updates instantly: pressure is proportional to &beta;, so nothing needs recomputing.</p>
     </fieldset>
   </div>
   <div data-for="batch" class="hidden">
     <fieldset>
-      <legend>Population of fields</legend>
-      <label for="bfamily">Generator</label>
+      <legend>Population of rocks</legend>
+      <label for="bfamily">Kind of rock</label>
       <select id="bfamily">
-        <option value="pdebench">PDEBench bumps</option>
-        <option value="grf">Smooth log-normal</option>
-        <option value="channels">Thin channels</option>
+        <option value="pdebench">Blobs (PDEBench, the training data)</option>
+        <option value="channels">Thin channels, like fractures</option>
+        <option value="grf">Smoothly varying</option>
+        <option value="layers">Tilted layers (never in training)</option>
       </select>
-      <label for="balow">Low permeability <output id="balowv"></output></label>
-      <input id="balow" type="range" min="-3" max="-0.3" step="0.1" value="-1">
+      <label for="bcontrast">Contrast <output id="bcontrastv"></output></label>
+      <input id="bcontrast" type="range" min="0.3" max="4" step="0.1" value="1">
       <label for="bcount">Number of fields</label>
-      <input id="bcount" type="number" value="128" min="1" max="256">
-      <label for="brisky">Reference solves on the riskiest</label>
+      <input id="bcount" type="number" value="64" min="1" max="256">
+      <label for="brisky">Solver checks on the riskiest</label>
       <input id="brisky" type="number" value="8" min="0" max="32">
-      <label for="baudit">Reference solves on a random audit</label>
+      <label for="baudit">Solver checks on a random sample</label>
       <input id="baudit" type="number" value="8" min="0" max="32">
-      <label for="bseed">Seed</label>
+      <label for="bseed">Random seed</label>
       <input id="bseed" type="number" value="1" min="0">
-      <button class="primary" id="runbatch">Run study</button>
-      <p class="hint">The network predicts every field. A residual-based estimate ranks them; reference solves go to the riskiest, plus a random audit that estimates the error of the rest without bias.</p>
+      <button class="primary" id="runbatch">Run screening</button>
     </fieldset>
   </div>
   <div data-for="evidence" class="hidden">
@@ -157,24 +184,48 @@ svg text { font: 12px "Schibsted Grotesk", sans-serif; fill: var(--muted); }
 </aside>
 
 <section class="view" id="single">
-  <div class="maps">
-    <figure><figcaption>Permeability a(x) <span id="acap"></span></figcaption><canvas class="map paint" id="ca" aria-label="Permeability field, paintable"></canvas><div class="bar" id="abar"></div><div class="ticks" id="aticks"></div></figure>
-    <figure><figcaption>Network prediction <span id="nncap"></span></figcaption><canvas class="map" id="cp" aria-label="Neural operator prediction"></canvas><div class="bar" id="ubar"></div><div class="ticks" id="uticks"></div></figure>
-    <figure><figcaption>Reference solver <span id="excap"></span></figcaption><canvas class="map" id="ce" aria-label="Finite-volume reference solution"></canvas><div class="bar" id="ubar2"></div><div class="ticks" id="uticks2"></div></figure>
+  <details class="intro" id="intro">
+    <summary>What am I looking at?</summary>
+    <p>Underground, water or oil seeps through rock. How easily it moves depends on the rock's <b>permeability</b>: sand lets fluid through, clay barely does. Here fluid is injected evenly everywhere in a square block of rock and drains away at its edges. The question is what <b>pressure</b> builds up inside.</p>
+    <p>A <b>neural network</b> (a Fourier neural operator) answers in a few milliseconds. A <b>conventional solver</b> computes the same answer the slow, reliable way, so you can see how far off the network is. The network was trained on one kind of rock. Try others below and watch where it stops being trustworthy, and why.</p>
+    <p>Maps: light rock is permeable, dark is tight. Pressure goes from dark (low) to yellow (high). The error map shows where the network is too high (red) or too low (blue).</p>
+  </details>
+  <div class="examples" role="group" aria-label="Examples">
+    <button data-ex="typical">Typical rock</button>
+    <button data-ex="channels">Fractured rock</button>
+    <button data-ex="contrast">Extreme contrast</button>
+    <button data-ex="layers">Layered rock</button>
+    <button data-ex="blank">Paint your own</button>
+  </div>
+  <p class="excap" id="excap"></p>
+  <div class="status" id="status" aria-live="polite"><span class="spin"></span><span id="statustext"></span></div>
+  <div class="maps" id="maps">
+    <figure><figcaption><span>Rock permeability<span class="what">paint on this map</span></span><small id="acap"></small></figcaption><canvas class="map paint" id="ca" aria-label="Permeability field, paintable"></canvas><div class="bar" id="abar"></div><div class="ticks" id="aticks"></div></figure>
+    <figure><figcaption><span>Network prediction<span class="what">pressure, from the neural network</span></span><small id="nncap"></small></figcaption><canvas class="map out" id="cp" aria-label="Neural operator prediction"></canvas><div class="bar" id="ubar"></div><div class="ticks" id="uticks"></div></figure>
+    <figure><figcaption><span>Solver reference<span class="what">pressure, from the finite-volume solver</span></span><small id="refcap"></small></figcaption><canvas class="map out" id="ce" aria-label="Finite-volume reference solution"></canvas><div class="bar" id="ubar2"></div><div class="ticks" id="uticks2"></div></figure>
     <figure><figcaption>
-      <span style="color:inherit;font-size:14px">Prediction minus reference</span>
-      <div class="seg" role="group" aria-label="Error map source" style="width:150px">
+      <span>Network error<span class="what">prediction minus reference</span></span>
+      <div class="seg" role="group" aria-label="Error map source" style="width:160px">
         <button aria-pressed="true" data-err="true">Measured</button><button aria-pressed="false" data-err="est">Estimated</button>
       </div></figcaption>
-      <canvas class="map" id="cerr" aria-label="Error map"></canvas><div class="bar" id="ebar"></div><div class="ticks" id="eticks"></div></figure>
+      <canvas class="map out" id="cerr" aria-label="Error map"></canvas><div class="bar" id="ebar"></div><div class="ticks" id="eticks"></div>
+      <p class="hint" id="errhint">Measured: against the solver. Estimated: from the network's answer alone, before any solve.</p></figure>
   </div>
-  <div class="verdict" id="verdict" aria-live="polite">Generate a field to begin.</div>
+  <div class="verdict" id="verdict" aria-live="polite">Starting.</div>
   <div class="stats" id="stats"></div>
+  <div class="inv" id="inv"></div>
 </section>
 
 <section class="view hidden" id="batch">
-  <h2>Where the network's errors are, and what a solve budget catches</h2>
-  <p class="prose hint" id="bsummary">Run a study to see results.</p>
+  <h2>Screen many rocks at once</h2>
+  <p class="prose">When you need answers for many fields, solving each one conventionally is the expensive part. Here the network predicts every field, and a cheap check ranks them by how wrong the network probably is. The solver then checks only the riskiest few, plus a random sample that tells you how good the unchecked answers are.</p>
+  <div class="examples" role="group" aria-label="Screening examples">
+    <button data-bex="typical">Typical rock</button>
+    <button data-bex="channels">Fractured rock, contrast 100×</button>
+    <button data-bex="layers">Layered rock</button>
+  </div>
+  <div class="status" id="bstatus" aria-live="polite"><span class="spin"></span><span id="bstatustext"></span></div>
+  <p class="prose" id="bsummary">Pick an example or set up a population and run the screening.</p>
   <div id="bplot"></div>
   <div class="stats" id="bstats"></div>
   <div id="btable"></div>
@@ -189,8 +240,9 @@ svg text { font: 12px "Schibsted Grotesk", sans-serif; fill: var(--muted); }
 <script>
 const $ = (id) => document.getElementById(id);
 const pct = (x) => x == null ? "n/a" : (100 * x).toFixed(x < 0.01 ? 2 : 1) + "%";
+const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-// --- colour maps -----------------------------------------------------------
+// --- colour maps: 256-entry lookup tables ----------------------------------------------------------
 function viridis(t) { // polynomial fit to matplotlib viridis
   t = Math.min(1, Math.max(0, t));
   const C = [[0.2777, 0.0054, 0.334], [0.105, 1.4046, 1.3846], [-0.3309, 0.2148, 0.095], [-4.6342, -5.7991, -19.3324],
@@ -203,17 +255,19 @@ function viridis(t) { // polynomial fit to matplotlib viridis
 }
 const mix = (a, b, t) => a.map((v, k) => v + (b[k] - v) * t);
 const hex = (h) => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
-const CLAY = hex("#7D5E4A"), SAND = hex("#E2C772"), BLUE = hex("#2166AC"), WHITE = [247, 247, 247], RED = hex("#B2182B");
+const CLAY = hex("#4A3426"), SAND = hex("#EBD58A"), BLUE = hex("#2166AC"), WHITE = [247, 247, 247], RED = hex("#B2182B");
 const perm = (t) => mix(CLAY, SAND, Math.min(1, Math.max(0, t)));
 const diverging = (t) => t < 0.5 ? mix(BLUE, WHITE, t * 2) : mix(WHITE, RED, (t - 0.5) * 2);
+const lut = (f) => { const L = new Uint8ClampedArray(256 * 3); for (let k = 0; k < 256; k++) { const c = f(k / 255); L[3 * k] = c[0]; L[3 * k + 1] = c[1]; L[3 * k + 2] = c[2]; } return L; };
+const LUT = new Map([[viridis, lut(viridis)], [perm, lut(perm)], [diverging, lut(diverging)]]);
 
 function draw(canvas, data, n, cmap, lo, hi) {
-  canvas.width = n; canvas.height = n;
-  const ctx = canvas.getContext("2d"), img = ctx.createImageData(n, n);
+  if (canvas.width !== n) { canvas.width = n; canvas.height = n; }
+  const ctx = canvas.getContext("2d"), img = ctx.createImageData(n, n), L = LUT.get(cmap), s = 255 / (hi - lo || 1), px = img.data;
   for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
-    const c = cmap((data[i * n + j] - lo) / (hi - lo || 1));
+    const k = 3 * Math.min(255, Math.max(0, Math.round((data[i * n + j] - lo) * s)));
     const p = 4 * ((n - 1 - j) * n + i); // i along x, j along y (up)
-    img.data[p] = c[0]; img.data[p + 1] = c[1]; img.data[p + 2] = c[2]; img.data[p + 3] = 255;
+    px[p] = L[k]; px[p + 1] = L[k + 1]; px[p + 2] = L[k + 2]; px[p + 3] = 255;
   }
   ctx.putImageData(img, 0, 0);
 }
@@ -222,163 +276,279 @@ function bar(el, ticks, cmap, labels) {
   ticks.innerHTML = labels.map(l => `<span>${l}</span>`).join("");
 }
 const extent = (v) => { let lo = Infinity, hi = -Infinity; for (const x of v) { if (x < lo) lo = x; if (x > hi) hi = x; } return [lo, hi]; };
-const fmt = (x) => Math.abs(x) >= 100 || (Math.abs(x) < 0.01 && x !== 0) ? x.toExponential(1) : x.toPrecision(3);
+const fmt = (x) => Math.abs(x) >= 1e5 || (Math.abs(x) < 1e-3 && x !== 0) ? x.toExponential(1) : String(Number(x.toPrecision(3)));
+const times = (x) => `${x >= 100 ? Math.round(x).toLocaleString("en") : fmt(x)}×`;
+let timer = null; // status-line clock
 
-// --- base64 float32 --------------------------------------------------------
+// --- base64 float32 --------------------------------------------------------------------------------
 function dec(s) { const b = atob(s), u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return new Float32Array(u.buffer); }
 function enc(f) { const u = new Uint8Array(f.buffer); let s = ""; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); }
 
-// --- backend: the FastAPI server when present, otherwise the same Python code in the browser (Pyodide) ---
-async function post(path, body) {
-  const r = await fetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-  const j = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(j.detail ? (typeof j.detail === "string" ? j.detail : JSON.stringify(j.detail)) : `Request failed with status ${r.status}`);
-  return j;
+// --- backend: a FlowGuard server when one answers, otherwise the same Python code in this browser ------
+function serverBackend(base) {
+  const post = async (path, body) => {
+    let r;
+    try { r = await fetch(base + path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); }
+    catch (e) { throw new Error("The FlowGuard server could not be reached. Check your connection and try again."); }
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.detail ? (typeof j.detail === "string" ? j.detail : JSON.stringify(j.detail)) : `The server answered with status ${r.status}.`);
+    return j;
+  };
+  return { kind: "server", base, solve: b => post("api/solve", b), batch: b => post("api/batch", b), investigate: b => post("api/investigate", b),
+           evidence: async () => { const e = await fetch(base + "api/evidence"); if (!e.ok) throw new Error("No reliability study is available on this server."); return e.json(); } };
 }
 function workerBackend() {
   const w = new Worker("worker.js"), pending = new Map();
   let seq = 0;
   w.onmessage = (ev) => {
     const { id, result, error, progress } = ev.data;
-    if (progress) { setStatus(`${progress}. First load downloads about 40 MB and runs entirely in your browser.`); return; }
+    if (progress) { setStatus(true, `${progress}. The first visit downloads about 38 MB; later visits use the browser cache.`); return; }
     const p = pending.get(id); pending.delete(id);
     if (error) p.reject(new Error(error));
     else if (result && result.error) p.reject(new Error(result.error));
     else p.resolve(result);
   };
   const call = (method, payload) => new Promise((resolve, reject) => { const id = ++seq; pending.set(id, { resolve, reject }); w.postMessage({ id, method, payload }); });
-  return { kind: "browser", solve: b => call("solve", b), batch: b => call("batch", b), evidence: () => call("evidence") };
+  return { kind: "browser", solve: b => call("solve", b), batch: b => call("batch", b), investigate: b => call("investigate", b), evidence: () => call("evidence") };
+}
+async function probe(base, ms) {
+  const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), ms);
+  try {
+    const r = await fetch(base + "api/health", { cache: "no-store", signal: ctl.signal });
+    return r.ok && Object.keys((await r.json()).models || {}).length > 0;
+  } catch (e) { return false; } finally { clearTimeout(timer); }
 }
 const backendReady = (async () => {
-  // scripts/build_site.py marks the static build; only the FastAPI deployment has /api
-  if (document.querySelector('meta[name="flowguard-runtime"][content="browser"]')) return workerBackend();
-  try {
-    const r = await fetch("api/health", { cache: "no-store" });
-    if (r.ok && Object.keys((await r.json()).models || {}).length > 0)
-      return { kind: "server", solve: b => post("api/solve", b), batch: b => post("api/batch", b),
-               evidence: async () => { const e = await fetch("api/evidence"); if (!e.ok) throw new Error("No reliability study has been run on this deployment yet."); return e.json(); } };
-  } catch (e) { /* static hosting: no server */ }
+  const meta = (name) => (document.querySelector(`meta[name="${name}"]`) || {}).content;
+  // static build (scripts/build_site.py): use the hosted server when it answers, else compute in the browser
+  if (new URLSearchParams(location.search).has("local")) return workerBackend();
+  if (meta("flowguard-runtime") === "browser") {
+    const api = meta("flowguard-api");
+    if (api) { setStatus(true, "Connecting to the FlowGuard server"); if (await probe(api, 4000)) return serverBackend(api); }
+    return workerBackend();
+  }
+  if (await probe("", 8000)) return serverBackend("");
   return workerBackend();
 })();
 backendReady.then(b => {
-  $("runtime").textContent = b.kind === "server"
-    ? "Computation runs on the FlowGuard server (NumPy network, SciPy sparse solver)."
-    : "Computation runs in your browser: the same Python package, compiled to WebAssembly (Pyodide). The network takes about 0.4 s per field here.";
+  $("runtime").innerHTML = b.kind === "server"
+    ? `Computation runs on the FlowGuard server (NumPy network, SciPy sparse solver).${b.base ? ` <a href="?local=1" id="golocal">Compute in this browser instead</a>.` : ""}`
+    : "Computation runs in your browser: the same Python package, compiled to WebAssembly (Pyodide). It is slower than the server: about 0.3 s per field.";
   if (b.kind === "browser") { $("bcount").value = 32; $("bcount").max = 128; }
 });
-const setStatus = (msg) => { $("verdict").className = "verdict"; $("verdict").textContent = msg; };
 
-// --- tabs ------------------------------------------------------------------
+// --- status line and tabs ----------------------------------------------------------------------------
+function setStatus(busy, text, el = "status") {
+  const box = $(el), t0 = performance.now();
+  box.classList.toggle("busy", busy);
+  clearInterval(timer);
+  const show = () => $(el + "text").textContent = busy ? `${text} ${((performance.now() - t0) / 1000).toFixed(1)} s` : text;
+  show();
+  if (busy) timer = setInterval(show, 100);
+}
 document.querySelectorAll("nav button").forEach(b => b.onclick = () => {
   document.querySelectorAll("nav button").forEach(x => x.setAttribute("aria-selected", x === b));
   document.querySelectorAll("section.view").forEach(s => s.classList.toggle("hidden", s.id !== b.dataset.view));
   document.querySelectorAll("aside > div").forEach(d => d.classList.toggle("hidden", d.dataset.for !== b.dataset.view));
   if (b.dataset.view === "evidence") loadEvidence();
 });
+try { if (!localStorage.getItem("fg-intro-seen")) $("intro").open = true; localStorage.setItem("fg-intro-seen", "1"); } catch (e) { $("intro").open = true; }
 
-// --- single field ----------------------------------------------------------
-const state = { a: null, n: 128, last: null, brush: "high", errMode: "true", busy: false, queued: false };
-const lowVal = () => Math.pow(10, +$("alow").value);
-const syncLow = () => { $("alowv").textContent = lowVal().toPrecision(2); $("balowv").textContent = Math.pow(10, +$("balow").value).toPrecision(2); };
-$("alow").oninput = $("balow").oninput = syncLow; syncLow();
+// --- single field --------------------------------------------------------------------------------------
+// state.unit holds unit-source (beta = 1) results: a beta change rescales them without a request.
+const state = { a: null, n: 128, unit: null, last: null, brush: "high", errMode: "true", busy: false, queued: null, seq: 0, investigated: false };
+const contrastOf = (id) => Math.pow(10, +$(id).value);
+const syncContrast = () => { $("contrastv").textContent = times(contrastOf("contrast")); $("bcontrastv").textContent = times(contrastOf("bcontrast")); };
+$("contrast").oninput = $("bcontrast").oninput = syncContrast; syncContrast();
 $("brush").oninput = () => $("brushv").textContent = $("brush").value;
 document.querySelectorAll("[data-brush]").forEach(b => b.onclick = () => { state.brush = b.dataset.brush; document.querySelectorAll("[data-brush]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
-document.querySelectorAll("[data-err]").forEach(b => b.onclick = () => { state.errMode = b.dataset.err; document.querySelectorAll("[data-err]").forEach(x => x.setAttribute("aria-pressed", x === b)); if (state.last) render(state.last); });
+document.querySelectorAll("[data-err]").forEach(b => b.onclick = () => { state.errMode = b.dataset.err; document.querySelectorAll("[data-err]").forEach(x => x.setAttribute("aria-pressed", x === b)); if (state.unit) render(); });
 
-async function run(body) {
-  if (state.busy) { state.queued = true; return; }
-  state.busy = true; $("gen").disabled = true;
+const MODEL_DESC = { broad: "Trained on the PDEBench blobs plus contrast up to 1000×, thin channels and smoothly varying rock. The default.",
+                     pdebench: "Trained only on PDEBench's blobs (two values, contrast 10×). Most accurate on rock like that, unreliable elsewhere." };
+const LOW = () => 1 / contrastOf("contrast");
+
+async function run(body, label) {
+  // one request at a time; the latest pending request replaces any older one
+  if (state.busy) { state.queued = [body, label]; return; }
+  state.busy = true; $("gen").disabled = true; $("maps").classList.add("stale");
+  setStatus(true, label);
+  const b = await backendReady;
   try {
-    const j = await (await backendReady).solve(body);
-    state.a = dec(j.a); state.n = j.n; state.last = j;
-    render(j);
+    const j = await b.solve(body);
+    const beta = j.beta;
+    if (j.a) state.a = dec(j.a);
+    state.n = j.n; state.last = j; state.investigated = false;
+    const up = dec(j.u_pred), ur = dec(j.u_ref), ue = dec(j.err_est_field);
+    for (const v of [up, ur, ue]) for (let i = 0; i < v.length; i++) v[i] /= beta;
+    state.unit = { up, ur, ue };
+    render();
+    const ms = j.ms, c = j.cached || {};
+    setStatus(false, `${b.kind === "server" ? "Server" : "Browser"}: network ${c.nn ? "reused" : ms.nn.toFixed(0) + " ms"}, solver ${c.reference ? "reused" : ms.reference.toFixed(0) + " ms"}.`);
   } catch (e) {
-    $("verdict").className = "verdict bad"; $("verdict").innerHTML = `<strong>Could not solve.</strong> ${e.message}`;
+    $("verdict").className = "verdict bad"; $("verdict").innerHTML = `<strong>Could not solve.</strong><p>${esc(e.message)}</p>`;
+    setStatus(false, "Failed.");
   } finally {
-    state.busy = false; $("gen").disabled = false;
-    if (state.queued) { state.queued = false; solveCurrent(); }
+    state.busy = false; $("gen").disabled = false; $("maps").classList.remove("stale");
+    if (state.queued) { const [qb, ql] = state.queued; state.queued = null; run(qb, ql); }
   }
 }
-const generate = () => run({ model: $("model").value, field: { family: $("family").value, seed: +$("seed").value, n: +$("n").value, a_low: lowVal(), a_high: 1 }, beta: +$("beta").value });
-const solveCurrent = () => state.a && run({ model: $("model").value, field: { n: state.n, values: enc(state.a) }, beta: +$("beta").value });
-const MODEL_DESC = { broad: "Trained on PDEBench fields plus contrast up to 1000×, thin channels and smooth fields. The default.",
-                     pdebench: "Trained only on PDEBench fields (two values, contrast 10×). Most accurate on fields like those." };
-$("model").onchange = () => { $("modeldesc").textContent = MODEL_DESC[$("model").value]; solveCurrent(); };
-$("modeldesc").textContent = MODEL_DESC[$("model").value];
-$("gen").onclick = generate;
-$("beta").onchange = solveCurrent;
+const model = () => $("model").value;
+const generate = (label = "Solving") => run({ model: model(), field: { family: $("family").value, seed: +$("seed").value, n: +$("n").value, a_low: LOW(), a_high: 1 }, beta: beta() }, label);
+const solveCurrent = (label) => state.a && run({ model: model(), field: { n: state.n, values: enc(state.a) }, beta: beta() }, label);
+const beta = () => { const v = +$("beta").value; return Number.isFinite(v) && v !== 0 ? v : 1; };
+$("model").onchange = () => { $("modeldesc").textContent = MODEL_DESC[model()]; $("inv").innerHTML = ""; solveCurrent("Switching network (the solver result is reused)"); };
+$("modeldesc").textContent = MODEL_DESC[model()];
+$("gen").onclick = () => { clearExample(); generate(); };
+$("beta").oninput = () => { if (state.unit) render(); };
 
-function render(j) {
-  const n = j.n, a = dec(j.a), up = dec(j.u_pred), ue = dec(j.u_ref);
-  const la = Array.from(a, Math.log10), [amin, amax] = extent(la);
+const EXAMPLES = {
+  typical: { family: "pdebench", contrast: 1, n: 128, seed: 7, text: "Rock like the training data: two kinds of rock, contrast 10×. Expect the network and the solver to agree to within about 1%." },
+  channels: { family: "channels", contrast: 2, n: 128, seed: 3, text: "Thin permeable channels, like fractures, at contrast 100×. The broad network was trained on rock like this; switch to the PDEBench specialist to see a network that was not." },
+  contrast: { family: "pdebench", contrast: 3.7, n: 128, seed: 5, text: "Contrast 5000×, beyond anything either network saw. The verdict should warn you. Then use the investigation to see which property of the input is to blame." },
+  layers: { family: "layers", contrast: 1, n: 128, seed: 2, text: "Tilted layers, a shape held out from all training. The error is larger than on familiar rock; the investigation can tell whether the shape is the reason." },
+};
+function clearExample() { document.querySelectorAll("[data-ex]").forEach(x => x.setAttribute("aria-pressed", "false")); $("excap").textContent = ""; }
+document.querySelectorAll("[data-ex]").forEach(b => b.onclick = () => {
+  document.querySelectorAll("[data-ex]").forEach(x => x.setAttribute("aria-pressed", x === b));
+  const ex = EXAMPLES[b.dataset.ex];
+  if (!ex) { // blank canvas: uniform permeable rock to paint on
+    $("excap").textContent = "Uniform permeable rock. Choose the Tight brush and draw barriers; each stroke is solved when you let go.";
+    const n = +$("n").value; state.a = new Float32Array(n * n).fill(1); state.n = n;
+    document.querySelector("[data-brush=low]").click();
+    return solveCurrent("Solving");
+  }
+  $("family").value = ex.family; $("contrast").value = ex.contrast; $("n").value = String(ex.n); $("seed").value = ex.seed; syncContrast();
+  $("excap").textContent = ex.text;
+  generate();
+});
+
+function render() {
+  const j = state.last, n = state.n, B = beta(), { up: up1, ur: ur1, ue: ue1 } = state.unit;
+  const up = up1.map(x => x * B), ur = ur1.map(x => x * B);
+  const la = Array.from(state.a, Math.log10), [amin, amax] = extent(la);
   draw($("ca"), la, n, perm, Math.min(amin, -1), Math.max(amax, 0));
-  bar($("abar"), $("aticks"), perm, [fmt(Math.pow(10, Math.min(amin, -1))), "log scale", fmt(Math.pow(10, Math.max(amax, 0)))]);
+  bar($("abar"), $("aticks"), perm, [`${fmt(Math.pow(10, Math.min(amin, -1)))} tight`, "log scale", `${fmt(Math.pow(10, Math.max(amax, 0)))} permeable`]);
   let lo = Infinity, hi = -Infinity;
-  for (const v of [up, ue]) for (const x of v) { if (x < lo) lo = x; if (x > hi) hi = x; }
-  draw($("cp"), up, n, viridis, lo, hi); draw($("ce"), ue, n, viridis, lo, hi);
-  for (const [b, t] of [["ubar", "uticks"], ["ubar2", "uticks2"]]) bar($(b), $(t), viridis, [fmt(lo), "u", fmt(hi)]);
-  const e = dec(state.errMode === "true" ? j.err_field : j.err_est_field);
-  let m = 0; for (const x of dec(j.err_field)) m = Math.max(m, Math.abs(x));
+  for (const v of [up, ur]) for (const x of v) { if (x < lo) lo = x; if (x > hi) hi = x; }
+  draw($("cp"), up, n, viridis, lo, hi); draw($("ce"), ur, n, viridis, lo, hi);
+  for (const [b, t] of [["ubar", "uticks"], ["ubar2", "uticks2"]]) bar($(b), $(t), viridis, [fmt(lo), "pressure", fmt(hi)]);
+  const err = up.map((x, i) => x - ur[i]), e = state.errMode === "true" ? err : ue1.map(x => x * B);
+  let m = 0; for (const x of err) m = Math.max(m, Math.abs(x));
   draw($("cerr"), e, n, diverging, -m, m);
-  bar($("ebar"), $("eticks"), diverging, [fmt(-m), "0", fmt(m)]);
+  bar($("ebar"), $("eticks"), diverging, [`${fmt(-m)} too low`, "0", `${fmt(m)} too high`]);
   $("acap").textContent = `${n}×${n}`;
-  $("nncap").textContent = `${j.ms.nn.toFixed(0)} ms`;
-  $("excap").textContent = `${j.ms.reference.toFixed(0)} ms`;
-  const bad = j.rel_err_vs_ref > 0.05;
+  $("nncap").textContent = j.cached && j.cached.nn ? "reused" : `${j.ms.nn.toFixed(0)} ms`;
+  $("refcap").textContent = j.cached && j.cached.reference ? "reused" : `${j.ms.reference.toFixed(0)} ms`;
+  const r = j.rel_err_vs_ref, level = r > 0.05 ? "bad" : r > 0.02 ? "warn" : "ok";
+  const head = { ok: "The network agrees with the solver", warn: "Usable with care", bad: "Do not use the network's answer" }[level];
   const d = j.reference_discretization_err;
-  $("verdict").className = "verdict" + (bad ? " bad" : "");
-  $("verdict").innerHTML = `<strong>${bad ? "Do not use the network answer" : "Network agrees with the reference solver"}</strong>
-    <div>Difference from the finite-volume reference: ${pct(j.rel_err_vs_ref)} (relative L2). ${j.bound90 != null ? `Before solving, the residual-based bound said at most ${pct(j.bound90)} with 90% coverage${j.flags.length ? ", but that calibration only holds on the training distribution" : ""}.` : ""}</div>
-    ${d != null ? `<div class="hint">The reference is itself an approximation: on ${j.n === 128 ? "this" : "the 128×128"} grid it differs from a 4× finer solve by about ${pct(d)} on typical fields.</div>` : ""}
-    ${j.flags.length ? `<ul class="flags">${j.flags.map(f => `<li>${f.msg}${f.measured_median_err != null ? ` Median error on such inputs in our tests: ${pct(f.measured_median_err)}.` : ""}</li>`).join("")}</ul>` : ""}`;
+  $("verdict").className = "verdict" + (level === "ok" ? "" : " " + level);
+  $("verdict").innerHTML = `<strong>${head}</strong>
+    <p>The network's pressure differs from the solver's by ${pct(r)} overall (relative L2 error). ${j.bound90 != null ? `Before running the solver, a cheap check on the network's answer put the error at most ${pct(j.bound90)} (right 9 times in 10 on training-like rock${j.flags.length ? "; this rock is not training-like, so that bound is not reliable here" : ""}).` : ""}</p>
+    ${j.flags.length ? `<ul class="flags">${j.flags.map(f => `<li>${esc(f.msg)}${f.measured_median_err != null ? ` In our tests on such inputs, the median error was ${pct(f.measured_median_err)}.` : ""}</li>`).join("")}</ul>` : ""}
+    ${d != null ? `<p class="hint">The solver is itself an approximation: on ${n === 128 ? "this" : "the 128 × 128"} grid it is about ${pct(d)} from a four-times finer solve.</p>` : ""}
+    ${r > 0.02 || j.flags.length ? `<p><button class="secondary" id="invbtn">Investigate why</button> <span class="hint">Runs controlled experiments on this field: about one second on the server.</span></p>` : ""}`;
+  if ($("invbtn")) $("invbtn").onclick = investigate;
+  const qp = [up.reduce((s, x) => s + x, 0) / up.length, extent(up)[1]], qr = [ur.reduce((s, x) => s + x, 0) / ur.length, extent(ur)[1]];
   $("stats").innerHTML = [
-    ["Residual-based estimate", pct(j.fft_err_rel), "from the network output alone"],
+    ["Cheap error estimate", pct(j.fft_err_rel), "from the network's answer alone"],
     ...(j.ensemble_spread != null ? [["Ensemble disagreement", pct(j.ensemble_spread), "spread across independently trained networks"]] : []),
-    ["Mean pressure", `${fmt(j.qoi.mean_pred)} vs ${fmt(j.qoi.mean_ref)}`, "network vs reference"],
-    ["Peak pressure", `${fmt(j.qoi.max_pred)} vs ${fmt(j.qoi.max_ref)}`, "network vs reference"],
+    ["Average pressure", `${fmt(qp[0])} vs ${fmt(qr[0])}`, "network vs solver"],
+    ["Peak pressure", `${fmt(qp[1])} vs ${fmt(qr[1])}`, "network vs solver"],
   ].map(([t, v, s]) => `<div><small>${t}</small><b>${v}</b><small>${s}</small></div>`).join("");
 }
 
-// painting
-let painting = false;
+// --- investigation: counterfactual experiments, each one a measured error ----------------------------
+const AXIS = { grid: "grid size", contrast: "contrast", continuous: "smooth variation", geometry: "shape" };
+const UNDO_TEXT = (dom) => ({ grid: `resampled to the ${dom.grid} × ${dom.grid} training grid`, contrast: `contrast compressed to ${times(dom.contrast_max)}, the training maximum`, continuous: "made two-valued, like the training rock" });
+async function investigate() {
+  const btn = $("invbtn"); if (btn) btn.disabled = true;
+  $("inv").innerHTML = ""; setStatus(true, "Investigating: running controlled experiments");
+  try {
+    const j = await (await backendReady).investigate({ model: model(), field: { n: state.n, values: enc(state.a) } });
+    renderInvestigation(j);
+    setStatus(false, `Investigation: ${j.cost} network runs and solver checks, ${(j.ms / 1000).toFixed(1)} s.`);
+  } catch (e) { $("inv").innerHTML = `<p class="err">${esc(e.message)}</p>`; setStatus(false, "Investigation failed."); }
+  finally { if (btn) btn.disabled = false; }
+}
+function renderInvestigation(j) {
+  const T = UNDO_TEXT(j.domain), steps = [];
+  const all = j.evidence.find(e => e.experiment === "all");
+  steps.push(`On this field the network's error is <b>${pct(j.err)}</b>. On rock like its training data it is typically ${pct(j.id_err)}.`);
+  if (all && all.applicable) steps.push(`Move every unfamiliar property back into the training range (${all.undone.map(k => T[k]).join("; ")}), keeping the shape. Error: <b>${pct(all.err_after)}</b>.`);
+  else steps.push("Grid, contrast and value range are already within the training range, so only the shape can explain a large error.");
+  for (const e of j.evidence.filter(e => e.experiment.startsWith("keep_") && e.applicable)) {
+    const k = e.experiment.slice(5);
+    steps.push(`Starting from that training-like version, put back only the original ${AXIS[k]}. Error: <b>${pct(e.err_after)}</b>.`);
+  }
+  const g = j.evidence.find(e => e.experiment === "geometry");
+  if (g) steps.push(`Replace the shape with training-like blobs that have the same rock values and grid (4 samples). Error: <b>${pct(g.err_after)}</b> (range ${pct(g.err_range[0])} to ${pct(g.err_range[1])}).`);
+  const causes = j.causes.map(c => AXIS[c]);
+  const concl = causes.length
+    ? `Measured cause${causes.length > 1 ? "s" : ""}: <b>${causes.join(" and ")}</b>. ${causes.length > 1 ? "Each" : "It"} raises the error clearly above the training-like version on its own${j.causes.includes("geometry") ? "; for shape, compared with training-like shapes with the same values" : ""}.`
+    : (j.err < 2 * j.id_err ? "No cause: the error is at the level the network reaches on its training data." : "None of the tested properties explains the error on its own by our threshold (1.5× for an input property, 2× for shape). The error may come from a combination, or from something these experiments do not vary.");
+  $("inv").innerHTML = `<h3>Why is the network ${j.err > 0.02 ? "wrong" : "off"} here?</h3>
+    <p class="hint">Each step edits the field, then runs the network and the solver again. The conclusion follows from the measured errors by a fixed rule, not from a language model.</p>
+    <ol>${steps.map(s => `<li>${s}</li>`).join("")}</ol>
+    <div class="concl">${concl}</div>`;
+}
+
+// --- painting: the rock map updates under the pointer; the solve waits for the stroke to end ----------
+let painting = false, raf = 0;
 function paintAt(ev) {
   if (!state.a) return;
   const c = $("ca"), r = c.getBoundingClientRect(), n = state.n;
   const i0 = Math.floor((ev.clientX - r.left) / r.width * n), j0 = n - 1 - Math.floor((ev.clientY - r.top) / r.height * n);
-  const rad = +$("brush").value * n / 128, val = state.brush === "high" ? 1 : lowVal();
+  const rad = +$("brush").value * n / 128, val = state.brush === "high" ? 1 : LOW();
   for (let i = Math.max(0, Math.floor(i0 - rad)); i <= Math.min(n - 1, i0 + rad); i++)
     for (let j = Math.max(0, Math.floor(j0 - rad)); j <= Math.min(n - 1, j0 + rad); j++)
       if ((i - i0) ** 2 + (j - j0) ** 2 <= rad * rad) state.a[i * n + j] = val;
-  const la = Array.from(state.a, Math.log10), [amin, amax] = extent(la);
-  draw(c, la, n, perm, Math.min(amin, -1), Math.max(amax, 0));
+  if (!raf) raf = requestAnimationFrame(() => {
+    raf = 0;
+    const la = Array.from(state.a, Math.log10), [amin, amax] = extent(la);
+    draw(c, la, n, perm, Math.min(amin, -1), Math.max(amax, 0));
+  });
 }
-$("ca").addEventListener("pointerdown", e => { painting = true; $("ca").setPointerCapture(e.pointerId); paintAt(e); });
+$("ca").addEventListener("pointerdown", e => { if (!state.a) return; painting = true; $("ca").setPointerCapture(e.pointerId); $("maps").classList.add("stale"); setStatus(false, "Painting. The field is solved when you let go."); paintAt(e); });
 $("ca").addEventListener("pointermove", e => painting && paintAt(e));
-$("ca").addEventListener("pointerup", () => { if (painting) { painting = false; solveCurrent(); } });
+const endStroke = () => { if (painting) { painting = false; $("inv").innerHTML = ""; solveCurrent("Solving the painted field"); } };
+$("ca").addEventListener("pointerup", endStroke);
+$("ca").addEventListener("pointercancel", endStroke);
 
-// --- batch -----------------------------------------------------------------
+// --- batch -----------------------------------------------------------------------------------------------
+const BEX = { typical: { family: "pdebench", contrast: 1 }, channels: { family: "channels", contrast: 2 }, layers: { family: "layers", contrast: 1 } };
+document.querySelectorAll("[data-bex]").forEach(b => b.onclick = () => {
+  document.querySelectorAll("[data-bex]").forEach(x => x.setAttribute("aria-pressed", x === b));
+  const ex = BEX[b.dataset.bex]; $("bfamily").value = ex.family; $("bcontrast").value = ex.contrast; syncContrast();
+  $("runbatch").click();
+});
 $("runbatch").onclick = async () => {
-  $("runbatch").disabled = true; $("bsummary").textContent = "Running.";
+  const count = +$("bcount").value, b = await backendReady;
+  $("runbatch").disabled = true;
+  setStatus(true, `Predicting ${count} fields, ranking them, and solving the selected ones`, "bstatus");
   try {
-    const j = await (await backendReady).batch({ field: { family: $("bfamily").value, seed: +$("bseed").value, a_low: Math.pow(10, +$("balow").value), a_high: 1 },
-      count: +$("bcount").value, verify_risky: +$("brisky").value, verify_random: +$("baudit").value, beta: 1, model: $("model").value });
+    const j = await b.batch({ field: { family: $("bfamily").value, seed: +$("bseed").value, a_low: 1 / contrastOf("bcontrast"), a_high: 1 },
+      count, verify_risky: +$("brisky").value, verify_random: +$("baudit").value, beta: 1, model: model() });
     renderBatch(j);
-  } catch (e) { $("bsummary").innerHTML = `<span class="err">${e.message}</span>`; }
+    setStatus(false, `Done: network ${(j.ms.nn_total / 1000).toFixed(1)} s for ${count} fields, solver ${(j.ms.reference_total / 1000).toFixed(1)} s for ${j.rows.filter(r => r.rel_err_vs_ref != null).length}.`, "bstatus");
+  } catch (e) { $("bsummary").innerHTML = `<span class="err">${esc(e.message)}</span>`; setStatus(false, "Failed.", "bstatus"); }
   finally { $("runbatch").disabled = false; }
 };
 
 function renderBatch(j) {
   const rows = j.rows, ver = rows.filter(r => r.rel_err_vs_ref != null).map(r => ({ ...r, err: r.rel_err_vs_ref }));
   const risky = ver.filter(r => r.role === "risky"), audit = ver.filter(r => r.role === "audit");
-  const caught = risky.filter(r => r.err > 0.05).length;
-  $("bsummary").innerHTML = `${rows.length} fields predicted. Of the ${risky.length} flagged as riskiest, ${caught} had error above 5%.
-    The random audit of ${audit.length} other fields found median error ${pct(j.audit.median)} and worst ${pct(j.audit.max)}; that is the estimate for the ${rows.length - risky.length} fields not ranked riskiest.
-    ${j.flags.length ? `<br><span class="err">${j.flags.map(f => f.msg).join(" ")}</span>` : ""}`;
+  const caught = risky.filter(r => r.err > 0.05).length, unchecked = rows.length - risky.length;
+  $("bsummary").innerHTML = `<b>${rows.length} fields predicted.</b> The ${risky.length} ranked riskiest were solved: ${caught} of them had more than 5% error${caught ? ", so those network answers should be replaced by the solver's" : ""}.
+    The random sample of ${audit.length} other fields had median error ${pct(j.audit.median)} and worst ${pct(j.audit.max)}. That is the honest estimate for the ${unchecked} answers that were not ranked riskiest.
+    ${j.flags.length ? `<br><span class="err">${j.flags.map(f => esc(f.msg)).join(" ")}</span>` : ""}`;
   // scatter: estimate (x) vs measured error (y), log-log, equal axes
   const W = 640, H = 320, L = 58, B = 40, T = 12, R = 12, xs = ver.map(r => r.fft_err_rel), ys = ver.map(r => r.err);
+  if (!ver.length) { $("bplot").innerHTML = ""; $("btable").innerHTML = ""; return; }
   const [mn, mx] = extent(xs.concat(ys).filter(v => v > 0)), lo = Math.log10(Math.min(mn, 0.05)) - 0.15, hi = Math.log10(Math.max(mx, 0.05)) + 0.15;
   const X = v => L + (Math.log10(v) - lo) / (hi - lo) * (W - L - R), Y = v => H - B - (Math.log10(v) - lo) / (hi - lo) * (H - B - T);
-  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px" role="img" aria-label="Residual-based estimate versus measured error for the fields solved with the reference solver">`;
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px" role="img" aria-label="Cheap error estimate versus measured error for the fields checked with the solver">`;
   s += `<rect x="${L}" y="${T}" width="${W - L - R}" height="${H - B - T}" fill="none" stroke="#C9D2D7"/>`;
   for (let d = Math.ceil(lo); d <= Math.floor(hi); d++) {
     const v = 10 ** d, lab = pct(v).replace(".00", "").replace(".0", "");
@@ -388,47 +558,56 @@ function renderBatch(j) {
   s += `<line x1="${X(10 ** lo)}" y1="${Y(10 ** lo)}" x2="${X(10 ** hi)}" y2="${Y(10 ** hi)}" stroke="#C9D2D7" stroke-dasharray="2 3"/>`;
   s += `<line x1="${L}" y1="${Y(0.05)}" x2="${W - R}" y2="${Y(0.05)}" stroke="#B0144F" stroke-dasharray="4 4"/><text x="${L + 6}" y="${Y(0.05) - 6}">5% error</text>`;
   for (const r of ver) s += `<circle cx="${X(r.fft_err_rel)}" cy="${Y(r.err)}" r="5" fill="${r.role === "risky" ? "#B0144F" : "#0F7480"}" fill-opacity=".8"><title>field ${r.i}: estimate ${pct(r.fft_err_rel)}, measured ${pct(r.err)}</title></circle>`;
-  s += `<text x="${(L + W - R) / 2}" y="${H - 6}" text-anchor="middle">residual-based estimate, before solving</text>`;
-  s += `<text transform="translate(14 ${(T + H - B) / 2}) rotate(-90)" text-anchor="middle">measured error vs reference</text></svg>`;
-  $("bplot").innerHTML = `<p class="legend"><span class="dot" style="background:#B0144F"></span>ranked riskiest <span class="dot" style="background:#0F7480"></span>random audit <span class="hint">Dotted diagonal: estimate equals measured error.</span></p>` + s;
+  s += `<text x="${(L + W - R) / 2}" y="${H - 6}" text-anchor="middle">cheap estimate, before solving</text>`;
+  s += `<text transform="translate(14 ${(T + H - B) / 2}) rotate(-90)" text-anchor="middle">measured error</text></svg>`;
+  $("bplot").innerHTML = `<p class="legend"><span class="dot" style="background:#B0144F"></span>ranked riskiest <span class="dot" style="background:#0F7480"></span>random sample <span class="hint">Points near the dotted diagonal: the estimate matched the measurement.</span></p>` + s;
   $("bstats").innerHTML = [
     ["Network, all fields", `${j.ms.nn_total.toFixed(0)} ms`], ["Estimates, all fields", `${j.ms.indicators_total.toFixed(0)} ms`],
-    ["Reference solves", `${j.ms.reference_total.toFixed(0)} ms`], ["Per reference solve", `${j.ms.reference_per_solve.toFixed(0)} ms`],
+    ["Solver checks", `${j.ms.reference_total.toFixed(0)} ms`], ["Per solver check", `${j.ms.reference_per_solve.toFixed(0)} ms`],
   ].map(([t, v]) => `<div><small>${t}</small><b>${v}</b></div>`).join("");
-  $("btable").innerHTML = `<table><thead><tr><th>Field</th><th>Chosen as</th><th>Estimate</th><th>Measured error</th></tr></thead><tbody>${
-    ver.sort((a, b) => b.err - a.err).map(r => `<tr><td>${r.i}</td><td>${r.role === "risky" ? "riskiest" : "audit"}</td><td>${pct(r.fft_err_rel)}</td><td class="${r.err > 0.05 ? "err" : ""}">${pct(r.err)}</td></tr>`).join("")}</tbody></table>`;
+  $("btable").innerHTML = `<details class="more"><summary>Checked fields (${ver.length})</summary><table><thead><tr><th>Field</th><th>Chosen as</th><th>Estimate</th><th>Measured error</th></tr></thead><tbody>${
+    ver.sort((a, b) => b.err - a.err).map(r => `<tr><td>${r.i}</td><td>${r.role === "risky" ? "riskiest" : "random"}</td><td>${pct(r.fft_err_rel)}</td><td class="${r.err > 0.05 ? "err" : ""}">${pct(r.err)}</td></tr>`).join("")}</tbody></table></details>`;
 }
 
-// --- evidence --------------------------------------------------------------
+// --- evidence ---------------------------------------------------------------------------------------------
 let evLoaded = false;
 async function loadEvidence() {
   if (evLoaded) return;
   try {
     const ev = await (await backendReady).evidence();
     const ms = Object.entries(ev.models || {}).filter(([, m]) => m.reliability);
-    if (!ms.length) throw new Error("No reliability study has been run on this deployment yet.");
+    if (!ms.length) throw new Error("No reliability study is available for this deployment.");
     evLoaded = true;
-    const names = { pdebench_test: "PDEBench test split", replica: "Fresh PDEBench-style fields", contrast100: "Contrast 100×",
-      grf: "Smooth log-normal", channels: "Thin channels", res64: "64×64 grid", res256: "256×256 grid",
-      contrast3000: "Contrast 3000× (held out from both)", layers: "Tilted layers (held out from both)" };
+    const names = { pdebench_test: "PDEBench test split", replica: "Fresh PDEBench-style rock", contrast100: "Contrast 100×",
+      grf: "Smoothly varying", channels: "Thin channels", res64: "64 × 64 grid", res256: "256 × 256 grid",
+      contrast3000: "Contrast 3000× (neither network trained on it)", layers: "Tilted layers (neither network trained on it)" };
     const head = ms.map(([, m]) => `<th>${m.label}</th>`).join("");
     const rows = Object.entries(names).filter(([k]) => ms.every(([, m]) => m.reliability.sets[k])).map(([k, label]) =>
       `<tr><td>${label}</td>${ms.map(([, m]) => `<td>${pct(m.reliability.sets[k].err.median)}</td>`).join("")}${ms.map(([, m]) => `<td>${m.reliability.sets[k].spearman.fft_err_rel.toFixed(2)}</td>`).join("")}</tr>`).join("");
-    $("ev").innerHTML = `<h2>How accurate is each network, and does the residual estimate know when it is wrong?</h2>
-      <p>Median relative L2 error against the finite-volume reference on the same grid, on held-out inputs. Rank correlation compares the residual-based estimate, available before any reference solve, with the measured error; 1 is a perfect ranking.</p>
+    $("ev").innerHTML = `<h2>In short</h2>
+      <ul>
+        <li>On rock like its training data, the network is within about 0.5 to 0.7% of the solver, and the solver is within 0.2% of a much finer solve.</li>
+        <li>On unfamiliar rock it can be wrong by tens of percent. The broad network was trained on more kinds of rock and is far more robust, at the cost of about 0.2 percentage points on familiar rock.</li>
+        <li>The cheap error estimate shown before solving ranks fields by error well on most kinds of rock, which is what the screening uses. Two popular alternatives (agreement between networks, consistency under rotation) fail exactly on unfamiliar rock.</li>
+        <li>PDEBench's own labels are snapshots of a simulation that had not finished; these networks were trained on fully solved steady states instead.</li>
+      </ul>
+      <details class="more" open><summary>Accuracy and the cheap estimate, by kind of input</summary>
+      <p>Median relative L2 error against the solver on the same grid, on held-out inputs. Rank correlation compares the cheap estimate, available before any solve, with the measured error; 1 is a perfect ranking.</p>
       <table><thead><tr><th rowspan="2">Inputs</th><th colspan="${ms.length}">Median error</th><th colspan="${ms.length}">Rank correlation</th></tr><tr>${head}${head}</tr></thead><tbody>${rows}</tbody></table>
-      ${ms.map(([, m]) => `<p><strong>${m.label}.</strong> ${m.description}</p>`).join("")}
-      <p>Adapting to broader fields costs about 0.2 percentage points on PDEBench-like fields and removes most of the error on the families it saw. It helps on held-out layers but does not extend to contrast far beyond its training range.</p>
-      <h2>Indicators we tried and did not keep</h2>
-      <p>A three-network ensemble ranks errors well on PDEBench-like fields (0.84) but its spread stops tracking the error on smooth fields, channels and extreme contrast, where the networks agree while all being wrong. The spread of the network over the eight symmetries of the square behaves the same way. A two-level Galerkin estimate ranks almost perfectly but costs about half a reference solve, so solving directly is better.</p>
-      <h2>What the network was trained on</h2>
+      ${ms.map(([, m]) => `<p><strong>${m.label}.</strong> ${m.description}</p>`).join("")}</details>
+      <details class="more"><summary>Indicators we tried and did not keep</summary>
+      <p>A three-network ensemble ranks errors well on PDEBench-like fields (0.84) but its spread stops tracking the error on smooth fields, channels and extreme contrast, where the networks agree while all being wrong. The spread of the network over the eight symmetries of the square behaves the same way. A two-level Galerkin estimate ranks almost perfectly but costs about half a solve, so solving directly is better.</p></details>
+      <details class="more"><summary>Training data and the solver</summary>
       <p>PDEBench's 10,000 Darcy fields, with targets re-solved to steady state. PDEBench's own labels are snapshots of a time-dependent run at t = 1.75; for slowly diffusing fields they still carry the random initial condition. A model trained on them had 4 times the mean error against the steady solution (3.3% versus 0.76%).</p>
-      <p>The reference solver uses harmonic face averaging with the wall on the boundary face, the same discretization the networks were trained on. It is about 0.2% from a four-times finer solve. PDEBench's own scheme puts the wall half a cell outside the domain and is about 2.6% off; a network trained on it learned that error too (3.1% from the fine solve, against 0.56% here), and transferred worse to other grids (2.9% at 64×64, against 0.6% here).</p>
+      <p>The solver uses harmonic face averaging with the wall on the boundary face, the same discretization the networks were trained on. It is about 0.2% from a four-times finer solve. PDEBench's own scheme puts the wall half a cell outside the domain and is about 2.6% off; a network trained on it learned that error too (3.1% from the fine solve, against 0.56% here), and transferred worse to other grids (2.9% at 64 × 64, against 0.6% here).</p></details>
+      <details class="more"><summary>The investigation</summary>
+      <p>"Investigate why" edits the field back toward the network's training data one property at a time (grid, contrast, smooth variation), runs the network and the solver on each edit, and swaps the shape for training-like shapes with the same values. A fixed rule names the properties that raise the error clearly. We tested whether a language model choosing the experiments does better; the result is in the repository README.</p></details>
       <p>Every number on this page, the scripts that produced it, and the full development history are in the <a href="https://github.com/G26karthik/flowguard">source repository</a>.</p>`;
-  } catch (e) { $("ev").innerHTML = `<p class="err">${e.message}</p>`; }
+  } catch (e) { $("ev").innerHTML = `<p class="err">${esc(e.message)}</p>`; }
 }
 
-generate();
+// first view: the typical example, solved as soon as a backend is ready
+document.querySelector("[data-ex=typical]").click();
 </script>
 </body>
 </html>

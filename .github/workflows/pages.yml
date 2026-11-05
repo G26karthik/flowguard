@@ -22,6 +22,8 @@ jobs:
         with:
           python-version: "3.11"
       - run: python scripts/build_site.py _site
+        env:
+          FLOWGUARD_API: ${{ vars.FLOWGUARD_API }}
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

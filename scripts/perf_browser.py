@@ -92,7 +92,7 @@ with sync_playwright() as p:
         page.on("pageerror", lambda e: console.append(f"pageerror: {e}"))
         t_nav = time.time() * 1e3
         page.goto(args.url, wait_until="load", timeout=T)
-        page.wait_for_function("document.querySelector('#verdict').innerText.match(/reference/i)", timeout=T)
+        page.wait_for_function("typeof state !== 'undefined' && state.last && !state.busy", timeout=T)
         first_wall = time.time() * 1e3 - t_nav
         origin = page.evaluate("performance.timeOrigin")
         nav = page.evaluate("(() => { const n = performance.getEntriesByType('navigation')[0];"
@@ -115,14 +115,20 @@ with sync_playwright() as p:
         warm = {}
         warm["render_single_ms"] = render_ms(page)
         warm["generate"] = []
-        for s in (11, 12, 13):
+        base = int(time.time()) % 100000 * 10  # fresh seeds: a server's cache must not serve earlier runs' fields
+        for s in (base + 1, base + 2, base + 3):
             page.fill("#seed", str(s))
             warm["generate"].append(timed(page, lambda: page.click("#gen")))
         warm["paint"] = [timed(page, lambda: stroke(page)) for _ in range(2)] if not args.phone else []
-        page.fill("#beta", "2")
-        warm["beta"] = timed(page, lambda: page.dispatch_event("#beta", "change"))
-        page.fill("#beta", "1")
-        timed(page, lambda: page.dispatch_event("#beta", "change"))
+        if page.evaluate("typeof state.unit !== 'undefined'"):  # current UI: beta rescales locally, no request
+            warm["beta"] = {"wall_ms": page.evaluate("() => { const t = performance.now(); const b = document.getElementById('beta');"
+                                                     " b.value = '2'; b.oninput(); b.value = '1'; b.oninput(); return (performance.now() - t) / 2; }"),
+                            "server_ms": None}
+        else:
+            page.fill("#beta", "2")
+            warm["beta"] = timed(page, lambda: page.dispatch_event("#beta", "change"))
+            page.fill("#beta", "1")
+            timed(page, lambda: page.dispatch_event("#beta", "change"))
         warm["model_switch"] = timed(page, lambda: page.select_option("#model", "pdebench"))
         page.select_option("#n", "256")
         warm["grid256"] = timed(page, lambda: page.click("#gen"))
@@ -130,6 +136,14 @@ with sync_playwright() as p:
         page.select_option("#n", "128")
         timed(page, lambda: page.select_option("#model", "broad"))
 
+        if page.locator("[data-ex=contrast]").count():  # investigation (current UI only)
+            warm["contrast_example"] = timed(page, lambda: page.click("[data-ex=contrast]"))
+            t = time.perf_counter()
+            page.click("#invbtn")
+            page.wait_for_selector("#inv .concl, #inv .err", timeout=T)
+            warm["investigate"] = {"wall_ms": 1e3 * (time.perf_counter() - t), "text": page.locator("#inv").inner_text()[-300:]}
+            page.click("[data-ex=typical]")
+            page.wait_for_function("!state.busy", timeout=T)
         page.click("nav button[data-view=batch]")
         warm["batch"] = {}
         for count in (32, 64):
@@ -173,6 +187,7 @@ res["summary"] = {
     "batch32_wall_ms": med([r["warm"]["batch"][32]["wall_ms"] for r in R]),
     "batch64_wall_ms": med([r["warm"]["batch"][64]["wall_ms"] for r in R]),
     "evidence_ms": med([r["warm"]["evidence_ms"] for r in R]),
+    "investigate_wall_ms": med([r["warm"]["investigate"]["wall_ms"] for r in R if "investigate" in r["warm"]]),
 }
 Path(args.out).parent.mkdir(parents=True, exist_ok=True)
 Path(args.out).write_text(json.dumps(res, indent=1))

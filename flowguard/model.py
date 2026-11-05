@@ -28,7 +28,7 @@ class FNO2d(nn.Module):
     but accuracy away from the training resolution must be measured, not assumed.
     """
 
-    def __init__(self, modes=16, width=48, layers=4, in_ch=1):
+    def __init__(self, modes=12, width=32, layers=4, in_ch=1):  # defaults = the trained configuration (scripts/train.py)
         super().__init__()
         self.cfg = dict(modes=modes, width=width, layers=layers, in_ch=in_ch)
         self.lift = nn.Conv2d(in_ch + 2, width, 1)

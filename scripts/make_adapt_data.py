@@ -1,4 +1,5 @@
-"""Broader training fields for adaptation, solved with the baseline's discretisation (arith faces, ghost wall).
+"""Broader training fields for adaptation, solved with the chosen discretisation (default arith faces, ghost wall;
+`harm,face` for the served models).
 
 2000 each: PDEBench bumps with contrast log-uniform in [10, 1000]; thin channels (k 1-5, width 0.01-0.05,
 contrast 10-1000); smooth log-normal fields (length 0.05-0.2, contrast 10-1000). Seeds disjoint from evaluation.

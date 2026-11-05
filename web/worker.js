@@ -6,16 +6,20 @@ let ready = null;
 
 async function boot() {
   const manifest = await (await fetch("manifest.json", { cache: "no-store" })).json();
-  postMessage({ progress: "Loading Python runtime" });
+  // start every download now: the weights (about 18 MB) arrive while the Python runtime and SciPy load
+  const files = Promise.all(manifest.files.map(async (f) => {
+    const r = await fetch(f);
+    if (!r.ok) throw new Error(`could not fetch ${f} (HTTP ${r.status})`);
+    return [f, new Uint8Array(await r.arrayBuffer())];
+  }));
+  files.catch(() => {}); // reported when awaited below
+  postMessage({ progress: "Loading the Python runtime" });
   const py = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/" });
   postMessage({ progress: "Loading NumPy and SciPy" });
   await py.loadPackage(["numpy", "scipy"]);
-  postMessage({ progress: "Loading model weights" });
+  postMessage({ progress: "Loading the networks" });
   py.FS.mkdir("/app");
-  for (const f of manifest.files) {
-    const r = await fetch(f);
-    if (!r.ok) throw new Error(`could not fetch ${f} (HTTP ${r.status})`);
-    const buf = new Uint8Array(await r.arrayBuffer());
+  for (const [f, buf] of await files) {
     const dir = f.split("/").slice(0, -1);
     for (let i = 1; i <= dir.length; i++) { try { py.FS.mkdir("/app/" + dir.slice(0, i).join("/")); } catch (e) { /* exists */ } }
     py.FS.writeFile("/app/" + f, buf);

@@ -1,10 +1,11 @@
 """Assemble the static site (GitHub Pages): web/ + the flowguard modules the browser runtime needs + the models
 listed in models.json and their evidence files.
 
-Usage: python scripts/build_site.py [out_dir=_site]
+Usage: [FLOWGUARD_API=https://host/] python scripts/build_site.py [out_dir=_site]
 The browser runs the same flowguard.core.Registry as the FastAPI server, through Pyodide (web/worker.js).
 """
 import json
+import os
 import shutil
 import sys
 from pathlib import Path
@@ -15,15 +16,13 @@ if out.exists():
     shutil.rmtree(out)
 shutil.copytree(ROOT / "web", out)
 
-registry = json.loads((ROOT / "models.json").read_text())
+sys.path.insert(0, str(ROOT / "scripts"))
+from served_files import served_files  # noqa: E402
+
+registry, data_files = served_files(ROOT)
 MODULES = ["__init__", "core", "diagnose", "fields", "guard", "infer", "npfno", "solver"]  # no torch, no FastAPI
-files = [f"flowguard/{m}.py" for m in MODULES]
-for v in registry.values():
-    files += v["weights"] + ([v["reliability"]] if v.get("reliability") else [])
-files.append("results/discretization_error.json")
+files = [f"flowguard/{m}.py" for m in MODULES] + data_files
 for f in files:
-    if not (ROOT / f).exists():
-        sys.exit(f"missing {f}: train/export/evaluate first (see README)")
     (out / f).parent.mkdir(parents=True, exist_ok=True)
     shutil.copy(ROOT / f, out / f)
 
@@ -34,5 +33,8 @@ index = out / "index.html"
 html = index.read_text(encoding="utf-8")
 if "<title>" not in html:
     sys.exit("index.html has no <title> to anchor the runtime marker")
-index.write_text(html.replace("<title>", '<meta name="flowguard-runtime" content="browser">\n<title>', 1), encoding="utf-8")
+# FLOWGUARD_API (a server URL ending in /): the page uses that server when it answers, else computes in the browser
+api = os.environ.get("FLOWGUARD_API", "").strip()
+marker = '<meta name="flowguard-runtime" content="browser">\n' + (f'<meta name="flowguard-api" content="{api}">\n' if api else "")
+index.write_text(html.replace("<title>", marker + "<title>", 1), encoding="utf-8")
 print("site at", out, "files:", len(files), "models:", list(registry))
