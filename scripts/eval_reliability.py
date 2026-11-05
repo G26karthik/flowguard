@@ -20,6 +20,7 @@ from scipy.stats import spearmanr
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from flowguard.fields import channels, grf, layers, pdebench  # noqa: E402
+from flowguard.data import steady_targets_path  # noqa: E402
 from flowguard.diagnose import symmetry_spread  # noqa: E402
 from flowguard.guard import fft_estimates, indicators  # noqa: E402
 from flowguard.infer import Predictor  # noqa: E402
@@ -28,7 +29,7 @@ from flowguard.solver import solve  # noqa: E402
 pred = Predictor(sys.argv[1:])
 pred0 = Predictor(sys.argv[1:2])  # the served model alone, for the 8-pass symmetry probe
 split = np.load("results/split.npz")
-steady = np.load("data/cache/2D_DarcyFlow_beta1.0_Train_steady.npy", mmap_mode="r")
+steady = np.load(steady_targets_path(pred.face, pred.bc), mmap_mode="r")  # truth in the model's own discretisation
 with h5py.File("data/raw/2D_DarcyFlow_beta1.0_Train.hdf5", "r") as h:
     nu_val, nu_test = h["nu"][split["val"]], h["nu"][split["test"]]
 

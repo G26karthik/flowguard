@@ -17,6 +17,7 @@ import numpy as np
 import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from flowguard.data import steady_targets_path  # noqa: E402
 from flowguard.model import FNO2d  # noqa: E402
 
 RAW = "data/raw/2D_DarcyFlow_beta1.0_Train.hdf5"
@@ -37,8 +38,7 @@ p.add_argument("--disc", default="arith,ghost", choices=["arith,ghost", "harm,fa
                help="discretisation of the steady targets (harm,face: data/cache/*_steady_harm_face.npy)")
 args = p.parse_args()
 DISC = args.disc.split(",")
-if DISC != ["arith", "ghost"]:
-    STEADY = STEADY.replace("_steady.npy", f"_steady_{DISC[0]}_{DISC[1]}.npy")
+STEADY = steady_targets_path(*DISC)
 
 torch.manual_seed(args.seed)
 np.random.seed(args.seed)
