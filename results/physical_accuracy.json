@@ -1,0 +1,48 @@
+{
+  "n": 40,
+  "truth": "512x512 harmonic/face solve, block-averaged to 128",
+  "rows": {
+    "runs/fno_steady_s0/model.pt": {
+      "discretisation": [
+        "arith",
+        "ghost"
+      ],
+      "network_vs_truth": {
+        "median": 0.031129301277589998,
+        "p90": 0.03902125253513169,
+        "max": 0.04700488056324894
+      },
+      "reference128_vs_truth": {
+        "median": 0.03099262054475615,
+        "p90": 0.034153044670323034,
+        "max": 0.0375476904766267
+      },
+      "network_vs_own_reference": {
+        "median": 0.004720696964149203,
+        "p90": 0.013415843796610889,
+        "max": 0.030742149893240398
+      }
+    },
+    "runs/fno_hf_s0/model.pt": {
+      "discretisation": [
+        "harm",
+        "face"
+      ],
+      "network_vs_truth": {
+        "median": 0.005595799113996474,
+        "p90": 0.016075214671740883,
+        "max": 0.026771432445135735
+      },
+      "reference128_vs_truth": {
+        "median": 0.0020901865406661797,
+        "p90": 0.0030687456974772364,
+        "max": 0.003284013095050584
+      },
+      "network_vs_own_reference": {
+        "median": 0.004596826809244994,
+        "p90": 0.01521176200774326,
+        "max": 0.029349727142875877
+      }
+    }
+  }
+}
