@@ -53,10 +53,14 @@ def policy_flags(pred, a, q90):
 LLM_SYSTEM = """You investigate why a neural operator's prediction of steady Darcy flow is inaccurate.
 The network was trained only on 128x128 fields with two permeability values and contrast 10 (PDEBench).
 Possible causes: contrast, grid, continuous, geometry (shapes unlike PDEBench's blobs). Several can apply.
-Tools run counterfactual experiments: each edits the input back to the training setting along one axis and
-reports the network's error afterwards (cost 1 each); 'all' undoes every applicable axis at once (cost 1).
-An axis is a cause if undoing it alone cuts the error substantially; geometry is a cause if the error stays
-high (> ~2%) after undoing every applicable axis. Spend as few experiments as you can, then call `conclude`."""
+Tools run counterfactual experiments (cost 1 each) and report the network's error on the edited input:
+  contrast / grid / continuous   undo that one axis (move it back to the training setting)
+  all                            undo every off-training axis at once (a training-like baseline)
+  keep_contrast / keep_grid / keep_continuous   undo every off-training axis except that one
+Errors of in-distribution inputs are ~0.6%. Factors can interact: one large factor can hide another.
+A cause is a factor that by itself makes the error clearly worse than the training-like baseline;
+geometry is a cause if even the training-like baseline has a high error (> ~2%). If nothing is off-training
+and the measured error is small, there is no cause. Spend as few experiments as you can, then call `conclude`."""
 
 
 def policy_llm(pred, a, model, q90):
@@ -72,7 +76,8 @@ def policy_llm(pred, a, model, q90):
            "measured_error_vs_reference": round(network_error(pred, a), 4)}
     tools = [{"name": "experiment", "description": "Run one counterfactual experiment.", "strict": True,
               "input_schema": {"type": "object", "additionalProperties": False, "required": ["name"],
-                               "properties": {"name": {"type": "string", "enum": ["contrast", "grid", "continuous", "all"]}}}},
+                               "properties": {"name": {"type": "string", "enum": ["contrast", "grid", "continuous", "all",
+                                                                                 "keep_contrast", "keep_grid", "keep_continuous"]}}}},
              {"name": "conclude", "description": "Name the causes and end the investigation.", "strict": True,
               "input_schema": {"type": "object", "additionalProperties": False, "required": ["causes"],
                                "properties": {"causes": {"type": "array", "items": {"type": "string", "enum": ["contrast", "grid", "continuous", "geometry"]}}}}}]
@@ -121,7 +126,7 @@ if __name__ == "__main__":
             p1 = investigate(pred, a)
             row = {"truth": sorted(cat), "err": p1["err"], "rule": {"causes": p1["causes"], "cost": p1["cost"]},
                    "flags": policy_flags(pred, a, q90),
-                   "effects": {e["experiment"]: round(p1["err"] / max(e["err_after"], 1e-12), 2) for e in p1["evidence"] if e["applicable"]}}
+                   "err_after": {e["experiment"]: round(e["err_after"], 5) for e in p1["evidence"] if e["applicable"]}}
             if args.llm:
                 row["llm"] = policy_llm(pred, a, args.llm, q90)
             rows.append(row)
@@ -136,8 +141,8 @@ if __name__ == "__main__":
         out["per_category"]["+".join(cat) or "none"] = {
             "median_err": float(np.median([r["err"] for r in sel])),
             **{pol: float(np.mean([set(r[pol]["causes"]) == set(cat) for r in sel])) for pol in out["policies"]},
-            "median_effect_of_undo": {k: float(np.median([r["effects"][k] for r in sel if k in r["effects"]]))
-                                      for k in ("contrast", "grid", "continuous", "all") if any(k in r["effects"] for r in sel)}}
+            "median_err_after": {k: float(np.median([r["err_after"][k] for r in sel if k in r["err_after"]]))
+                                 for k in ("all", "keep_contrast", "keep_grid", "keep_continuous") if any(k in r["err_after"] for r in sel)}}
     print(json.dumps(out, indent=2))
     tag = Path(args.weights[0]).parent.name + (f"_{args.llm}" if args.llm else "")
     Path(f"results/agent_study_{tag}.json").write_text(json.dumps({**out, "rows": rows}, indent=1))

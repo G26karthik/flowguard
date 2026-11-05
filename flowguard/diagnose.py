@@ -39,7 +39,20 @@ def _undo_continuous(a):
 
 
 UNDO = {"contrast": _undo_contrast, "grid": _undo_grid, "continuous": _undo_continuous}
-COST = {"contrast": 1, "grid": 1, "continuous": 1, "all": 1, "symmetry": 0.2}  # in units of (network + reference solve)
+ORDER = ("grid", "continuous", "contrast")  # grid first: the other edits act on the 128 grid
+# in units of one network run + one reference solve
+COST = {"contrast": 1, "grid": 1, "continuous": 1, "all": 1, "symmetry": 0.2,
+        "keep_contrast": 1, "keep_grid": 1, "keep_continuous": 1}
+
+
+def _undo(a, axes):
+    used = []
+    for k in ORDER:
+        if k in axes:
+            b = UNDO[k](a)
+            if b is not None:
+                a, used = b, used + [k]
+    return a, used
 
 
 def _d4(x, k):
@@ -67,13 +80,18 @@ def run_experiment(predictor, a, name):
     if name == "symmetry":
         return {"experiment": name, "applicable": True, "symmetry_spread": symmetry_spread(predictor, a)}
     if name == "all":
-        b, used = a, []
-        for k in ("grid", "continuous", "contrast"):  # grid first: the other edits act on the 128 grid
-            nb = UNDO[k](b)
-            if nb is not None:
-                b, used = nb, used + [k]
+        b, used = _undo(a, UNDO)
         if not used:
             return {"experiment": name, "applicable": False}
+        return {"experiment": name, "applicable": True, "undone": used, "err_after": network_error(predictor, b)}
+    if name.startswith("keep_"):
+        # undo every off-training axis except one: that axis's effect measured from the training-like baseline
+        k = name[5:]
+        if UNDO[k](a) is None:
+            return {"experiment": name, "applicable": False}
+        b, used = _undo(a, [x for x in UNDO if x != k])
+        if not used:
+            return {"experiment": name, "applicable": False, "note": "only this axis is off-training: same as the input"}
         return {"experiment": name, "applicable": True, "undone": used, "err_after": network_error(predictor, b)}
     b = UNDO[name](a)
     if b is None:
@@ -82,21 +100,30 @@ def run_experiment(predictor, a, name):
 
 
 def attribute(err0, evidence, id_err=0.006, ratio=1.5):
-    """Fixed rule: an axis is a cause if undoing it alone cuts the error by >= `ratio`; geometry is a cause if,
-    after undoing every applicable axis, the error is still > 3x the in-distribution median `id_err`."""
+    """Ablation rule from a training-like baseline (every off-training axis undone):
+    axis k is a cause if adding it back alone raises the baseline error by >= `ratio`;
+    geometry is a cause if the baseline itself is still > 3x the in-distribution median `id_err`.
+    When only one axis is off-training, adding it back reproduces the input, so its error is err0."""
+    ev = {e["experiment"]: e for e in evidence}
+    alle = ev.get("all")
+    base = alle["err_after"] if alle and alle["applicable"] else err0
+    off = alle["undone"] if alle and alle["applicable"] else []
     causes = set()
-    for e in evidence:
-        if e["experiment"] in UNDO and e["applicable"] and err0 / max(e["err_after"], 1e-12) >= ratio:
-            causes.add(e["experiment"])
-    alle = next((e for e in evidence if e["experiment"] == "all"), None)
-    if alle is not None and (not alle["applicable"] or alle["err_after"] > 3 * id_err):
+    for k in off:
+        kept = ev.get(f"keep_{k}")
+        err_k = kept["err_after"] if kept and kept["applicable"] else (err0 if len(off) == 1 else None)
+        if err_k is not None and err_k / max(base, 1e-12) >= ratio:
+            causes.add(k)
+    if base > 3 * id_err:
         causes.add("geometry")
     return causes
 
 
 def investigate(predictor, a):
-    """Fixed policy: run every applicable undo experiment and the joint undo, then attribute."""
+    """Fixed policy: the joint undo, then add back each off-training axis alone (skipped when only one is off)."""
     err0 = network_error(predictor, a)
-    evidence = [run_experiment(predictor, a, k) for k in ("contrast", "grid", "continuous", "all")]
+    evidence = [run_experiment(predictor, a, "all")]
+    if evidence[0]["applicable"] and len(evidence[0]["undone"]) > 1:
+        evidence += [run_experiment(predictor, a, f"keep_{k}") for k in evidence[0]["undone"]]
     cost = sum(COST[e["experiment"]] for e in evidence if e["applicable"])
     return {"err": err0, "evidence": evidence, "causes": sorted(attribute(err0, evidence)), "cost": cost}

@@ -1,0 +1,1631 @@
+{
+ "weights": [
+  "runs/fno_steady_s0/weights.npz"
+ ],
+ "n_cases": 72,
+ "policies": {
+  "flags": {
+   "exact_match": 0.75,
+   "mean_cost": 0.0
+  },
+  "rule": {
+   "exact_match": 0.8472222222222222,
+   "mean_cost": 1.2222222222222223
+  }
+ },
+ "per_category": {
+  "none": {
+   "median_err": 0.007359827004701298,
+   "flags": 0.75,
+   "rule": 1.0,
+   "median_err_after": {}
+  },
+  "contrast": {
+   "median_err": 0.8757838743777294,
+   "flags": 1.0,
+   "rule": 1.0,
+   "median_err_after": {
+    "all": 0.004495000000000001
+   }
+  },
+  "grid": {
+   "median_err": 0.017938969272988537,
+   "flags": 1.0,
+   "rule": 1.0,
+   "median_err_after": {
+    "all": 0.00544
+   }
+  },
+  "continuous": {
+   "median_err": 0.017376344157403224,
+   "flags": 1.0,
+   "rule": 1.0,
+   "median_err_after": {
+    "all": 0.005325
+   }
+  },
+  "geometry": {
+   "median_err": 0.06816801764077957,
+   "flags": 1.0,
+   "rule": 1.0,
+   "median_err_after": {}
+  },
+  "contrast+grid": {
+   "median_err": 0.7984751714699359,
+   "flags": 1.0,
+   "rule": 1.0,
+   "median_err_after": {
+    "all": 0.00726,
+    "keep_contrast": 0.79671,
+    "keep_grid": 0.020435000000000002
+   }
+  },
+  "contrast+geometry": {
+   "median_err": 0.8459123200090104,
+   "flags": 0.0,
+   "rule": 1.0,
+   "median_err_after": {
+    "all": 0.139395
+   }
+  },
+  "grid+continuous": {
+   "median_err": 0.0339110140107258,
+   "flags": 1.0,
+   "rule": 0.625,
+   "median_err_after": {
+    "all": 0.011835,
+    "keep_grid": 0.02665,
+    "keep_continuous": 0.034519999999999995
+   }
+  },
+  "continuous+geometry": {
+   "median_err": 0.08240646077079244,
+   "flags": 0.0,
+   "rule": 0.0,
+   "median_err_after": {
+    "all": 0.11282500000000001
+   }
+  }
+ },
+ "rows": [
+  {
+   "truth": [],
+   "err": 0.00716327193950001,
+   "rule": {
+    "causes": [],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [],
+    "cost": 0
+   },
+   "err_after": {}
+  },
+  {
+   "truth": [],
+   "err": 0.007556382069902585,
+   "rule": {
+    "causes": [],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [],
+    "cost": 0
+   },
+   "err_after": {}
+  },
+  {
+   "truth": [],
+   "err": 0.0036761430633753815,
+   "rule": {
+    "causes": [],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [],
+    "cost": 0
+   },
+   "err_after": {}
+  },
+  {
+   "truth": [],
+   "err": 0.006913511635094799,
+   "rule": {
+    "causes": [],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [],
+    "cost": 0
+   },
+   "err_after": {}
+  },
+  {
+   "truth": [],
+   "err": 0.011674954695297769,
+   "rule": {
+    "causes": [],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "err_after": {}
+  },
+  {
+   "truth": [],
+   "err": 0.003199531108171583,
+   "rule": {
+    "causes": [],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [],
+    "cost": 0
+   },
+   "err_after": {}
+  },
+  {
+   "truth": [],
+   "err": 0.01268883756756026,
+   "rule": {
+    "causes": [],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "err_after": {}
+  },
+  {
+   "truth": [],
+   "err": 0.01639235197230403,
+   "rule": {
+    "causes": [],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [],
+    "cost": 0
+   },
+   "err_after": {}
+  },
+  {
+   "truth": [
+    "contrast"
+   ],
+   "err": 0.7956461665411884,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00591
+   }
+  },
+  {
+   "truth": [
+    "contrast"
+   ],
+   "err": 0.8519887971450871,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00393
+   }
+  },
+  {
+   "truth": [
+    "contrast"
+   ],
+   "err": 0.9559769980274827,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00355
+   }
+  },
+  {
+   "truth": [
+    "contrast"
+   ],
+   "err": 0.7275918551019697,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00589
+   }
+  },
+  {
+   "truth": [
+    "contrast"
+   ],
+   "err": 0.8851477719444131,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00722
+   }
+  },
+  {
+   "truth": [
+    "contrast"
+   ],
+   "err": 0.8664199768110458,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00506
+   }
+  },
+  {
+   "truth": [
+    "contrast"
+   ],
+   "err": 0.9607095981450445,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00292
+   }
+  },
+  {
+   "truth": [
+    "contrast"
+   ],
+   "err": 0.9586928943185736,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00236
+   }
+  },
+  {
+   "truth": [
+    "grid"
+   ],
+   "err": 0.015323592278955828,
+   "rule": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.0027
+   }
+  },
+  {
+   "truth": [
+    "grid"
+   ],
+   "err": 0.024284355815892868,
+   "rule": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.01447
+   }
+  },
+  {
+   "truth": [
+    "grid"
+   ],
+   "err": 0.030927144670395788,
+   "rule": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00933
+   }
+  },
+  {
+   "truth": [
+    "grid"
+   ],
+   "err": 0.0195994382178525,
+   "rule": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00651
+   }
+  },
+  {
+   "truth": [
+    "grid"
+   ],
+   "err": 0.01855507459901288,
+   "rule": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.01097
+   }
+  },
+  {
+   "truth": [
+    "grid"
+   ],
+   "err": 0.017322863946964195,
+   "rule": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00384
+   }
+  },
+  {
+   "truth": [
+    "grid"
+   ],
+   "err": 0.01328243462057123,
+   "rule": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00291
+   }
+  },
+  {
+   "truth": [
+    "grid"
+   ],
+   "err": 0.014687502387437467,
+   "rule": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00437
+   }
+  },
+  {
+   "truth": [
+    "continuous"
+   ],
+   "err": 0.01753338678568739,
+   "rule": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00461
+   }
+  },
+  {
+   "truth": [
+    "continuous"
+   ],
+   "err": 0.015046965197025988,
+   "rule": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00342
+   }
+  },
+  {
+   "truth": [
+    "continuous"
+   ],
+   "err": 0.017066017690071763,
+   "rule": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00324
+   }
+  },
+  {
+   "truth": [
+    "continuous"
+   ],
+   "err": 0.022536376294287824,
+   "rule": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00764
+   }
+  },
+  {
+   "truth": [
+    "continuous"
+   ],
+   "err": 0.06129549052719503,
+   "rule": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.01417
+   }
+  },
+  {
+   "truth": [
+    "continuous"
+   ],
+   "err": 0.020804151222327216,
+   "rule": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00604
+   }
+  },
+  {
+   "truth": [
+    "continuous"
+   ],
+   "err": 0.017219301529119053,
+   "rule": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00713
+   }
+  },
+  {
+   "truth": [
+    "continuous"
+   ],
+   "err": 0.015482755956936035,
+   "rule": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00444
+   }
+  },
+  {
+   "truth": [
+    "geometry"
+   ],
+   "err": 0.1333234216136034,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "err_after": {}
+  },
+  {
+   "truth": [
+    "geometry"
+   ],
+   "err": 0.06345920580384913,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "err_after": {}
+  },
+  {
+   "truth": [
+    "geometry"
+   ],
+   "err": 0.06424192968695183,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "err_after": {}
+  },
+  {
+   "truth": [
+    "geometry"
+   ],
+   "err": 0.10385788659733672,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "err_after": {}
+  },
+  {
+   "truth": [
+    "geometry"
+   ],
+   "err": 0.07395038609212848,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "err_after": {}
+  },
+  {
+   "truth": [
+    "geometry"
+   ],
+   "err": 0.05233165612404062,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "err_after": {}
+  },
+  {
+   "truth": [
+    "geometry"
+   ],
+   "err": 0.0720941055946073,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "err_after": {}
+  },
+  {
+   "truth": [
+    "geometry"
+   ],
+   "err": 0.038557820205093345,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "err_after": {}
+  },
+  {
+   "truth": [
+    "contrast",
+    "grid"
+   ],
+   "err": 0.9189403083925302,
+   "rule": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00611,
+    "keep_grid": 0.01851,
+    "keep_contrast": 0.91906
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "grid"
+   ],
+   "err": 0.5802554108538276,
+   "rule": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.01013,
+    "keep_grid": 0.02915,
+    "keep_contrast": 0.56527
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "grid"
+   ],
+   "err": 0.8836558856085048,
+   "rule": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00839,
+    "keep_grid": 0.01373,
+    "keep_contrast": 0.88405
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "grid"
+   ],
+   "err": 0.7675763494745572,
+   "rule": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00423,
+    "keep_grid": 0.02049,
+    "keep_contrast": 0.76753
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "grid"
+   ],
+   "err": 0.962239657690167,
+   "rule": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00613,
+    "keep_grid": 0.02262,
+    "keep_contrast": 0.96178
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "grid"
+   ],
+   "err": 0.8293739934653144,
+   "rule": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00366,
+    "keep_grid": 0.03105,
+    "keep_contrast": 0.82589
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "grid"
+   ],
+   "err": 0.6425420643218523,
+   "rule": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00983,
+    "keep_grid": 0.02038,
+    "keep_contrast": 0.65243
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "grid"
+   ],
+   "err": 0.749101422503722,
+   "rule": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00848,
+    "keep_grid": 0.01693,
+    "keep_contrast": 0.75206
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "geometry"
+   ],
+   "err": 0.9683224344865549,
+   "rule": {
+    "causes": [
+     "contrast",
+     "geometry"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.04392
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "geometry"
+   ],
+   "err": 0.8224984493742964,
+   "rule": {
+    "causes": [
+     "contrast",
+     "geometry"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.23611
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "geometry"
+   ],
+   "err": 0.8298050065467166,
+   "rule": {
+    "causes": [
+     "contrast",
+     "geometry"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.19675
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "geometry"
+   ],
+   "err": 0.7587344351745775,
+   "rule": {
+    "causes": [
+     "contrast",
+     "geometry"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.19967
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "geometry"
+   ],
+   "err": 0.8763903301635865,
+   "rule": {
+    "causes": [
+     "contrast",
+     "geometry"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.08513
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "geometry"
+   ],
+   "err": 0.7867714933930704,
+   "rule": {
+    "causes": [
+     "contrast",
+     "geometry"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.04915
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "geometry"
+   ],
+   "err": 0.948360823905345,
+   "rule": {
+    "causes": [
+     "contrast",
+     "geometry"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.04929
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "geometry"
+   ],
+   "err": 0.8620196334713043,
+   "rule": {
+    "causes": [
+     "contrast",
+     "geometry"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.19366
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "grid"
+   ],
+   "err": 0.06428686267012045,
+   "rule": {
+    "causes": [
+     "continuous",
+     "geometry"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "continuous",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.04418,
+    "keep_grid": 0.03058,
+    "keep_continuous": 0.10441
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "grid"
+   ],
+   "err": 0.050405998588501075,
+   "rule": {
+    "causes": [
+     "continuous",
+     "geometry"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "continuous",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.03274,
+    "keep_grid": 0.02491,
+    "keep_continuous": 0.07988
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "grid"
+   ],
+   "err": 0.033798002059194365,
+   "rule": {
+    "causes": [
+     "continuous",
+     "grid"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "continuous",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00697,
+    "keep_grid": 0.02409,
+    "keep_continuous": 0.02189
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "grid"
+   ],
+   "err": 0.012050118631573636,
+   "rule": {
+    "causes": [
+     "continuous",
+     "grid"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "continuous",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00371,
+    "keep_grid": 0.01658,
+    "keep_continuous": 0.01413
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "grid"
+   ],
+   "err": 0.03328651922324903,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "continuous",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.03335,
+    "keep_grid": 0.02839,
+    "keep_continuous": 0.04715
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "grid"
+   ],
+   "err": 0.03402402596225723,
+   "rule": {
+    "causes": [
+     "continuous",
+     "grid"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "continuous",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00467,
+    "keep_grid": 0.0285,
+    "keep_continuous": 0.01688
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "grid"
+   ],
+   "err": 0.03634613974582155,
+   "rule": {
+    "causes": [
+     "continuous",
+     "grid"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "continuous",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.0167,
+    "keep_grid": 0.02932,
+    "keep_continuous": 0.05524
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "grid"
+   ],
+   "err": 0.01716352032457296,
+   "rule": {
+    "causes": [
+     "continuous",
+     "grid"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "continuous",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.00318,
+    "keep_grid": 0.01672,
+    "keep_continuous": 0.01429
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "geometry"
+   ],
+   "err": 0.04215799912021073,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.03056
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "geometry"
+   ],
+   "err": 0.07920151774835604,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.1998
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "geometry"
+   ],
+   "err": 0.09976138422374194,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.11296
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "geometry"
+   ],
+   "err": 0.05501436288568353,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.08936
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "geometry"
+   ],
+   "err": 0.04848424060144909,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.10787
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "geometry"
+   ],
+   "err": 0.08871741326125164,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.1286
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "geometry"
+   ],
+   "err": 0.09385281093209198,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.1597
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "geometry"
+   ],
+   "err": 0.08561140379322886,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 1
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "err_after": {
+    "all": 0.11269
+   }
+  }
+ ]
+}

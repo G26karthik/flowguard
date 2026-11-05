@@ -23,9 +23,16 @@ def test_undo_edits_reach_training_axes_and_keep_geometry():
 
 
 def test_attribute_rule():
-    ev = [{"experiment": "contrast", "applicable": True, "err_after": 0.01},
-          {"experiment": "grid", "applicable": False},
-          {"experiment": "all", "applicable": True, "err_after": 0.01}]
+    # single off-training axis: adding it back reproduces the input
+    ev = [{"experiment": "all", "applicable": True, "undone": ["contrast"], "err_after": 0.01}]
     assert attribute(0.5, ev) == {"contrast"}
-    ev[-1]["err_after"] = 0.2
+    ev[0]["err_after"] = 0.2
     assert attribute(0.5, ev) == {"contrast", "geometry"}
+    # nothing off-training and a small error: no cause (the old rule blamed geometry here)
+    assert attribute(0.007, [{"experiment": "all", "applicable": False}]) == set()
+    assert attribute(0.08, [{"experiment": "all", "applicable": False}]) == {"geometry"}
+    # interaction: contrast dominates the input, but grid alone still triples the baseline error
+    ev = [{"experiment": "all", "applicable": True, "undone": ["grid", "contrast"], "err_after": 0.006},
+          {"experiment": "keep_grid", "applicable": True, "err_after": 0.018},
+          {"experiment": "keep_contrast", "applicable": True, "err_after": 0.5}]
+    assert attribute(0.8, ev) == {"grid", "contrast"}

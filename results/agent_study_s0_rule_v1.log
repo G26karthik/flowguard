@@ -1,0 +1,104 @@
+() median err 0.007
+('contrast',) median err 0.876
+('grid',) median err 0.018
+('continuous',) median err 0.017
+('geometry',) median err 0.068
+('contrast', 'grid') median err 0.798
+('contrast', 'geometry') median err 0.846
+('grid', 'continuous') median err 0.034
+('continuous', 'geometry') median err 0.082
+{
+  "weights": [
+    "runs/fno_steady_s0/weights.npz"
+  ],
+  "n_cases": 72,
+  "policies": {
+    "flags": {
+      "exact_match": 0.75,
+      "mean_cost": 0.0
+    },
+    "rule": {
+      "exact_match": 0.5555555555555556,
+      "mean_cost": 1.7777777777777777
+    }
+  },
+  "per_category": {
+    "none": {
+      "median_err": 0.007359827004701298,
+      "flags": 0.75,
+      "rule": 0.0,
+      "median_effect_of_undo": {}
+    },
+    "contrast": {
+      "median_err": 0.8757838743777294,
+      "flags": 1.0,
+      "rule": 1.0,
+      "median_effect_of_undo": {
+        "contrast": 194.195,
+        "all": 194.195
+      }
+    },
+    "grid": {
+      "median_err": 0.017938969272988537,
+      "flags": 1.0,
+      "rule": 1.0,
+      "median_effect_of_undo": {
+        "grid": 3.34,
+        "all": 3.34
+      }
+    },
+    "continuous": {
+      "median_err": 0.017376344157403224,
+      "flags": 1.0,
+      "rule": 1.0,
+      "median_effect_of_undo": {
+        "continuous": 3.6500000000000004,
+        "all": 3.6500000000000004
+      }
+    },
+    "geometry": {
+      "median_err": 0.06816801764077957,
+      "flags": 1.0,
+      "rule": 1.0,
+      "median_effect_of_undo": {}
+    },
+    "contrast+grid": {
+      "median_err": 0.7984751714699359,
+      "flags": 1.0,
+      "rule": 0.0,
+      "median_effect_of_undo": {
+        "contrast": 39.995000000000005,
+        "grid": 1.0,
+        "all": 127.85
+      }
+    },
+    "contrast+geometry": {
+      "median_err": 0.8459123200090104,
+      "flags": 0.0,
+      "rule": 1.0,
+      "median_effect_of_undo": {
+        "contrast": 7.369999999999999,
+        "all": 7.369999999999999
+      }
+    },
+    "grid+continuous": {
+      "median_err": 0.0339110140107258,
+      "flags": 1.0,
+      "rule": 0.0,
+      "median_effect_of_undo": {
+        "grid": 0.78,
+        "continuous": 1.2149999999999999,
+        "all": 2.715
+      }
+    },
+    "continuous+geometry": {
+      "median_err": 0.08240646077079244,
+      "flags": 0.0,
+      "rule": 0.0,
+      "median_effect_of_undo": {
+        "continuous": 0.655,
+        "all": 0.655
+      }
+    }
+  }
+}

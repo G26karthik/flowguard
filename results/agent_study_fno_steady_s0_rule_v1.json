@@ -1,0 +1,1673 @@
+{
+ "weights": [
+  "runs/fno_steady_s0/weights.npz"
+ ],
+ "n_cases": 72,
+ "policies": {
+  "flags": {
+   "exact_match": 0.75,
+   "mean_cost": 0.0
+  },
+  "rule": {
+   "exact_match": 0.5555555555555556,
+   "mean_cost": 1.7777777777777777
+  }
+ },
+ "per_category": {
+  "none": {
+   "median_err": 0.007359827004701298,
+   "flags": 0.75,
+   "rule": 0.0,
+   "median_effect_of_undo": {}
+  },
+  "contrast": {
+   "median_err": 0.8757838743777294,
+   "flags": 1.0,
+   "rule": 1.0,
+   "median_effect_of_undo": {
+    "contrast": 194.195,
+    "all": 194.195
+   }
+  },
+  "grid": {
+   "median_err": 0.017938969272988537,
+   "flags": 1.0,
+   "rule": 1.0,
+   "median_effect_of_undo": {
+    "grid": 3.34,
+    "all": 3.34
+   }
+  },
+  "continuous": {
+   "median_err": 0.017376344157403224,
+   "flags": 1.0,
+   "rule": 1.0,
+   "median_effect_of_undo": {
+    "continuous": 3.6500000000000004,
+    "all": 3.6500000000000004
+   }
+  },
+  "geometry": {
+   "median_err": 0.06816801764077957,
+   "flags": 1.0,
+   "rule": 1.0,
+   "median_effect_of_undo": {}
+  },
+  "contrast+grid": {
+   "median_err": 0.7984751714699359,
+   "flags": 1.0,
+   "rule": 0.0,
+   "median_effect_of_undo": {
+    "contrast": 39.995000000000005,
+    "grid": 1.0,
+    "all": 127.85
+   }
+  },
+  "contrast+geometry": {
+   "median_err": 0.8459123200090104,
+   "flags": 0.0,
+   "rule": 1.0,
+   "median_effect_of_undo": {
+    "contrast": 7.369999999999999,
+    "all": 7.369999999999999
+   }
+  },
+  "grid+continuous": {
+   "median_err": 0.0339110140107258,
+   "flags": 1.0,
+   "rule": 0.0,
+   "median_effect_of_undo": {
+    "grid": 0.78,
+    "continuous": 1.2149999999999999,
+    "all": 2.715
+   }
+  },
+  "continuous+geometry": {
+   "median_err": 0.08240646077079244,
+   "flags": 0.0,
+   "rule": 0.0,
+   "median_effect_of_undo": {
+    "continuous": 0.655,
+    "all": 0.655
+   }
+  }
+ },
+ "rows": [
+  {
+   "truth": [],
+   "err": 0.00716327193950001,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [],
+    "cost": 0
+   },
+   "effects": {}
+  },
+  {
+   "truth": [],
+   "err": 0.007556382069902585,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [],
+    "cost": 0
+   },
+   "effects": {}
+  },
+  {
+   "truth": [],
+   "err": 0.0036761430633753815,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [],
+    "cost": 0
+   },
+   "effects": {}
+  },
+  {
+   "truth": [],
+   "err": 0.006913511635094799,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [],
+    "cost": 0
+   },
+   "effects": {}
+  },
+  {
+   "truth": [],
+   "err": 0.011674954695297769,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "effects": {}
+  },
+  {
+   "truth": [],
+   "err": 0.003199531108171583,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [],
+    "cost": 0
+   },
+   "effects": {}
+  },
+  {
+   "truth": [],
+   "err": 0.01268883756756026,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "effects": {}
+  },
+  {
+   "truth": [],
+   "err": 0.01639235197230403,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [],
+    "cost": 0
+   },
+   "effects": {}
+  },
+  {
+   "truth": [
+    "contrast"
+   ],
+   "err": 0.7956461665411884,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 134.69,
+    "all": 134.69
+   }
+  },
+  {
+   "truth": [
+    "contrast"
+   ],
+   "err": 0.8519887971450871,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 217.06,
+    "all": 217.06
+   }
+  },
+  {
+   "truth": [
+    "contrast"
+   ],
+   "err": 0.9559769980274827,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 269.34,
+    "all": 269.34
+   }
+  },
+  {
+   "truth": [
+    "contrast"
+   ],
+   "err": 0.7275918551019697,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 123.58,
+    "all": 123.58
+   }
+  },
+  {
+   "truth": [
+    "contrast"
+   ],
+   "err": 0.8851477719444131,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 122.67,
+    "all": 122.67
+   }
+  },
+  {
+   "truth": [
+    "contrast"
+   ],
+   "err": 0.8664199768110458,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 171.33,
+    "all": 171.33
+   }
+  },
+  {
+   "truth": [
+    "contrast"
+   ],
+   "err": 0.9607095981450445,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 328.77,
+    "all": 328.77
+   }
+  },
+  {
+   "truth": [
+    "contrast"
+   ],
+   "err": 0.9586928943185736,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 406.68,
+    "all": 406.68
+   }
+  },
+  {
+   "truth": [
+    "grid"
+   ],
+   "err": 0.015323592278955828,
+   "rule": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "grid": 5.68,
+    "all": 5.68
+   }
+  },
+  {
+   "truth": [
+    "grid"
+   ],
+   "err": 0.024284355815892868,
+   "rule": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "grid": 1.68,
+    "all": 1.68
+   }
+  },
+  {
+   "truth": [
+    "grid"
+   ],
+   "err": 0.030927144670395788,
+   "rule": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "grid": 3.32,
+    "all": 3.32
+   }
+  },
+  {
+   "truth": [
+    "grid"
+   ],
+   "err": 0.0195994382178525,
+   "rule": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "grid": 3.01,
+    "all": 3.01
+   }
+  },
+  {
+   "truth": [
+    "grid"
+   ],
+   "err": 0.01855507459901288,
+   "rule": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "grid": 1.69,
+    "all": 1.69
+   }
+  },
+  {
+   "truth": [
+    "grid"
+   ],
+   "err": 0.017322863946964195,
+   "rule": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "grid": 4.51,
+    "all": 4.51
+   }
+  },
+  {
+   "truth": [
+    "grid"
+   ],
+   "err": 0.01328243462057123,
+   "rule": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "grid": 4.57,
+    "all": 4.57
+   }
+  },
+  {
+   "truth": [
+    "grid"
+   ],
+   "err": 0.014687502387437467,
+   "rule": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "grid": 3.36,
+    "all": 3.36
+   }
+  },
+  {
+   "truth": [
+    "continuous"
+   ],
+   "err": 0.01753338678568739,
+   "rule": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "continuous": 3.81,
+    "all": 3.81
+   }
+  },
+  {
+   "truth": [
+    "continuous"
+   ],
+   "err": 0.015046965197025988,
+   "rule": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "continuous": 4.4,
+    "all": 4.4
+   }
+  },
+  {
+   "truth": [
+    "continuous"
+   ],
+   "err": 0.017066017690071763,
+   "rule": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "continuous": 5.26,
+    "all": 5.26
+   }
+  },
+  {
+   "truth": [
+    "continuous"
+   ],
+   "err": 0.022536376294287824,
+   "rule": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "continuous": 2.95,
+    "all": 2.95
+   }
+  },
+  {
+   "truth": [
+    "continuous"
+   ],
+   "err": 0.06129549052719503,
+   "rule": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "continuous": 4.33,
+    "all": 4.33
+   }
+  },
+  {
+   "truth": [
+    "continuous"
+   ],
+   "err": 0.020804151222327216,
+   "rule": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "continuous": 3.44,
+    "all": 3.44
+   }
+  },
+  {
+   "truth": [
+    "continuous"
+   ],
+   "err": 0.017219301529119053,
+   "rule": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "continuous": 2.41,
+    "all": 2.41
+   }
+  },
+  {
+   "truth": [
+    "continuous"
+   ],
+   "err": 0.015482755956936035,
+   "rule": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "continuous": 3.49,
+    "all": 3.49
+   }
+  },
+  {
+   "truth": [
+    "geometry"
+   ],
+   "err": 0.1333234216136034,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "effects": {}
+  },
+  {
+   "truth": [
+    "geometry"
+   ],
+   "err": 0.06345920580384913,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "effects": {}
+  },
+  {
+   "truth": [
+    "geometry"
+   ],
+   "err": 0.06424192968695183,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "effects": {}
+  },
+  {
+   "truth": [
+    "geometry"
+   ],
+   "err": 0.10385788659733672,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "effects": {}
+  },
+  {
+   "truth": [
+    "geometry"
+   ],
+   "err": 0.07395038609212848,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "effects": {}
+  },
+  {
+   "truth": [
+    "geometry"
+   ],
+   "err": 0.05233165612404062,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "effects": {}
+  },
+  {
+   "truth": [
+    "geometry"
+   ],
+   "err": 0.0720941055946073,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "effects": {}
+  },
+  {
+   "truth": [
+    "geometry"
+   ],
+   "err": 0.038557820205093345,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0
+   },
+   "effects": {}
+  },
+  {
+   "truth": [
+    "contrast",
+    "grid"
+   ],
+   "err": 0.9189403083925302,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 49.64,
+    "grid": 1.0,
+    "all": 150.4
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "grid"
+   ],
+   "err": 0.5802554108538276,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 19.91,
+    "grid": 1.03,
+    "all": 57.28
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "grid"
+   ],
+   "err": 0.8836558856085048,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 64.37,
+    "grid": 1.0,
+    "all": 105.3
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "grid"
+   ],
+   "err": 0.7675763494745572,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 37.46,
+    "grid": 1.0,
+    "all": 181.62
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "grid"
+   ],
+   "err": 0.962239657690167,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 42.53,
+    "grid": 1.0,
+    "all": 156.95
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "grid"
+   ],
+   "err": 0.8293739934653144,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 26.71,
+    "grid": 1.0,
+    "all": 226.46
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "grid"
+   ],
+   "err": 0.6425420643218523,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 31.52,
+    "grid": 0.98,
+    "all": 65.39
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "grid"
+   ],
+   "err": 0.749101422503722,
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 44.25,
+    "grid": 1.0,
+    "all": 88.29
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "geometry"
+   ],
+   "err": 0.9683224344865549,
+   "rule": {
+    "causes": [
+     "contrast",
+     "geometry"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 22.05,
+    "all": 22.05
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "geometry"
+   ],
+   "err": 0.8224984493742964,
+   "rule": {
+    "causes": [
+     "contrast",
+     "geometry"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 3.48,
+    "all": 3.48
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "geometry"
+   ],
+   "err": 0.8298050065467166,
+   "rule": {
+    "causes": [
+     "contrast",
+     "geometry"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 4.22,
+    "all": 4.22
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "geometry"
+   ],
+   "err": 0.7587344351745775,
+   "rule": {
+    "causes": [
+     "contrast",
+     "geometry"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 3.8,
+    "all": 3.8
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "geometry"
+   ],
+   "err": 0.8763903301635865,
+   "rule": {
+    "causes": [
+     "contrast",
+     "geometry"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 10.29,
+    "all": 10.29
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "geometry"
+   ],
+   "err": 0.7867714933930704,
+   "rule": {
+    "causes": [
+     "contrast",
+     "geometry"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 16.01,
+    "all": 16.01
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "geometry"
+   ],
+   "err": 0.948360823905345,
+   "rule": {
+    "causes": [
+     "contrast",
+     "geometry"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 19.24,
+    "all": 19.24
+   }
+  },
+  {
+   "truth": [
+    "contrast",
+    "geometry"
+   ],
+   "err": 0.8620196334713043,
+   "rule": {
+    "causes": [
+     "contrast",
+     "geometry"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "contrast": 4.45,
+    "all": 4.45
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "grid"
+   ],
+   "err": 0.06428686267012045,
+   "rule": {
+    "causes": [
+     "continuous",
+     "geometry"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "continuous",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "grid": 0.62,
+    "continuous": 2.1,
+    "all": 1.46
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "grid"
+   ],
+   "err": 0.050405998588501075,
+   "rule": {
+    "causes": [
+     "continuous",
+     "geometry"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "continuous",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "grid": 0.63,
+    "continuous": 2.02,
+    "all": 1.54
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "grid"
+   ],
+   "err": 0.033798002059194365,
+   "rule": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "continuous",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "grid": 1.54,
+    "continuous": 1.4,
+    "all": 4.85
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "grid"
+   ],
+   "err": 0.012050118631573636,
+   "rule": {
+    "causes": [],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "continuous",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "grid": 0.85,
+    "continuous": 0.73,
+    "all": 3.25
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "grid"
+   ],
+   "err": 0.03328651922324903,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "continuous",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "grid": 0.71,
+    "continuous": 1.17,
+    "all": 1.0
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "grid"
+   ],
+   "err": 0.03402402596225723,
+   "rule": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "continuous",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "grid": 2.02,
+    "continuous": 1.19,
+    "all": 7.29
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "grid"
+   ],
+   "err": 0.03634613974582155,
+   "rule": {
+    "causes": [],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "continuous",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "grid": 0.66,
+    "continuous": 1.24,
+    "all": 2.18
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "grid"
+   ],
+   "err": 0.01716352032457296,
+   "rule": {
+    "causes": [],
+    "cost": 3
+   },
+   "flags": {
+    "causes": [
+     "continuous",
+     "grid"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "grid": 1.2,
+    "continuous": 1.03,
+    "all": 5.39
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "geometry"
+   ],
+   "err": 0.04215799912021073,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "continuous": 1.38,
+    "all": 1.38
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "geometry"
+   ],
+   "err": 0.07920151774835604,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "continuous": 0.4,
+    "all": 0.4
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "geometry"
+   ],
+   "err": 0.09976138422374194,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "continuous": 0.88,
+    "all": 0.88
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "geometry"
+   ],
+   "err": 0.05501436288568353,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "continuous": 0.62,
+    "all": 0.62
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "geometry"
+   ],
+   "err": 0.04848424060144909,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "continuous": 0.45,
+    "all": 0.45
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "geometry"
+   ],
+   "err": 0.08871741326125164,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "continuous": 0.69,
+    "all": 0.69
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "geometry"
+   ],
+   "err": 0.09385281093209198,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "continuous": 0.59,
+    "all": 0.59
+   }
+  },
+  {
+   "truth": [
+    "continuous",
+    "geometry"
+   ],
+   "err": 0.08561140379322886,
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 2
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0
+   },
+   "effects": {
+    "continuous": 0.76,
+    "all": 0.76
+   }
+  }
+ ]
+}

@@ -33,7 +33,12 @@ p.add_argument("--width", type=int, default=32)
 p.add_argument("--out", required=True)
 p.add_argument("--init", help="checkpoint to fine-tune from (keeps its architecture and output scale)")
 p.add_argument("--extra", help="npz with a, u (unit source) appended to training; last 300 held out as val_extra")
+p.add_argument("--disc", default="arith,ghost", choices=["arith,ghost", "harm,face"],
+               help="discretisation of the steady targets (harm,face: data/cache/*_steady_harm_face.npy)")
 args = p.parse_args()
+DISC = args.disc.split(",")
+if DISC != ["arith", "ghost"]:
+    STEADY = STEADY.replace("_steady.npy", f"_steady_{DISC[0]}_{DISC[1]}.npy")
 
 torch.manual_seed(args.seed)
 np.random.seed(args.seed)
@@ -112,7 +117,7 @@ for ep in range(args.epochs):
         print(json.dumps(log[-1]), flush=True)
 
 torch.save({"state_dict": model.state_dict(), "cfg": model.cfg, "y_scale": y_scale, "input": "log10(a)",
-            "target": args.target, "seed": args.seed, "discretisation": ["arith", "ghost"],
+            "target": args.target, "seed": args.seed, "discretisation": DISC,
             "init": args.init, "extra": args.extra}, out / "model.pt")
 
 # test metrics against both references, so models trained on either target are comparable
