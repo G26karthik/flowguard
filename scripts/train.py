@@ -31,6 +31,8 @@ p.add_argument("--lr", type=float, default=1e-3)
 p.add_argument("--modes", type=int, default=12)
 p.add_argument("--width", type=int, default=32)
 p.add_argument("--out", required=True)
+p.add_argument("--init", help="checkpoint to fine-tune from (keeps its architecture and output scale)")
+p.add_argument("--extra", help="npz with a, u (unit source) appended to training; last 300 held out as val_extra")
 args = p.parse_args()
 
 torch.manual_seed(args.seed)
@@ -54,8 +56,22 @@ x = torch.from_numpy(np.log10(nu)).unsqueeze(1).to(dev)  # log-permeability inpu
 y = torch.from_numpy(y_all).unsqueeze(1).to(dev)
 y_scale = float(y[split["train"]].std())
 tr, va = torch.from_numpy(split["train"]).to(dev), torch.from_numpy(split["val"]).to(dev)
+va_extra = None
+if args.extra:
+    ex = np.load(args.extra)
+    n0, ne = len(x), len(ex["a"])
+    x = torch.cat([x, torch.from_numpy(np.log10(ex["a"])).unsqueeze(1).to(dev)])
+    y = torch.cat([y, torch.from_numpy(ex["u"]).unsqueeze(1).to(dev)])
+    # extra fields are generated family by family: shuffle before holding out, so val_extra covers all families
+    perm_ex = torch.from_numpy(np.random.default_rng(1).permutation(ne) + n0).to(dev)
+    tr, va_extra = torch.cat([tr, perm_ex[:-300]]), perm_ex[-300:]
 
 model = FNO2d(modes=args.modes, width=args.width).to(dev)
+if args.init:
+    ck0 = torch.load(args.init, map_location=dev, weights_only=False)
+    model = FNO2d(**ck0["cfg"]).to(dev)
+    model.load_state_dict(ck0["state_dict"])
+    y_scale = ck0["y_scale"]
 opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
 steps = args.epochs * (len(tr) // args.batch)
 sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=args.lr, total_steps=steps, pct_start=0.05)
@@ -91,10 +107,13 @@ for ep in range(args.epochs):
     if ep % 5 == 4 or ep == args.epochs - 1:
         v = evaluate(va)
         log.append({"epoch": ep + 1, "train_rel_l2": tot / (len(perm) // args.batch), "val_rel_l2_mean": float(v.mean()), "time_s": time.time() - t0})
+        if va_extra is not None:
+            log[-1]["val_extra_rel_l2_mean"] = float(evaluate(va_extra).mean())
         print(json.dumps(log[-1]), flush=True)
 
 torch.save({"state_dict": model.state_dict(), "cfg": model.cfg, "y_scale": y_scale, "input": "log10(a)",
-            "target": args.target, "seed": args.seed, "discretisation": ["arith", "ghost"]}, out / "model.pt")
+            "target": args.target, "seed": args.seed, "discretisation": ["arith", "ghost"],
+            "init": args.init, "extra": args.extra}, out / "model.pt")
 
 # test metrics against both references, so models trained on either target are comparable
 te = torch.from_numpy(split["test"]).to(dev)

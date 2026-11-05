@@ -46,4 +46,18 @@ def channels(count, rng, n=128, k=3, width=0.03, a_low=0.1, a_high=1.0):
     return out
 
 
-FAMILIES = {"pdebench": pdebench, "grf": grf, "channels": channels}
+def layers(count, rng, n=128, k=6, a_low=0.1, a_high=1.0):
+    """Tilted strata with random thicknesses, alternating permeability (sedimentary layering).
+    Held out from every training set: used only to test generalisation of adapted models."""
+    c = _centres(n)
+    x, y = np.meshgrid(c, c, indexing="ij")
+    out = np.empty((count, n, n))
+    for b in range(count):
+        th = rng.uniform(-0.4, 0.4)
+        s = y * np.cos(th) + x * np.sin(th)
+        cuts = np.sort(rng.uniform(s.min(), s.max(), k - 1))
+        out[b] = np.where(np.searchsorted(cuts, s) % 2 == 0, a_high, a_low)
+    return out
+
+
+FAMILIES = {"pdebench": pdebench, "grf": grf, "channels": channels, "layers": layers}

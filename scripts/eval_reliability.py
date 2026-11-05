@@ -19,7 +19,7 @@ import numpy as np
 from scipy.stats import spearmanr
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from flowguard.fields import channels, grf, pdebench  # noqa: E402
+from flowguard.fields import channels, grf, layers, pdebench  # noqa: E402
 from flowguard.guard import fft_estimates, indicators  # noqa: E402
 from flowguard.infer import Predictor  # noqa: E402
 from flowguard.solver import solve  # noqa: E402
@@ -40,6 +40,9 @@ sets = {
     "channels": (channels(200, rng), None),
     "res64": (pdebench(200, rng, n=64), None),
     "res256": (pdebench(100, rng, n=256), None),
+    # held out from every training set, including the adaptation mix
+    "contrast3000": (pdebench(200, rng, a_low=1 / 3000), None),
+    "layers": (layers(200, rng), None),
 }
 
 
