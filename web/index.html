@@ -333,7 +333,7 @@ function render(j) {
     ${j.flags.length ? `<ul class="flags">${j.flags.map(f => `<li>${f.msg}${f.measured_median_err != null ? ` Median error on such inputs in our tests: ${pct(f.measured_median_err)}.` : ""}</li>`).join("")}</ul>` : ""}`;
   $("stats").innerHTML = [
     ["Residual-based estimate", pct(j.fft_err_rel), "from the network output alone"],
-    ["Ensemble disagreement", pct(j.ensemble_spread), "spread across independently trained networks"],
+    ...(j.ensemble_spread != null ? [["Ensemble disagreement", pct(j.ensemble_spread), "spread across independently trained networks"]] : []),
     ["Mean pressure", `${fmt(j.qoi.mean_pred)} vs ${fmt(j.qoi.mean_ref)}`, "network vs reference"],
     ["Peak pressure", `${fmt(j.qoi.max_pred)} vs ${fmt(j.qoi.max_ref)}`, "network vs reference"],
   ].map(([t, v, s]) => `<div><small>${t}</small><b>${v}</b><small>${s}</small></div>`).join("");
@@ -418,12 +418,12 @@ async function loadEvidence() {
       <p>Median relative L2 error against the finite-volume reference on the same grid, on held-out inputs. Rank correlation compares the residual-based estimate, available before any reference solve, with the measured error; 1 is a perfect ranking.</p>
       <table><thead><tr><th rowspan="2">Inputs</th><th colspan="${ms.length}">Median error</th><th colspan="${ms.length}">Rank correlation</th></tr><tr>${head}${head}</tr></thead><tbody>${rows}</tbody></table>
       ${ms.map(([, m]) => `<p><strong>${m.label}.</strong> ${m.description}</p>`).join("")}
-      <p>Adapting to broader fields costs about 0.2 percentage points on PDEBench-like fields, less than the reference's own discretization error, and removes most of the error on the families it saw. It helps on held-out layers but does not extend to contrast far beyond its training range.</p>
+      <p>Adapting to broader fields costs about 0.2 percentage points on PDEBench-like fields and removes most of the error on the families it saw. It helps on held-out layers but does not extend to contrast far beyond its training range.</p>
       <h2>Indicators we tried and did not keep</h2>
       <p>A three-network ensemble ranks errors well on PDEBench-like fields (0.84) but its spread stops tracking the error on smooth fields, channels and extreme contrast, where the networks agree while all being wrong. The spread of the network over the eight symmetries of the square behaves the same way. A two-level Galerkin estimate ranks almost perfectly but costs about half a reference solve, so solving directly is better.</p>
       <h2>What the network was trained on</h2>
       <p>PDEBench's 10,000 Darcy fields, with targets re-solved to steady state. PDEBench's own labels are snapshots of a time-dependent run at t = 1.75; for slowly diffusing fields they still carry the random initial condition. A model trained on them had 4 times the mean error against the steady solution (3.3% versus 0.76%).</p>
-      <p>The reference solver uses PDEBench's discretization so that network and reference solve the same discrete problem. That discretization is itself about 2.6% from a four-times finer solve on typical fields.</p>
+      <p>The reference solver uses harmonic face averaging with the wall on the boundary face, the same discretization the networks were trained on. It is about 0.2% from a four-times finer solve. PDEBench's own scheme puts the wall half a cell outside the domain and is about 2.6% off; a network trained on it learned that error too (3.1% from the fine solve, against 0.56% here), and transferred worse to other grids (2.9% at 64×64, against 0.6% here).</p>
       <p>Every number on this page, the scripts that produced it, and the full development history are in the <a href="https://github.com/G26karthik/flowguard">source repository</a>.</p>`;
   } catch (e) { $("ev").innerHTML = `<p class="err">${e.message}</p>`; }
 }

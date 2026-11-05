@@ -55,32 +55,41 @@ against a 512x512 harmonic/face solve on 40 test fields (`scripts/eval_physical.
 |---|---|---|---|
 | PDEBench scheme | 3.1% | 3.1% | 0.47% |
 | harmonic/face | **0.56%** | 0.21% | 0.46% |
+| PDEBench scheme, adapted (broad) | 3.2% | 3.1% | 0.74% |
+| harmonic/face, adapted (broad) | **0.72%** | 0.21% | 0.62% |
 
-Same network, same training cost, same fit to its targets: the physical error drops 5.6x. The PDEBench-scheme network
-was never limited by learning; it was faithfully learning a discretisation that is 3% off. The app calls the
-finite-volume solution the "reference", states its discretisation error, and always solves with the discretisation
-recorded in the model checkpoint.
+(`results/physical_accuracy_adapt.json` for the adapted pair.) Same network, same training cost, same fit to its
+targets: the physical error drops 4 to 6x. The PDEBench-scheme network was never limited by learning; it was
+faithfully learning a discretisation that is 3% off.
+
+The same choice explains most of the network's poor transfer to other grids. The ghost-centre wall moves with the
+grid (h/2 outside the domain), so a network trained at 128² meets a slightly different problem at 64² or 256². With
+the consistent scheme, the error at other grids drops from 2.9% / 1.6% to 0.64% / 0.58% (64² / 256²).
+
+**The served models use harmonic/face targets.** The app calls the finite-volume solution the "reference", states
+its discretisation error (0.21%), and always solves with the discretisation recorded in the model checkpoint.
 
 ### 3. Accuracy in and out of distribution; adaptation
 
-Median error against the model's own reference (`results/reliability_*.json`):
+Median error against the model's own reference (`results/reliability_*.json`). The two served models are the
+harmonic/face pair; the PDEBench-scheme pair is shown for comparison.
 
-| Inputs | PDEBench model | Adapted model |
-|---|---|---|
-| PDEBench test split (1,000) | **0.54%** | 0.76% |
-| Fresh fields from a replica of PDEBench's sampler (KS 0.02) | 0.60% | 0.81% |
-| Contrast 100x (training: 10x) | 76% | **3.1%** |
-| Smooth log-normal fields | 9.4% | **1.6%** |
-| Thin channels | 11.7% | **2.6%** |
-| 64x64 / 256x256 grids | 2.9% / 1.6% | 2.5% / 1.6% |
-| Tilted layers (held out from both) | 6.8% | **4.3%** |
-| Contrast 3000x (held out from both) | 99% | 39% |
+| Inputs | PDEBench-trained (PDEBench scheme) | adapted (PDEBench scheme) | **PDEBench-trained (served)** | **adapted (served, default)** |
+|---|---|---|---|---|
+| PDEBench test split (1,000) | 0.54% | 0.76% | **0.52%** | 0.73% |
+| Fresh fields from a replica of PDEBench's sampler (KS 0.02) | 0.60% | 0.81% | 0.58% | 0.83% |
+| Contrast 100x (training: 10x) | 76% | 3.1% | 77% | **3.4%** |
+| Smooth log-normal fields | 9.4% | 1.6% | 10.4% | **1.6%** |
+| Thin channels | 11.7% | 2.6% | 11.7% | **2.6%** |
+| 64x64 / 256x256 grids | 2.9% / 1.6% | 2.5% / 1.6% | **0.64% / 0.58%** | 1.0% / 0.79% |
+| Tilted layers (held out from all training) | 6.8% | 4.3% | 6.9% | **4.6%** |
+| Contrast 3000x (held out from all training) | 99% | 39% | 99% | 39% |
 
-The adapted model is fine-tuned from the PDEBench model on PDEBench fields plus 5,700 broader fields (contrast up to
-1000x, channels, smooth fields; `scripts/make_adapt_data.py`). It costs 0.2 percentage points on PDEBench-like fields,
-less than the PDEBench scheme's own 2.6% discretisation error. It removes most of the error on the families it saw
-and helps on held-out layers. It does not extrapolate in contrast. Three seeds of the PDEBench model give test
-medians of 0.56, 0.56 and 0.59% in their training-time evaluation (GPU, TF32); seed 0 is 0.54% in exact fp32.
+The adapted models are fine-tuned on PDEBench fields plus 5,700 broader fields (contrast up to 1000x, channels,
+smooth fields; `scripts/make_adapt_data.py`). Adaptation costs about 0.2 percentage points on PDEBench-like fields,
+removes most of the error on the families it saw, and helps on held-out layers. It does not extrapolate in contrast.
+Three seeds of the PDEBench-scheme model give test medians of 0.56, 0.56 and 0.59% in their training-time evaluation
+(GPU, TF32); seed 0 is 0.54% in exact fp32.
 
 ### 4. Do the cheap checks know when the network is wrong?
 
@@ -96,7 +105,9 @@ Spearman rank correlation between indicator and measured error (`results/reliabi
 
 - The ensemble and the symmetry probe are the best cheap indicators on PDEBench-like fields and fail exactly where
   it matters: the networks agree while all being wrong. The DST estimate is the only cheap indicator that holds
-  across input families; nothing cheap detects a grid change, so the app flags that from the input.
+  across input families. With the PDEBench scheme it fails on grid changes (above); with the served harmonic/face
+  models it ranks errors there too (Spearman 0.67 at 64², 0.63 at 256²; `results/reliability_fno_hf_s0.json`).
+  The app still flags grid changes from the input.
 - A split-conformal 90% bound on the DST estimate (calibrated on the validation split) covers 90% of the test split.
   On shifted inputs coverage ranges from 20% (smooth fields) and 32% (64² grid) to 100% (channels, where the bound
   is loose), so the app shows it with a caveat when inputs are flagged.
@@ -164,6 +175,11 @@ python scripts/make_adapt_data.py && python scripts/train.py --target steady --e
     --init runs/fno_steady_s0/model.pt --extra data/cache/adapt_train.npz --out runs/fno_adapt_s0
 python scripts/export_numpy.py runs/fno_adapt_s0/model.pt
 python scripts/eval_reliability.py runs/fno_adapt_s0/model.pt
+# served models (harmonic faces, wall on the boundary face)
+python scripts/resolve_hf.py && python scripts/train.py --target steady --disc harm,face --epochs 100 --out runs/fno_hf_s0
+python scripts/make_adapt_data.py harm,face && python scripts/train.py --target steady --disc harm,face --epochs 40 \
+    --lr 3e-4 --init runs/fno_hf_s0/model.pt --extra data/cache/adapt_train_harm_face.npz --out runs/fno_hf_adapt_s0
+python scripts/eval_physical.py runs/fno_steady_s0/model.pt runs/fno_hf_s0/model.pt
 python -m pytest -q
 uvicorn flowguard.api:app --port 8000                               # server mode
 python scripts/build_site.py && python -m http.server -d _site      # browser mode
