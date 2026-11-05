@@ -78,7 +78,5 @@
       "median": 2.130695941418768,
       "max": 5.236899910784792
     }
-  },
-  "best_scale_factor_label_over_steady": 1.1082345147398391,
-  "rel_l2_after_scaling": 0.07300350448562248
+  }
 }

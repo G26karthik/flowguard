@@ -47,13 +47,7 @@ for face in ("arith", "harm"):
         }
         print(face, bc, out[f"{face}/{bc}"])
 
-# best-matching discretisation: also check whether label = steady * c (scale mismatch) or steady + smooth offset
-s = np.stack([solve(a_i, beta, "arith", "face") for a_i in nu])
-c = float((u * s).sum() / (s * s).sum())
-out["best_scale_factor_label_over_steady"] = c
-out["rel_l2_after_scaling"] = float(np.median(np.linalg.norm((u - c * s).reshape(len(u), -1), axis=1) / np.linalg.norm(s.reshape(len(u), -1), axis=1)))
-print("scale factor", c, "rel after scaling", out["rel_l2_after_scaling"])
-
+s = np.stack([solve(a_i, beta, "arith", "ghost") for a_i in nu])  # the matched discretisation
 Path("results").mkdir(exist_ok=True)
 Path(f"results/audit_{path.stem}.json").write_text(json.dumps(out, indent=2))
 np.savez_compressed(f"results/audit_{path.stem}_samples.npz", idx=idx, nu=nu[:8], label=u[:8], steady=s[:8])
