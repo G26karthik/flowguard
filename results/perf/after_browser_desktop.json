@@ -1,0 +1,878 @@
+{
+ "url": "https://g26karthik.github.io/flowguard/",
+ "viewport": "desktop",
+ "runs": [
+  {
+   "cold": {
+    "first_verdict_ms": 10034.5224609375,
+    "dom_content_loaded_ms": 455.9000000357628,
+    "load_ms": 542.1000000238419,
+    "phases": [
+     [
+      10018,
+      "verdict",
+      "The network agrees with the solver\n\nThe network's pressure differs from the solver's by 0."
+     ]
+    ],
+    "first_solve_server_ms": {
+     "nn": 171.69999999999953,
+     "reference": 102.70000100000054
+    },
+    "bytes_total": 37643622,
+    "network": [
+     {
+      "url": "https://g26karthik.github.io/flowguard/",
+      "start_ms": 3.751708984375,
+      "end_ms": 297.236708984375,
+      "bytes": 16497
+     },
+     {
+      "url": "https://fonts.googleapis.com/css2",
+      "start_ms": 299.697021484375,
+      "end_ms": 425.028021484375,
+      "bytes": 910
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/worker.js",
+      "start_ms": 427.137939453125,
+      "end_ms": 748.819939453125,
+      "bytes": 188
+     },
+     {
+      "url": "ic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9Gayo.woff2",
+      "start_ms": 455.68310546875,
+      "end_ms": 561.16510546875,
+      "bytes": 46784
+     },
+     {
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js",
+      "start_ms": 717.625,
+      "end_ms": 751.086,
+      "bytes": 6689
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/manifest.json",
+      "start_ms": 749.540771484375,
+      "end_ms": 1003.087771484375,
+      "bytes": 780
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/__init__.py",
+      "start_ms": 1004.10498046875,
+      "end_ms": 1306.31598046875,
+      "bytes": 314
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/core.py",
+      "start_ms": 1004.4091796875,
+      "end_ms": 1306.0681796875,
+      "bytes": 4769
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/diagnose.py",
+      "start_ms": 1004.509765625,
+      "end_ms": 1307.356765625,
+      "bytes": 3105
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/fields.py",
+      "start_ms": 1004.689697265625,
+      "end_ms": 1309.007697265625,
+      "bytes": 1566
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/guard.py",
+      "start_ms": 1004.77783203125,
+      "end_ms": 1325.09683203125,
+      "bytes": 1767
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/infer.py",
+      "start_ms": 1004.85302734375,
+      "end_ms": 1263.68802734375,
+      "bytes": 1105
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/npfno.py",
+      "start_ms": 1005.06591796875,
+      "end_ms": 1307.37691796875,
+      "bytes": 2784
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/solver.py",
+      "start_ms": 1005.22998046875,
+      "end_ms": 1307.18398046875,
+      "bytes": 1996
+     },
+     {
+      "url": "ttps://g26karthik.github.io/flowguard/runs/fno_hf_adapt_s0/weights.npz",
+      "start_ms": 1005.31884765625,
+      "end_ms": 7725.79884765625,
+      "bytes": 8812177
+     },
+     {
+      "url": "26karthik.github.io/flowguard/results/reliability_fno_hf_adapt_s0.json",
+      "start_ms": 1005.39892578125,
+      "end_ms": 1325.80892578125,
+      "bytes": 2880
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/runs/fno_hf_s0/weights.npz",
+      "start_ms": 1005.48486328125,
+      "end_ms": 8549.747863281249,
+      "bytes": 8817196
+     },
+     {
+      "url": "ps://g26karthik.github.io/flowguard/results/reliability_fno_hf_s0.json",
+      "start_ms": 1005.723876953125,
+      "end_ms": 1268.594876953125,
+      "bytes": 2864
+     },
+     {
+      "url": "tps://g26karthik.github.io/flowguard/results/discretization_error.json",
+      "start_ms": 1005.89404296875,
+      "end_ms": 1283.8510429687499,
+      "bytes": 533
+     },
+     {
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js",
+      "start_ms": 1006.304931640625,
+      "end_ms": 1034.430931640625,
+      "bytes": 241468
+     },
+     {
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/python_stdlib.zip",
+      "start_ms": 1098.109130859375,
+      "end_ms": 2048.116130859375,
+      "bytes": 2307994
+     },
+     {
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.wasm",
+      "start_ms": 1099.10888671875,
+      "end_ms": 2200.03288671875,
+      "bytes": 2993867
+     },
+     {
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide-lock.json",
+      "start_ms": 1099.210693359375,
+      "end_ms": 1219.641693359375,
+      "bytes": 22340
+     },
+     {
+      "url": "yodide/v0.26.4/full/numpy-1.26.4-cp312-cp312-pyodide_2024_0_wasm32.whl",
+      "start_ms": 3185.332763671875,
+      "end_ms": 4740.751763671875,
+      "bytes": 2458801
+     },
+     {
+      "url": "yodide/v0.26.4/full/scipy-1.12.0-cp312-cp312-pyodide_2024_0_wasm32.whl",
+      "start_ms": 3190.999755859375,
+      "end_ms": 6567.049755859375,
+      "bytes": 10406130
+     },
+     {
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/openblas-0.3.26.zip",
+      "start_ms": 3191.4267578125,
+      "end_ms": 4254.6707578125,
+      "bytes": 1488118
+     }
+    ]
+   },
+   "warm": {
+    "render_single_ms": [
+     5.599999964237213,
+     5.5,
+     4.800000011920929,
+     4.199999988079071,
+     3.800000011920929
+    ],
+    "generate": [
+     {
+      "wall_ms": 246.32269999710843,
+      "server_ms": {
+       "nn": 143.39999999999975,
+       "reference": 60.900000000000176
+      }
+     },
+     {
+      "wall_ms": 245.81390002276748,
+      "server_ms": {
+       "nn": 146.79999900000064,
+       "reference": 60.5999999999991
+      }
+     },
+     {
+      "wall_ms": 237.061400024686,
+      "server_ms": {
+       "nn": 143.69999999999905,
+       "reference": 60.2999999999998
+      }
+     }
+    ],
+    "paint": [
+     {
+      "wall_ms": 345.77910002553836,
+      "server_ms": {
+       "nn": 141.0999999999998,
+       "reference": 68.09999999999938
+      }
+     },
+     {
+      "wall_ms": 132.30470003327355,
+      "server_ms": {
+       "nn": 0.19999999999953388,
+       "reference": 0
+      }
+     }
+    ],
+    "beta": {
+     "wall_ms": 4.0999999940395355,
+     "server_ms": null
+    },
+    "model_switch": {
+     "wall_ms": 174.05949998646975,
+     "server_ms": {
+      "nn": 147.7000000000004,
+      "reference": 0
+     }
+    },
+    "grid256": {
+     "wall_ms": 1128.995799983386,
+     "server_ms": {
+      "nn": 580.2000009999997,
+      "reference": 462.3999990000005
+     }
+    },
+    "render_single_256_ms": [
+     12.800000011920929,
+     12.5,
+     12.300000011920929,
+     14.099999964237213,
+     16.700000047683716
+    ],
+    "contrast_example": {
+     "wall_ms": 240.74319994542748,
+     "server_ms": {
+      "nn": 143.20000000000022,
+      "reference": 60.2999999999998
+     }
+    },
+    "investigate": {
+     "wall_ms": 1347.9572999640368,
+     "text": "ressed to 1,000\u00d7, the training maximum), keeping the shape. Error: 5.9%.\nReplace the shape with training-like blobs that have the same rock values and grid (4 samples). Error: 7.2% (range 6.2% to 9.5%).\nMeasured cause: contrast. It raises the error clearly above the training-like version on its own."
+    },
+    "batch": {
+     "32": {
+      "wall_ms": 6000.357699987944,
+      "ms": 0.9000000357627869,
+      "server": {
+       "nn_total": 4877.299999999998,
+       "indicators_total": 32.19999999999956,
+       "reference_total": 1038.7000009999988,
+       "reference_per_solve": 64.91875006249992
+      }
+     },
+     "64": {
+      "wall_ms": 10881.077199999709,
+      "ms": 0.8999999761581421,
+      "server": {
+       "nn_total": 9712.600000000002,
+       "indicators_total": 65.30000100000066,
+       "reference_total": 1034.1999999999985,
+       "reference_per_solve": 64.6374999999999
+      }
+     }
+    },
+    "evidence_ms": 49.29709999123588
+   },
+   "console": []
+  },
+  {
+   "cold": {
+    "first_verdict_ms": 9720.900634765625,
+    "dom_content_loaded_ms": 495.2999999523163,
+    "load_ms": 606.1999999880791,
+    "phases": [
+     [
+      9711,
+      "verdict",
+      "The network agrees with the solver\n\nThe network's pressure differs from the solver's by 0."
+     ]
+    ],
+    "first_solve_server_ms": {
+     "nn": 169.99999999999994,
+     "reference": 96.99999999999953
+    },
+    "bytes_total": 37643250,
+    "network": [
+     {
+      "url": "https://g26karthik.github.io/flowguard/",
+      "start_ms": 1.714111328125,
+      "end_ms": 310.282111328125,
+      "bytes": 16497
+     },
+     {
+      "url": "https://fonts.googleapis.com/css2",
+      "start_ms": 316.09912109375,
+      "end_ms": 464.22112109375,
+      "bytes": 912
+     },
+     {
+      "url": "ic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9Gayo.woff2",
+      "start_ms": 491.037109375,
+      "end_ms": 621.629109375,
+      "bytes": 46784
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/worker.js",
+      "start_ms": 493.3720703125,
+      "end_ms": 1075.4070703124999,
+      "bytes": 188
+     },
+     {
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js",
+      "start_ms": 795.73291015625,
+      "end_ms": 1076.55391015625,
+      "bytes": 6688
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/manifest.json",
+      "start_ms": 1076.152099609375,
+      "end_ms": 1390.038099609375,
+      "bytes": 780
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/__init__.py",
+      "start_ms": 1391.176025390625,
+      "end_ms": 1652.243025390625,
+      "bytes": 129
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/core.py",
+      "start_ms": 1391.68896484375,
+      "end_ms": 1647.33596484375,
+      "bytes": 4732
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/diagnose.py",
+      "start_ms": 1391.88037109375,
+      "end_ms": 1653.11237109375,
+      "bytes": 3108
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/fields.py",
+      "start_ms": 1392.055908203125,
+      "end_ms": 1962.5329082031249,
+      "bytes": 1391
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/guard.py",
+      "start_ms": 1392.439208984375,
+      "end_ms": 1695.722208984375,
+      "bytes": 1781
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/infer.py",
+      "start_ms": 1392.55712890625,
+      "end_ms": 1647.47712890625,
+      "bytes": 1128
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/npfno.py",
+      "start_ms": 1392.670166015625,
+      "end_ms": 1686.352166015625,
+      "bytes": 2787
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/solver.py",
+      "start_ms": 1392.965087890625,
+      "end_ms": 1669.765087890625,
+      "bytes": 2209
+     },
+     {
+      "url": "ttps://g26karthik.github.io/flowguard/runs/fno_hf_adapt_s0/weights.npz",
+      "start_ms": 1393.17822265625,
+      "end_ms": 7652.86422265625,
+      "bytes": 8812182
+     },
+     {
+      "url": "26karthik.github.io/flowguard/results/reliability_fno_hf_adapt_s0.json",
+      "start_ms": 1393.2880859375,
+      "end_ms": 1686.2020859375,
+      "bytes": 2857
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/runs/fno_hf_s0/weights.npz",
+      "start_ms": 1393.381103515625,
+      "end_ms": 8306.826103515625,
+      "bytes": 8817153
+     },
+     {
+      "url": "ps://g26karthik.github.io/flowguard/results/reliability_fno_hf_s0.json",
+      "start_ms": 1393.650390625,
+      "end_ms": 1687.332390625,
+      "bytes": 2874
+     },
+     {
+      "url": "tps://g26karthik.github.io/flowguard/results/discretization_error.json",
+      "start_ms": 1393.84912109375,
+      "end_ms": 1696.26912109375,
+      "bytes": 702
+     },
+     {
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js",
+      "start_ms": 1394.002197265625,
+      "end_ms": 1421.004197265625,
+      "bytes": 241465
+     },
+     {
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/python_stdlib.zip",
+      "start_ms": 1480.260009765625,
+      "end_ms": 2269.447009765625,
+      "bytes": 2307822
+     },
+     {
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.wasm",
+      "start_ms": 1481.23583984375,
+      "end_ms": 2461.01883984375,
+      "bytes": 2993620
+     },
+     {
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide-lock.json",
+      "start_ms": 1481.33740234375,
+      "end_ms": 1591.24240234375,
+      "bytes": 22368
+     },
+     {
+      "url": "yodide/v0.26.4/full/numpy-1.26.4-cp312-cp312-pyodide_2024_0_wasm32.whl",
+      "start_ms": 3544.586181640625,
+      "end_ms": 5118.6731816406245,
+      "bytes": 2458795
+     },
+     {
+      "url": "yodide/v0.26.4/full/scipy-1.12.0-cp312-cp312-pyodide_2024_0_wasm32.whl",
+      "start_ms": 3550.321044921875,
+      "end_ms": 6951.888044921875,
+      "bytes": 10406086
+     },
+     {
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/openblas-0.3.26.zip",
+      "start_ms": 3550.670166015625,
+      "end_ms": 4735.894166015625,
+      "bytes": 1488212
+     }
+    ]
+   },
+   "warm": {
+    "render_single_ms": [
+     5.899999976158142,
+     5.800000011920929,
+     5.300000011920929,
+     6.100000023841858,
+     5
+    ],
+    "generate": [
+     {
+      "wall_ms": 254.43600001744926,
+      "server_ms": {
+       "nn": 150.39999899999935,
+       "reference": 66.9000000000004
+      }
+     },
+     {
+      "wall_ms": 243.97070001577958,
+      "server_ms": {
+       "nn": 148.7999990000013,
+       "reference": 61.20000099999956
+      }
+     },
+     {
+      "wall_ms": 241.30389996571466,
+      "server_ms": {
+       "nn": 144.80000100000012,
+       "reference": 58.19999899999928
+      }
+     }
+    ],
+    "paint": [
+     {
+      "wall_ms": 345.86429997580126,
+      "server_ms": {
+       "nn": 141.10000099999985,
+       "reference": 65.69999899999956
+      }
+     },
+     {
+      "wall_ms": 139.53440001932904,
+      "server_ms": {
+       "nn": 0.09999999999976694,
+       "reference": 0.09999999999976694
+      }
+     }
+    ],
+    "beta": {
+     "wall_ms": 4.8499999940395355,
+     "server_ms": null
+    },
+    "model_switch": {
+     "wall_ms": 175.31510000117123,
+     "server_ms": {
+      "nn": 150.7000000000005,
+      "reference": 0.09999999999976694
+     }
+    },
+    "grid256": {
+     "wall_ms": 1126.4126999885775,
+     "server_ms": {
+      "nn": 582.3000000000001,
+      "reference": 455.1999999999996
+     }
+    },
+    "render_single_256_ms": [
+     13,
+     14.099999964237213,
+     14.699999988079071,
+     12.5,
+     11.200000047683716
+    ],
+    "contrast_example": {
+     "wall_ms": 249.6652999543585,
+     "server_ms": {
+      "nn": 150.30000099999972,
+      "reference": 61.89999899999954
+     }
+    },
+    "investigate": {
+     "wall_ms": 1357.2243999806233,
+     "text": "ressed to 1,000\u00d7, the training maximum), keeping the shape. Error: 5.9%.\nReplace the shape with training-like blobs that have the same rock values and grid (4 samples). Error: 7.2% (range 6.2% to 9.5%).\nMeasured cause: contrast. It raises the error clearly above the training-like version on its own."
+    },
+    "batch": {
+     "32": {
+      "wall_ms": 6007.949499995448,
+      "ms": 0.8999999761581421,
+      "server": {
+       "nn_total": 4821.299999999999,
+       "indicators_total": 33.500000000000085,
+       "reference_total": 1099.3999999999992,
+       "reference_per_solve": 68.71249999999995
+      }
+     },
+     "64": {
+      "wall_ms": 10812.065099948086,
+      "ms": 0.699999988079071,
+      "server": {
+       "nn_total": 9614.300001,
+       "indicators_total": 70.09999899999997,
+       "reference_total": 1045.2999999999975,
+       "reference_per_solve": 65.33124999999984
+      }
+     }
+    },
+    "evidence_ms": 43.48599998047575
+   },
+   "console": []
+  },
+  {
+   "cold": {
+    "first_verdict_ms": 7615.430908203125,
+    "dom_content_loaded_ms": 174.5,
+    "load_ms": 375.5,
+    "phases": [
+     [
+      7604,
+      "verdict",
+      "The network agrees with the solver\n\nThe network's pressure differs from the solver's by 0."
+     ]
+    ],
+    "first_solve_server_ms": {
+     "nn": 175.5999999999993,
+     "reference": 108.29999900000064
+    },
+    "bytes_total": 37642087,
+    "network": [
+     {
+      "url": "https://g26karthik.github.io/flowguard/",
+      "start_ms": 1.9072265625,
+      "end_ms": 24.3852265625,
+      "bytes": 16496
+     },
+     {
+      "url": "https://fonts.googleapis.com/css2",
+      "start_ms": 28.959228515625,
+      "end_ms": 145.997228515625,
+      "bytes": 910
+     },
+     {
+      "url": "ic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9Gayo.woff2",
+      "start_ms": 171.156005859375,
+      "end_ms": 392.572005859375,
+      "bytes": 46784
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/worker.js",
+      "start_ms": 173.520263671875,
+      "end_ms": 216.420263671875,
+      "bytes": 165
+     },
+     {
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js",
+      "start_ms": 189.7431640625,
+      "end_ms": 219.2451640625,
+      "bytes": 6689
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/manifest.json",
+      "start_ms": 217.278076171875,
+      "end_ms": 223.579076171875,
+      "bytes": 780
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/__init__.py",
+      "start_ms": 224.593994140625,
+      "end_ms": 232.323994140625,
+      "bytes": 336
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/core.py",
+      "start_ms": 225.072021484375,
+      "end_ms": 235.283021484375,
+      "bytes": 4731
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/diagnose.py",
+      "start_ms": 225.256103515625,
+      "end_ms": 235.528103515625,
+      "bytes": 3290
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/fields.py",
+      "start_ms": 225.360107421875,
+      "end_ms": 234.037107421875,
+      "bytes": 1366
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/guard.py",
+      "start_ms": 225.6650390625,
+      "end_ms": 234.3630390625,
+      "bytes": 1766
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/infer.py",
+      "start_ms": 225.762939453125,
+      "end_ms": 235.893939453125,
+      "bytes": 919
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/npfno.py",
+      "start_ms": 225.84521484375,
+      "end_ms": 236.07721484375,
+      "bytes": 2799
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/flowguard/solver.py",
+      "start_ms": 226.09619140625,
+      "end_ms": 236.43719140625,
+      "bytes": 2198
+     },
+     {
+      "url": "ttps://g26karthik.github.io/flowguard/runs/fno_hf_adapt_s0/weights.npz",
+      "start_ms": 226.332275390625,
+      "end_ms": 3291.719275390625,
+      "bytes": 8812209
+     },
+     {
+      "url": "26karthik.github.io/flowguard/results/reliability_fno_hf_adapt_s0.json",
+      "start_ms": 226.4541015625,
+      "end_ms": 236.6181015625,
+      "bytes": 2895
+     },
+     {
+      "url": "https://g26karthik.github.io/flowguard/runs/fno_hf_s0/weights.npz",
+      "start_ms": 226.56201171875,
+      "end_ms": 4748.30301171875,
+      "bytes": 8817213
+     },
+     {
+      "url": "ps://g26karthik.github.io/flowguard/results/reliability_fno_hf_s0.json",
+      "start_ms": 226.670166015625,
+      "end_ms": 237.234166015625,
+      "bytes": 2864
+     },
+     {
+      "url": "tps://g26karthik.github.io/flowguard/results/discretization_error.json",
+      "start_ms": 227.041015625,
+      "end_ms": 237.205015625,
+      "bytes": 536
+     },
+     {
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js",
+      "start_ms": 227.27392578125,
+      "end_ms": 310.85592578125,
+      "bytes": 241470
+     },
+     {
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/python_stdlib.zip",
+      "start_ms": 372.49609375,
+      "end_ms": 1525.08009375,
+      "bytes": 2308012
+     },
+     {
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.wasm",
+      "start_ms": 375.07080078125,
+      "end_ms": 1640.69680078125,
+      "bytes": 2993693
+     },
+     {
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide-lock.json",
+      "start_ms": 375.7119140625,
+      "end_ms": 564.3319140625,
+      "bytes": 22358
+     },
+     {
+      "url": "yodide/v0.26.4/full/numpy-1.26.4-cp312-cp312-pyodide_2024_0_wasm32.whl",
+      "start_ms": 2582.196044921875,
+      "end_ms": 4118.701044921875,
+      "bytes": 2458521
+     },
+     {
+      "url": "yodide/v0.26.4/full/scipy-1.12.0-cp312-cp312-pyodide_2024_0_wasm32.whl",
+      "start_ms": 2586.669921875,
+      "end_ms": 5573.642921875,
+      "bytes": 10405041
+     },
+     {
+      "url": "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/openblas-0.3.26.zip",
+      "start_ms": 2586.842041015625,
+      "end_ms": 3774.498041015625,
+      "bytes": 1488046
+     }
+    ]
+   },
+   "warm": {
+    "render_single_ms": [
+     5.599999964237213,
+     5.599999964237213,
+     4.600000023841858,
+     5.399999976158142,
+     4.5
+    ],
+    "generate": [
+     {
+      "wall_ms": 252.30110000120476,
+      "server_ms": {
+       "nn": 150.60000099999993,
+       "reference": 64.39999899999992
+      }
+     },
+     {
+      "wall_ms": 249.3730999995023,
+      "server_ms": {
+       "nn": 147.89999999999992,
+       "reference": 62.80000000000019
+      }
+     },
+     {
+      "wall_ms": 240.3764000046067,
+      "server_ms": {
+       "nn": 143.10000100000053,
+       "reference": 60.2999999999998
+      }
+     }
+    ],
+    "paint": [
+     {
+      "wall_ms": 351.6952999634668,
+      "server_ms": {
+       "nn": 142.29999899999868,
+       "reference": 70.60000100000074
+      }
+     },
+     {
+      "wall_ms": 135.74290001997724,
+      "server_ms": {
+       "nn": 0.10000099999984968,
+       "reference": 0
+      }
+     }
+    ],
+    "beta": {
+     "wall_ms": 3.300000011920929,
+     "server_ms": null
+    },
+    "model_switch": {
+     "wall_ms": 162.1325999731198,
+     "server_ms": {
+      "nn": 139.90000100000088,
+      "reference": 0
+     }
+    },
+    "grid256": {
+     "wall_ms": 1138.6314000119455,
+     "server_ms": {
+      "nn": 581.6999999999997,
+      "reference": 477.099999
+     }
+    },
+    "render_single_256_ms": [
+     12.100000023841858,
+     14.800000011920929,
+     14.5,
+     15,
+     11.799999952316284
+    ],
+    "contrast_example": {
+     "wall_ms": 246.01140001323074,
+     "server_ms": {
+      "nn": 150.00000000000034,
+      "reference": 60.49999999999933
+     }
+    },
+    "investigate": {
+     "wall_ms": 1361.9466999662109,
+     "text": "ressed to 1,000\u00d7, the training maximum), keeping the shape. Error: 5.9%.\nReplace the shape with training-like blobs that have the same rock values and grid (4 samples). Error: 7.2% (range 6.2% to 9.5%).\nMeasured cause: contrast. It raises the error clearly above the training-like version on its own."
+    },
+    "batch": {
+     "32": {
+      "wall_ms": 6070.184100011829,
+      "ms": 0.8999999761581421,
+      "server": {
+       "nn_total": 4947.499999999998,
+       "indicators_total": 35.199999999999676,
+       "reference_total": 1031.9000010000004,
+       "reference_per_solve": 64.49375006250003
+      }
+     },
+     "64": {
+      "wall_ms": 11061.84460001532,
+      "ms": 0.6000000238418579,
+      "server": {
+       "nn_total": 9812.200001000001,
+       "indicators_total": 75.09999899999897,
+       "reference_total": 1092.1000009999987,
+       "reference_per_solve": 68.25625006249992
+      }
+     }
+    },
+    "evidence_ms": 54.28559996653348
+   },
+   "console": []
+  }
+ ],
+ "summary": {
+  "first_verdict_ms": 9721,
+  "bytes_total_MB": 37.6,
+  "generate_wall_ms": 246,
+  "generate_server_nn_ms": 147,
+  "generate_server_ref_ms": 61,
+  "paint_wall_ms": 243,
+  "beta_wall_ms": 4,
+  "model_switch_wall_ms": 174,
+  "grid256_wall_ms": 1129,
+  "render_128_ms": 5,
+  "render_256_ms": 13,
+  "batch32_wall_ms": 6008,
+  "batch64_wall_ms": 10881,
+  "evidence_ms": 49,
+  "investigate_wall_ms": 1357
+ }
+}
