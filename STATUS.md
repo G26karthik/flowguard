@@ -16,12 +16,18 @@ Session started 2026-11-05 15:42 (IST). QUEST rule: everything in one session, 7
 - Benchmark `results/bench_solver.json`: exact solve 9 / 48 / 274 / 2537 ms at N = 64 / 128 / 256 / 512.
 - API `flowguard/api.py`, frontend `web/index.html`, `Dockerfile` (not yet deployed).
 
+- `runs/fno_steady_s0` trained (100 epochs, ~31 s/epoch): test vs steady median 0.56%, p90 1.4%, max 7.4%.
+- `results/reliability_fno_steady_s0.json`: OOD errors contrast100 76%, GRF 9.4%, channels 11.7%, 64^2 2.9%, 256^2 1.6%.
+  DST estimate Spearman 0.74-0.96 (not across resolution); conformal 90% bound: 89.9% coverage on test, fails OOD.
+  Triage recall of >5% errors at 20% budget: DST 70%, raw residual 52%, oracle 72%, random 20%.
+- App checked locally with the trained model (headless Edge screenshot); flags and batch mode behave.
+- Note: two concurrent trainings ran slower than serial; a CUDA illegal-address crash followed force-killing one run.
+
 ## Running
-- `runs/fno_steady_s0` (100 epochs, ~24 s/epoch alone).
-- Queue (serial, after s0): `fno_label_s0`, `fno_steady_s1`, `fno_steady_s2`.
+- Serial queue (background bash): `fno_label_s0` (started ~17:30), then `fno_steady_s1`, `fno_steady_s2` (~50 min each).
 
 ## Next
-1. `scripts/eval_reliability.py runs/fno_steady_s0/model.pt` then with all 3 steady members.
-2. Compare steady- vs label-trained model on steady truth.
-3. Run app locally, screenshot, check UI.
-4. Deploy (needs user OK: HF Space + public GitHub repo).
+1. Ensemble eval: `scripts/eval_reliability.py runs/fno_steady_s{0,1,2}/model.pt`.
+2. Compare label- vs steady-trained model on steady truth.
+3. Adaptation: fine-tune on a broader generated distribution (contrast, GRF, channels) and measure ID cost / OOD gain.
+4. Deploy (needs user OK: HF Space + public GitHub repo). README.
