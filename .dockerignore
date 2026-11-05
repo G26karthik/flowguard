@@ -1,0 +1,10 @@
+.venv
+.git
+data
+_site
+**/__pycache__
+runs/**/model.pt
+runs/**/*.npy
+runs_*.log
+runs_*.err
+results/*.npz
