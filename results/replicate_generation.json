@@ -1,0 +1,91 @@
+{
+  "n": 300,
+  "times": [
+    1.75,
+    2.0
+  ],
+  "per_beta": {
+    "beta=0.01 T=1.75": {
+      "n_identifiable": 229,
+      "median_fraction_of_deviation_explained": 0.9998128195561189,
+      "fitted_u0_quantiles": [
+        0.7533989895767691,
+        2.9556491715920865,
+        5.4297324844887624,
+        7.811709146956612,
+        9.482056108390463
+      ],
+      "ks_u0_vs_uniform_0.1_10": 0.06630292567997492
+    },
+    "beta=0.01 T=2.0": {
+      "n_identifiable": 229,
+      "median_fraction_of_deviation_explained": 0.9997172627769927,
+      "fitted_u0_quantiles": [
+        1.891638892615788,
+        8.629988628523918,
+        15.403729383966935,
+        23.791893657369183,
+        41.755846091618636
+      ],
+      "ks_u0_vs_uniform_0.1_10": 0.6982731362028617
+    },
+    "beta=1.0 T=1.75": {
+      "n_identifiable": 94,
+      "median_fraction_of_deviation_explained": 0.9995946790881114,
+      "fitted_u0_quantiles": [
+        2.341315573005227,
+        4.201878024373506,
+        6.416240544050114,
+        8.317891523758115,
+        9.518406544329242
+      ],
+      "ks_u0_vs_uniform_0.1_10": 0.18168738070063312
+    },
+    "beta=1.0 T=2.0": {
+      "n_identifiable": 94,
+      "median_fraction_of_deviation_explained": 0.9996039430093946,
+      "fitted_u0_quantiles": [
+        4.38188663236517,
+        8.83452661841785,
+        13.601730947960132,
+        17.525160346519723,
+        25.87529359770734
+      ],
+      "ks_u0_vs_uniform_0.1_10": 0.7021276595744681
+    },
+    "beta=100.0 T=1.75": {
+      "n_identifiable": 24,
+      "median_fraction_of_deviation_explained": 0.9979172363340373,
+      "fitted_u0_quantiles": [
+        -0.43611992897767504,
+        2.6341822106126993,
+        5.3693921402033595,
+        7.439729372030114,
+        8.822451962968772
+      ],
+      "ks_u0_vs_uniform_0.1_10": 0.13163191380388137
+    },
+    "beta=100.0 T=2.0": {
+      "n_identifiable": 24,
+      "median_fraction_of_deviation_explained": 0.9979172952175606,
+      "fitted_u0_quantiles": [
+        -35.66969675898604,
+        -28.509622303202306,
+        -24.20285383036014,
+        -20.44276149899379,
+        -17.988985189382273
+      ],
+      "ks_u0_vs_uniform_0.1_10": 1.0
+    }
+  },
+  "u0_consistency_beta0.01_vs_beta1_T=1.75": {
+    "n": 94,
+    "pearson": 0.999922430899548,
+    "median_abs_rel_diff": 0.00664177387859787
+  },
+  "u0_consistency_beta0.01_vs_beta1_T=2.0": {
+    "n": 94,
+    "pearson": 0.9999741529742974,
+    "median_abs_rel_diff": 0.0216095056495969
+  }
+}

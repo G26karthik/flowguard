@@ -79,6 +79,22 @@ def solve(a, f, face="arith", bc="face"):
     return splu(assemble(a, face, bc)).solve(rhs).reshape(n, n)
 
 
+def propagate(A, v, times, dt=1 / 400):
+    """exp(-t A) v for each t in increasing `times`: Crank-Nicolson with two half-step backward-Euler
+    starting steps (Rannacher), which damp the stiff modes CN alone would leave oscillating.
+    v: (n_dof,) or (n_dof, k). Used to replay PDEBench's time-stepping generator."""
+    I = sp.identity(A.shape[0], format="csc")
+    be = splu((I + 0.5 * dt * A).tocsc())
+    cn_l, cn_r = splu((I + 0.5 * dt * A).tocsc()), (I - 0.5 * dt * A).tocsc()
+    x, t, out = be.solve(be.solve(np.asarray(v, dtype=np.float64))), dt, []
+    for target in times:
+        while t < target - 1e-12:
+            x = cn_l.solve(cn_r @ x)
+            t += dt
+        out.append(x.copy())
+    return out
+
+
 def residual(a, u, f, face="arith", bc="face"):
     """r = f - A u. Zero (to round-off) for the solver's own solution."""
     return np.asarray(f, dtype=np.float64) - apply_operator(a, u, face, bc)

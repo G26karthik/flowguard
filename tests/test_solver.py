@@ -64,6 +64,21 @@ def test_solution_has_zero_residual_and_scales_linearly_with_source():
     np.testing.assert_allclose(solve(a, 7.5), 7.5 * u1, rtol=1e-10)
 
 
+def test_propagate_matches_matrix_exponential():
+    from scipy.linalg import expm
+
+    from flowguard.solver import propagate
+
+    rng = np.random.default_rng(4)
+    a = np.where(rng.random((12, 12)) > 0.5, 1.0, 0.1)
+    A = assemble(a, "arith", "ghost")
+    v = np.ones(144) + 0.3 * rng.standard_normal(144)
+    got = propagate(A, v, [0.05, 0.3])
+    for t, g in zip([0.05, 0.3], got):
+        ref = expm(-t * A.toarray()) @ v
+        assert np.linalg.norm(g - ref) / np.linalg.norm(ref) < 2e-3, t
+
+
 def test_constant_coefficient_means_agree():
     a = np.full((16, 16), 0.3)
     np.testing.assert_allclose(solve(a, 1.0, "arith"), solve(a, 1.0, "harm"))
