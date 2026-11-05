@@ -1,0 +1,13 @@
+[project]
+name = "flowguard"
+version = "0.1.0"
+description = "Darcy-flow neural operator service with independent numerical verification"
+requires-python = ">=3.11"
+dependencies = ["numpy", "scipy", "h5py", "torch", "fastapi", "uvicorn"]
+
+[project.optional-dependencies]
+dev = ["pytest", "httpx", "matplotlib"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

@@ -1,0 +1,25 @@
+{
+  "file": "2D_DarcyFlow_beta0.01_Train.hdf5",
+  "beta": 0.01,
+  "discretisation": [
+    "arith",
+    "ghost"
+  ],
+  "n": 10000,
+  "rel_l2_label_vs_steady_quantiles": {
+    "0.5": 0.16998977959156036,
+    "0.75": 1.7675554752349854,
+    "0.9": 10.121621131896973,
+    "0.95": 21.308303833007812,
+    "0.99": 43.362945556640625,
+    "1.0": 61.60268783569336
+  },
+  "fraction_over": {
+    "0.01": 0.7568,
+    "0.02": 0.7028,
+    "0.05": 0.6246,
+    "0.1": 0.5557
+  },
+  "spearman_dev_vs_low_conductivity_fraction": 0.9366905739669058,
+  "mean_signed_label_minus_steady_over_mean_steady": 5.946174144744873
+}

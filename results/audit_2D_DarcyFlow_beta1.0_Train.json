@@ -1,0 +1,84 @@
+{
+  "file": "2D_DarcyFlow_beta1.0_Train.hdf5",
+  "layout": {
+    "nu": [
+      [
+        10000,
+        128,
+        128
+      ],
+      "float32"
+    ],
+    "tensor": [
+      [
+        10000,
+        1,
+        128,
+        128
+      ],
+      "float32"
+    ],
+    "x-coordinate": [
+      [
+        128
+      ],
+      "float32"
+    ],
+    "y-coordinate": [
+      [
+        128
+      ],
+      "float32"
+    ]
+  },
+  "attrs": {
+    "beta": 1.0
+  },
+  "n_checked": 100,
+  "arith/face": {
+    "rel_l2_label_vs_steady": {
+      "median": 0.045371113236343796,
+      "p90": 0.1308967458499408,
+      "max": 0.5361356394087831
+    },
+    "label_residual_rel": {
+      "median": 7.11106679186113,
+      "max": 9.094865019480105
+    }
+  },
+  "arith/ghost": {
+    "rel_l2_label_vs_steady": {
+      "median": 0.0035407032451411115,
+      "p90": 0.09417865392289186,
+      "max": 0.4989193532107595
+    },
+    "label_residual_rel": {
+      "median": 0.0029921456843950904,
+      "max": 0.4187924719319035
+    }
+  },
+  "harm/face": {
+    "rel_l2_label_vs_steady": {
+      "median": 0.034382166311248505,
+      "p90": 0.11644103131193104,
+      "max": 0.5320741432219247
+    },
+    "label_residual_rel": {
+      "median": 7.6420692477149395,
+      "max": 10.637660819869714
+    }
+  },
+  "harm/ghost": {
+    "rel_l2_label_vs_steady": {
+      "median": 0.011278861445732594,
+      "p90": 0.08076273287569852,
+      "max": 0.4950426350020307
+    },
+    "label_residual_rel": {
+      "median": 2.130695941418768,
+      "max": 5.236899910784792
+    }
+  },
+  "best_scale_factor_label_over_steady": 1.1082345147398391,
+  "rel_l2_after_scaling": 0.07300350448562248
+}
