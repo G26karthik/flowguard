@@ -187,7 +187,8 @@ class Service:
         test = ((self.rel or {}).get("sets") or {}).get("pdebench_test")
         id_err = test["err"]["median"] if test else 0.006
         t = time.perf_counter()
-        r = investigate(self.p, a, domain=self.domain, id_err=id_err, geometry=True)
+        # thresholds calibrated on held-out cases (scripts/investigator_study.py, results/investigator_study.json)
+        r = investigate(self.p, a, domain=self.domain, id_err=id_err, geometry=True, ratio=1.5, geo_ratio=4.0)
         return {**r, "id_err": id_err, "domain": {k: self.domain[k] for k in ("grid", "contrast_max", "continuous")},
                 "ms": 1e3 * (time.perf_counter() - t)}
 

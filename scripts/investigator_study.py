@@ -14,11 +14,14 @@ Policies
           on the residual estimate exceeds 3x the in-distribution median error
   rule    flowguard.diagnose.investigate as served (ablation + geometry experiment); its two thresholds are
           chosen on the calibration split (both models pooled) and scored on the evaluation split
+Two labelings. truth: every factor applied by construction. truth_causal: only the factors that hurt this model on
+independent held-out data (causal_factors). The first run showed why both are needed: the served models are
+grid-robust, so a grid change is applied by construction but does not raise the error.
   llm     (--llm MODEL, needs ANTHROPIC_API_KEY) a language model picks experiments one at a time with the same
           tools and names the causes; evaluation split only
 Score: exact match of the cause set; cost in units of one network run + one reference solve.
 
-Usage: python scripts/investigator_study.py [--n-cal 6] [--n-eval 10] [--llm claude-opus-5-5]
+Usage: python scripts/investigator_study.py [--n-cal 6] [--n-eval 10] [--llm claude-opus-5-5] [--rescore]
 Output: results/investigator_study.json (and results/investigator_study_<llm>.json with --llm)
 """
 import argparse
@@ -160,9 +163,70 @@ def policy_llm(client, pred, a, dom, id_err, est90, model):
     return {"causes": [], "cost": cost, "usage": usage, "note": "no conclusion within 10 turns"}
 
 
-def score(rows, key):
-    return {"exact_match": float(np.mean([set(r[key]["causes"]) == set(r["truth"]) for r in rows])),
-            "mean_cost": float(np.mean([r[key]["cost"] for r in rows])), "n": len(rows)}
+def causal_factors(entry, ratio=2.0):
+    """Which construction factors actually hurt this model, from data independent of the investigator: the
+    held-out reliability sets (results/reliability_*.json, computed before this study). A factor counts as a cause
+    when the model's median error on any of its sets is >= `ratio` x the in-distribution median (pdebench_test)."""
+    rel = json.loads((ROOT / entry["reliability"]).read_text())["sets"]
+    dom = entry["domain"]
+    sets = {"contrast": [dom["eval_sets"]["contrast"]], "grid": ["res64", "res256"], "continuous": ["grf"],
+            "geometry": ["layers"] if dom["continuous"] else ["channels", "layers"]}
+    idm = rel["pdebench_test"]["err"]["median"]
+    return {k: max(rel[x]["err"]["median"] for x in v) / idm for k, v in sets.items()}, idm, ratio
+
+
+def label(rows, registry):
+    """truth: the construction factors. truth_causal: those that hurt the model (causal_factors)."""
+    for r in rows:
+        eff, _, ratio = causal_factors(registry[r["model"]])
+        r["truth_causal"] = sorted(k for k in r["truth"] if eff[k] >= ratio)
+
+
+def exact(r, key, truth):
+    return set(r[key]["causes"]) == set(r[truth])
+
+
+def analyse(cases, registry, extra_pols=()):
+    out = {"causal_factors": {}, "by_truth": {}}
+    for name, entry in registry.items():
+        eff, idm, ratio = causal_factors(entry)
+        out["causal_factors"][name] = {"in_distribution_median": idm, "ratio_to_it": eff,
+                                       "causal": sorted(k for k in eff if eff[k] >= ratio)}
+    for split in cases:
+        label(cases[split], registry)
+    for truth in ("truth", "truth_causal"):
+        # the rule's thresholds are chosen on the calibration split (both models pooled): exact match, then cost
+        grid = []
+        for ratio, geo in itertools.product(RATIOS, GEO_RATIOS):
+            res = [rule_from_evidence(r["err"], r["evidence"], r["id_err"], ratio, geo) for r in cases["cal"]]
+            acc = float(np.mean([set(c) == set(r[truth]) for (c, _), r in zip(res, cases["cal"])]))
+            grid.append({"ratio": ratio, "geo_ratio": geo, "cal_exact_match": acc,
+                         "cal_mean_cost": float(np.mean([k for _, k in res]))})
+        best = max(grid, key=lambda g: (g["cal_exact_match"], -g["cal_mean_cost"]))
+        rule = f"rule[{truth}]"
+        for split in cases:
+            for r in cases[split]:
+                c, k = rule_from_evidence(r["err"], r["evidence"], r["id_err"], best["ratio"], best["geo_ratio"])
+                r[rule] = {"causes": c, "cost": k}
+                c, k = rule_from_evidence(r["err"], r["evidence"], r["id_err"], 1.5, 2.0)
+                r["rule_default"] = {"causes": c, "cost": k}
+        pols = ["flags", rule, "rule_default", *extra_pols]
+        res = {"thresholds": best, "threshold_grid": grid}
+        for split in ("cal", "eval"):
+            for name in registry:
+                rows = [r for r in cases[split] if r["model"] == name]
+                have = [q for q in pols if all(q in r for r in rows)]
+                per_cat = {}
+                for c in dict.fromkeys(r["category"] for r in rows):
+                    sel = [r for r in rows if r["category"] == c]
+                    per_cat[c] = {"n": len(sel), "truth": sel[0][truth], "median_err": float(np.median([r["err"] for r in sel])),
+                                  **{q: float(np.mean([exact(r, q, truth) for r in sel])) for q in have}}
+                res[f"{split}/{name}"] = {
+                    "policies": {q: {"exact_match": float(np.mean([exact(r, q, truth) for r in rows])),
+                                     "mean_cost": float(np.mean([r[q]["cost"] for r in rows])), "n": len(rows)} for q in have},
+                    "per_category": per_cat}
+        out["by_truth"][truth] = res
+    return out
 
 
 if __name__ == "__main__":
@@ -170,60 +234,48 @@ if __name__ == "__main__":
     ap.add_argument("--n-cal", type=int, default=6)
     ap.add_argument("--n-eval", type=int, default=10)
     ap.add_argument("--llm")
+    ap.add_argument("--rescore", action="store_true",
+                    help="re-analyse the stored cases (results/investigator_study[_llm].json) without running experiments")
     args = ap.parse_args()
     registry = json.loads((ROOT / "models.json").read_text())
+    tag = f"_{args.llm}" if args.llm else ""
+    path = ROOT / f"results/investigator_study{tag}.json"
     client = None
-    if args.llm:
+    if args.llm and not args.rescore:
         if not os.environ.get("ANTHROPIC_API_KEY"):
             sys.exit("--llm needs ANTHROPIC_API_KEY")
         import anthropic
         client = anthropic.Anthropic()
 
-    cases = {}
-    t0 = time.time()
-    for name, entry in registry.items():
-        pred = Predictor([str(ROOT / w) for w in entry["weights"]])
-        rel = json.loads((ROOT / entry["reliability"]).read_text())
-        dom, id_err, q90 = entry["domain"], rel["sets"]["pdebench_test"]["err"]["median"], rel["conformal_q90_fft"]
-        for split, n_per, seed in (("cal", args.n_cal, 2024), ("eval", args.n_eval, 31337)):
-            rng = np.random.default_rng(seed)
-            for cat in categories(dom):
-                for _ in range(n_per):
-                    a, shape = make_case(rng, cat, dom)
-                    u_hat = pred.predict(a)[0]
-                    est90 = q90 * float(fft_estimates(a[None], 1.0, u_hat[None], pred.face, pred.bc)[0]["fft_err_rel"][0])
-                    err0, ev = collect(pred, a, dom)
-                    row = {"model": name, "split": split, "category": "+".join(cat) or "none", "shape": shape,
-                           "truth": sorted(set(cat) - {"variety"}), "err": err0, "id_err": id_err, "evidence": ev,
-                           "flags": {"causes": policy_flags(a, est90, dom, id_err), "cost": 0}}
-                    if client and split == "eval":
-                        row["llm"] = policy_llm(client, pred, a, dom, id_err, est90, args.llm)
-                    cases.setdefault(split, []).append(row)
-            print(name, split, f"{len(cases[split])} cases so far, {time.time() - t0:.0f} s", flush=True)
+    if args.rescore:
+        cases = json.loads(path.read_text())["rows"]
+    else:
+        cases = {}
+        t0 = time.time()
+        for name, entry in registry.items():
+            pred = Predictor([str(ROOT / w) for w in entry["weights"]])
+            rel = json.loads((ROOT / entry["reliability"]).read_text())
+            dom, id_err, q90 = entry["domain"], rel["sets"]["pdebench_test"]["err"]["median"], rel["conformal_q90_fft"]
+            for split, n_per, seed in (("cal", args.n_cal, 2024), ("eval", args.n_eval, 31337)):
+                rng = np.random.default_rng(seed)
+                for cat in categories(dom):
+                    for _ in range(n_per):
+                        a, shape = make_case(rng, cat, dom)
+                        u_hat = pred.predict(a)[0]
+                        est90 = q90 * float(fft_estimates(a[None], 1.0, u_hat[None], pred.face, pred.bc)[0]["fft_err_rel"][0])
+                        err0, ev = collect(pred, a, dom)
+                        row = {"model": name, "split": split, "category": "+".join(cat) or "none", "shape": shape,
+                               "truth": sorted(set(cat) - {"variety"}), "err": err0, "id_err": id_err, "evidence": ev,
+                               "flags": {"causes": policy_flags(a, est90, dom, id_err), "cost": 0}}
+                        if client and split == "eval":
+                            row["llm"] = policy_llm(client, pred, a, dom, id_err, est90, args.llm)
+                        cases.setdefault(split, []).append(row)
+                print(name, split, f"{len(cases[split])} cases so far, {time.time() - t0:.0f} s", flush=True)
 
-    # choose the rule's thresholds on the calibration split (both models pooled): exact match, then lower cost
-    grid = []
-    for ratio, geo in itertools.product(RATIOS, GEO_RATIOS):
-        res = [rule_from_evidence(r["err"], r["evidence"], r["id_err"], ratio, geo) for r in cases["cal"]]
-        acc = float(np.mean([set(c) == set(r["truth"]) for (c, _), r in zip(res, cases["cal"])]))
-        grid.append({"ratio": ratio, "geo_ratio": geo, "cal_exact_match": acc, "cal_mean_cost": float(np.mean([k for _, k in res]))})
-    best = max(grid, key=lambda g: (g["cal_exact_match"], -g["cal_mean_cost"]))
-    for split in cases:
-        for r in cases[split]:
-            for key, (ra, ge) in (("rule", (best["ratio"], best["geo_ratio"])), ("rule_default", (1.5, 2.0))):
-                c, k = rule_from_evidence(r["err"], r["evidence"], r["id_err"], ra, ge)
-                r[key] = {"causes": c, "cost": k}
-
-    pols = ["flags", "rule", "rule_default"] + (["llm"] if client else [])
-    out = {"thresholds": best, "threshold_grid": grid, "results": {}}
-    for split in ("cal", "eval"):
-        for name in registry:
-            rows = [r for r in cases[split] if r["model"] == name]
-            out["results"][f"{split}/{name}"] = {
-                "policies": {p: score(rows, p) for p in pols if all(p in r for r in rows)},
-                "per_category": {c: {"n": len(sel), "median_err": float(np.median([r["err"] for r in sel])),
-                                     **{p: float(np.mean([set(r[p]["causes"]) == set(r["truth"]) for r in sel])) for p in pols if all(p in r for r in sel)}}
-                                 for c in dict.fromkeys(r["category"] for r in rows) for sel in [[r for r in rows if r["category"] == c]]}}
-    print(json.dumps({"thresholds": best, **{k: v["policies"] for k, v in out["results"].items()}}, indent=1))
-    tag = f"_{args.llm}" if args.llm else ""
-    Path(ROOT / f"results/investigator_study{tag}.json").write_text(json.dumps({**out, "rows": cases}, indent=1, default=float))
+    has_llm = all("llm" in r for r in cases["eval"])
+    out = analyse(cases, registry, ["llm"] if has_llm else [])
+    summary = {"causal_factors": out["causal_factors"]}
+    for t, v in out["by_truth"].items():
+        summary[t] = {"thresholds": v["thresholds"], **{k: x["policies"] for k, x in v.items() if "/" in k}}
+    print(json.dumps(summary, indent=1))
+    path.write_text(json.dumps({**out, "rows": cases}, indent=1, default=float))

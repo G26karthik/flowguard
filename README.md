@@ -3,7 +3,7 @@
 Steady Darcy flow from Fourier neural operators, with every answer checked against an independent finite-volume
 solver, and cheap indicators that say when a network should not be trusted.
 
-**Live app:** https://g26karthik.github.io/flowguard/ (runs the Python package in your browser; see [Deployment](#deployment)).
+**Live app:** https://g26karthik.github.io/flowguard/ (see [Deployment](#deployment) for the server and the browser runtime).
 
 Built for the QUEST Lab (IISc) Full Stack AI pre-doctoral application, project 3, "PDE solutions as a service",
 in a single Claude Code session. The git history and the session log line up; `STATUS.md` is the running log.
@@ -116,24 +116,49 @@ Spearman rank correlation between indicator and measured error (`results/reliabi
   except the raw residual does about equally (`results/triage_unflagged.txt`); within a family, the table above is
   what matters.
 
-### 5. Should an LLM agent investigate unreliable predictions?
+### 5. Investigating an unreliable prediction, and whether an LLM should choose the experiments
 
-`flowguard/diagnose.py` implements counterfactual experiments: undo one off-training axis (contrast, grid,
-continuous values) and re-measure; a training-like baseline with everything undone; and "add back one axis". On 72
-cases with known causes (`scripts/agent_study.py`, `results/agent_study_fno_steady_s0.json`):
+`flowguard/diagnose.py` runs counterfactual experiments on one field. It moves every off-training property back
+into the model's training range (grid, contrast, smooth variation; the range comes from `models.json`, so it differs
+between the two served models), then adds each property back alone, and swaps the shape for training-family shapes
+with the same values and grid. A fixed rule names a property as a cause when adding it back raises the error by
+1.5x or more, and the shape when the training-like version is at least 4x worse than training-family shapes (and 4x
+the in-distribution median). The app runs this as "Investigate why" (`/api/investigate`): about 0.9 s and 3 to 4
+network runs plus solves per field on the 1-vCPU server.
 
-| Policy | exact cause set | experiments per case |
-|---|---|---|
-| Input flags only | 75% | 0 |
-| First fixed rule (undo each axis alone) | 56% | 1.8 |
-| Ablation rule (baseline, then add back each axis) | **85%** | 1.2 |
+**Served models** (`scripts/investigator_study.py`, `results/investigator_study.json`). Cases with known
+construction: contrast 3 to 30x beyond the model's range, 64 or 256 grids, smooth fields (PDEBench model only),
+unseen shapes, in-domain variety as a control, singly and in pairs. Thresholds were chosen on a calibration split
+(102 cases) and scored on a separate evaluation split (170 cases):
 
-The first rule failed on unchanged fields and missed factors masked by a dominant one. The ablation design fixed
-both. The remaining misses are cases where an applied factor does not hurt (blurred channels are easier than sharp
-ones), so the construction label is not a causal truth. The rule already uses the minimum number of experiments for
-its evidence, and each costs about 0.2 s. An LLM policy is implemented with the same tools (`--llm`), but it was not
-run: no Anthropic credentials were available in this session. On this evidence an LLM can only match the rule, at
-a cost of seconds and money per case, so the app uses the rule.
+| Exact cause set, evaluation split | broad model | PDEBench specialist | experiments per case |
+|---|---|---|---|
+| Input flags only, against construction labels | 60% | 73% | 0 |
+| Rule, against construction labels | 48% | 63% | 2.8 to 3.6 |
+| Input flags only, against causal labels | 35% | 41% | 0 |
+| **Rule, against causal labels** | **85%** | **78%** | 2.8 to 3.6 |
+
+The first scoring used construction labels and the rule lost to the input flags. The reason was the labels: the
+served (harmonic/face) models are grid-robust (median error on grid-only cases 0.9% and 0.5%, the in-distribution
+level), so a grid change is applied by construction but does not cause error. The rule says so; the flags, which
+restate the construction, cannot. We then added causal labels from independent data, defined after seeing that first
+result: a property counts as a cause for a model when that model's median error on the matching held-out reliability
+set is at least 2x its in-distribution median (grid: 1.4x and 1.2x, so not a cause; contrast, smooth fields, unseen
+shapes: 2.1x to 149x). Against those labels the rule is right about twice as often as the flags. Its remaining
+misses are mostly pairs where one property dominates (contrast with an unseen shape, smooth values with an unseen
+shape): once the dominant one is undone, the second changes the error little, so whether it is "a cause" is
+ambiguous by construction.
+
+An earlier version of this study, on the PDEBench-scheme model with a fixed geometry threshold
+(`scripts/agent_study.py`, `results/agent_study_fno_steady_s0.json`, 72 cases), gave flags 75%, a first rule that
+undid each axis alone 56%, and the ablation rule 85%.
+
+**LLM policy.** `scripts/investigator_study.py --llm MODEL` gives a language model the same experiments as tools,
+one at a time, and asks it to name the causes. It has not been run: it needs an Anthropic API key, which this
+session does not have. Until it is run, the app uses the rule, and nothing in the app is described as agentic. The
+decision space is small (at most four experiments; on the 1-vCPU server the geometry swap takes about 0.4 s and
+each other one about 0.1 s), which limits what an LLM could add; the two-factor cases above are where a better
+experiment choice could help.
 
 ### 6. Is the network worth it here?
 
@@ -141,13 +166,14 @@ Cost per field (`results/bench_solver.json`, `results/bench_network.json`; lapto
 
 | Grid | sparse direct solve | FNO, torch GPU (batched) | FNO, torch CPU | FNO, NumPy (served) |
 |---|---|---|---|---|
-| 128² | 48 ms | 1.2 ms | 26 ms | 170 ms |
-| 256² | 274 ms | 5.2 ms | 119 ms | 625 ms |
-| 512² | 2.5 s | 17 ms | 480 ms | 2.4 s |
+| 128² | 48 ms | 1.2 ms | 26 ms | 53 ms (170 ms before the rewrite) |
+| 256² | 274 ms | 5.2 ms | 119 ms | 169 ms |
+| 512² | 2.5 s | 17 ms | 480 ms | not measured |
 
-On a GPU the network is 39x (128²) to 148x (512²) faster than the direct solve; at 256² and 512² it runs off its
-training grid. The free deployment runs a NumPy forward pass in the browser, which is slower than the direct solve:
-there, the value is the reliability workflow, not speed.
+The served NumPy forward pass computes the network's 12 x 12 retained Fourier modes with truncated DFT matrix
+products (BLAS) instead of full FFTs, and the GELU in place on cache-sized blocks; it matches the previous pass to
+6e-7. On a GPU the network is 39x (128²) to 148x (512²) faster than the direct solve. On the served CPU it is about
+as fast as the solve, so there the value is the reliability workflow, and screening many fields with few solves.
 
 ## Repository
 
@@ -157,11 +183,12 @@ there, the value is the reliability workflow, not speed.
 | `flowguard/model.py`, `scripts/train.py` | FNO (torch) and training (`--init`, `--extra`, `--disc` for adaptation and experiment B) |
 | `flowguard/npfno.py`, `scripts/export_numpy.py` | NumPy forward pass used for serving (max relative difference to torch fp32: 4e-7) |
 | `flowguard/guard.py` | residual, DST and Galerkin error indicators |
-| `flowguard/diagnose.py` | counterfactual diagnostic experiments and the ablation rule |
+| `flowguard/diagnose.py` | counterfactual diagnostic experiments and the attribution rule |
 | `flowguard/fields.py` | PDEBench sampler replica and shifted families (`layers` is held out from all training) |
-| `flowguard/core.py`, `flowguard/api.py`, `models.json` | service logic, model registry, FastAPI wrapper |
+| `flowguard/core.py`, `flowguard/api.py`, `models.json` | service logic and caches, model registry, FastAPI wrapper |
 | `web/` | front end; `worker.js` runs the same package in the browser via Pyodide |
-| `scripts/` | every experiment in this README; `ui_check.py` drives the app in Microsoft Edge |
+| `Dockerfile`, `scripts/served_files.py`, `railway.json` | server image; `models.json` decides which weights ship |
+| `scripts/` | every experiment in this README; `ui_check.py` and `perf_browser.py` drive the app in Microsoft Edge |
 
 ## Reproduce
 
@@ -180,24 +207,49 @@ python scripts/resolve_hf.py && python scripts/train.py --target steady --disc h
 python scripts/make_adapt_data.py harm,face && python scripts/train.py --target steady --disc harm,face --epochs 40 \
     --lr 3e-4 --init runs/fno_hf_s0/model.pt --extra data/cache/adapt_train_harm_face.npz --out runs/fno_hf_adapt_s0
 python scripts/eval_physical.py runs/fno_steady_s0/model.pt runs/fno_hf_s0/model.pt
+python scripts/investigator_study.py                                # investigator on the served models (~4 min)
 python -m pytest -q
 uvicorn flowguard.api:app --port 8000                               # server mode
 python scripts/build_site.py && python -m http.server -d _site      # browser mode
+docker build -t flowguard . && docker run -p 8000:8000 flowguard    # production image
+uv run --with playwright python scripts/perf_browser.py http://127.0.0.1:8000/ out.json   # timings
 ```
 
 Seeds: data split `numpy.default_rng(0)`, training `--seed`, evaluation sets `default_rng(12345)`, adaptation fields
-`default_rng(777)`. About 31 s per epoch on the laptop GPU. On Windows PowerShell, hide the GPU with
-`$env:CUDA_VISIBLE_DEVICES = "-1"`: assigning an empty string deletes the variable (an evaluation in this project ran
-on the GPU with cuDNN TF32 because of that, which moved the test median from 0.54% to 0.56%).
+`default_rng(777)`, investigator cases `default_rng(2024)` (calibration) and `default_rng(31337)` (evaluation). About
+31 s per epoch on the laptop GPU. On Windows PowerShell, hide the GPU with `$env:CUDA_VISIBLE_DEVICES = "-1"`:
+assigning an empty string deletes the variable (an evaluation in this project ran on the GPU with cuDNN TF32 because
+of that, which moved the test median from 0.54% to 0.56%).
 
 ## Deployment
 
-Hugging Face requires a paid plan for Docker Spaces (`402 Payment Required` from the API), and free container hosts
-offer about 0.1 vCPU. The live app is a static GitHub Pages site that runs the same `flowguard` package (solver,
-indicators, NumPy network, service logic) in the browser through Pyodide. The FastAPI server and the `Dockerfile`
-(591 MB image, verified) run the identical code server-side; the UI uses a server when one is present.
-`scripts/ui_check.py` checks both modes and the live URL: field generation, painting, the error-map toggle, batch
-study, evidence, and phone width.
+The app is built to run as one FastAPI service that also serves the front end (`Dockerfile`, `railway.json`). The
+static GitHub Pages site runs the same `flowguard` package in the browser through Pyodide, and uses the hosted server
+instead when its build is given one (`FLOWGUARD_API`) and it answers; "Compute in this browser instead" forces the
+browser runtime.
+
+Measured with `scripts/perf_browser.py` in Microsoft Edge (median; `results/perf/`). Before: the live Pages site,
+browser runtime. After: the Docker image limited to 1 vCPU and 512 MB, a fresh container per run, served on
+localhost (so without internet latency):
+
+| | before (browser runtime) | after (server, 1 vCPU) |
+|---|---|---|
+| first answer after opening the page | 10.2 s | 0.31 s |
+| downloaded on first visit | 37.6 MB | 0.26 MB |
+| new field (network + solver) | 404 ms | 123 ms |
+| paint a stroke, re-solve | 511 ms | 179 ms |
+| change the source β | 387 ms | 4 ms (local rescale) |
+| switch network | 389 ms | 64 ms (solver result reused) |
+| 256 x 256 field | 1.9 s | 0.54 s |
+| batch of 32 / 64 fields | 9.8 s / 17.6 s | 2.2 s / 3.5 s |
+| investigation | not available | 0.86 s |
+
+Three problems were found while measuring: the previous image could not start (it never copied `models.json`);
+under a 1-vCPU quota OpenBLAS started one thread per host core and the network took 200 ms per field instead of
+43 ms (the API now sizes BLAS threads from the cgroup quota); and the GELU and FFTs dominated the forward pass.
+Hugging Face Docker Spaces need a paid plan (`402 Payment Required`). `scripts/ui_check.py` checks both runtimes on
+desktop and phone widths: examples, painting, beta, model switch, investigation, batch, evidence, a failed request,
+and horizontal overflow.
 
 ## Data and licences
 

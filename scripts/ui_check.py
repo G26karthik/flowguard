@@ -84,13 +84,20 @@ with sync_playwright() as p:
             page.screenshot(path=out / f"{name}_4_estimated_error.png", clip={"x": 0, "y": 0, "width": 1366, "height": 900})
 
             # failure: the next solve's request is aborted; the app must say so and keep working afterwards
+            # server: the request is aborted (network failure); browser runtime: an invalid seed (rejected input)
+            server = page.evaluate("backendReady.then(b => b.kind)") == "server"
             n_console = len(console)
-            page.route("**/api/solve", lambda route: route.abort())
+            if server:
+                page.route("**/api/solve", lambda route: route.abort())
+            else:
+                page.fill("#seed", "-5")
             page.click("#gen")
             page.wait_for_function("!state.busy && /Could not solve/.test(document.querySelector('#verdict').innerText)", timeout=timeout)
             page.screenshot(path=out / f"{name}_5_failure.png", full_page=True)
-            page.unroute("**/api/solve")
-            console[n_console:] = [c for c in console[n_console:] if "ERR_FAILED" not in c]  # the aborted request itself
+            if server:
+                page.unroute("**/api/solve")
+                console[n_console:] = [c for c in console[n_console:] if "ERR_FAILED" not in c]  # the aborted request itself
+            page.fill("#seed", "7")
             new_result(page, lambda: page.click("#gen"))
             check("Could not" not in page.locator("#verdict").inner_text(), "did not recover after a failed request")
 
