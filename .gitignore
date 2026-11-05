@@ -10,3 +10,4 @@ node_modules/
 runs_*.log
 runs_*.err
 _site/
+uv.lock
