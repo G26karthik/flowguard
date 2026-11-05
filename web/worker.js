@@ -24,15 +24,12 @@ async function boot() {
 import sys, json
 sys.path.insert(0, "/app")
 from pathlib import Path
-from flowguard.core import Service
-from flowguard.infer import Predictor
+from flowguard.core import Registry
 _m = json.loads(${JSON.stringify(JSON.stringify(manifest))})
 _load = lambda p: json.loads(Path("/app/" + p).read_text()) if p else None
-svc = Service(Predictor(["/app/" + w for w in _m["weights"]]), _load(_m.get("reliability")), _load(_m.get("discretization")))
+svc = Registry(_m["registry"], _load, _load(_m.get("discretization")), path=lambda w: "/app/" + w)
 def call(method, payload):
     try:
-        if method == "evidence":
-            return json.dumps(svc.rel)
         return json.dumps(getattr(svc, method)(json.loads(payload)))
     except ValueError as exc:
         return json.dumps({"error": str(exc)})

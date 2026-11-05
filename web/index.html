@@ -90,6 +90,11 @@ svg text { font: 12px "Schibsted Grotesk", sans-serif; fill: var(--muted); }
 </header>
 <main>
 <aside>
+  <fieldset data-for-all>
+    <legend>Network</legend>
+    <select id="model" aria-label="Network model"><option value="broad">Broad (adapted)</option><option value="pdebench">PDEBench specialist</option></select>
+    <p class="hint" id="modeldesc"></p>
+  </fieldset>
   <div data-for="single">
     <fieldset>
       <legend>Permeability field</legend>
@@ -147,7 +152,7 @@ svg text { font: 12px "Schibsted Grotesk", sans-serif; fill: var(--muted); }
     </fieldset>
   </div>
   <div data-for="evidence" class="hidden">
-    <p class="hint">Numbers on this page come from scripts in the repository, run on held-out data. Nothing here is computed in the browser.</p>
+    <p class="hint">Numbers on this page were computed offline, on held-out data, by scripts in the repository. They are not recomputed here.</p>
   </div>
 </aside>
 
@@ -249,7 +254,7 @@ const backendReady = (async () => {
   if (document.querySelector('meta[name="flowguard-runtime"][content="browser"]')) return workerBackend();
   try {
     const r = await fetch("api/health", { cache: "no-store" });
-    if (r.ok && (await r.json()).models > 0)
+    if (r.ok && Object.keys((await r.json()).models || {}).length > 0)
       return { kind: "server", solve: b => post("api/solve", b), batch: b => post("api/batch", b),
                evidence: async () => { const e = await fetch("api/evidence"); if (!e.ok) throw new Error("No reliability study has been run on this deployment yet."); return e.json(); } };
   } catch (e) { /* static hosting: no server */ }
@@ -294,8 +299,12 @@ async function run(body) {
     if (state.queued) { state.queued = false; solveCurrent(); }
   }
 }
-const generate = () => run({ field: { family: $("family").value, seed: +$("seed").value, n: +$("n").value, a_low: lowVal(), a_high: 1 }, beta: +$("beta").value });
-const solveCurrent = () => state.a && run({ field: { n: state.n, values: enc(state.a) }, beta: +$("beta").value });
+const generate = () => run({ model: $("model").value, field: { family: $("family").value, seed: +$("seed").value, n: +$("n").value, a_low: lowVal(), a_high: 1 }, beta: +$("beta").value });
+const solveCurrent = () => state.a && run({ model: $("model").value, field: { n: state.n, values: enc(state.a) }, beta: +$("beta").value });
+const MODEL_DESC = { broad: "Trained on PDEBench fields plus contrast up to 1000×, thin channels and smooth fields. The default.",
+                     pdebench: "Trained only on PDEBench fields (two values, contrast 10×). Most accurate on fields like those." };
+$("model").onchange = () => { $("modeldesc").textContent = MODEL_DESC[$("model").value]; solveCurrent(); };
+$("modeldesc").textContent = MODEL_DESC[$("model").value];
 $("gen").onclick = generate;
 $("beta").onchange = solveCurrent;
 
@@ -352,7 +361,7 @@ $("runbatch").onclick = async () => {
   $("runbatch").disabled = true; $("bsummary").textContent = "Running.";
   try {
     const j = await (await backendReady).batch({ field: { family: $("bfamily").value, seed: +$("bseed").value, a_low: Math.pow(10, +$("balow").value), a_high: 1 },
-      count: +$("bcount").value, verify_risky: +$("brisky").value, verify_random: +$("baudit").value, beta: 1 });
+      count: +$("bcount").value, verify_risky: +$("brisky").value, verify_random: +$("baudit").value, beta: 1, model: $("model").value });
     renderBatch(j);
   } catch (e) { $("bsummary").innerHTML = `<span class="err">${e.message}</span>`; }
   finally { $("runbatch").disabled = false; }
@@ -396,21 +405,24 @@ async function loadEvidence() {
   if (evLoaded) return;
   try {
     const ev = await (await backendReady).evidence();
-    if (!ev) throw new Error("No reliability study has been run on this deployment yet.");
+    const ms = Object.entries(ev.models || {}).filter(([, m]) => m.reliability);
+    if (!ms.length) throw new Error("No reliability study has been run on this deployment yet.");
     evLoaded = true;
-    const names = { pdebench_test: "PDEBench test split", replica: "Fresh PDEBench-style fields", contrast100: "Contrast 100× (low = 0.01)", grf: "Smooth log-normal", channels: "Thin channels", res64: "64×64 grid", res256: "256×256 grid" };
-    const rows = Object.entries(names).filter(([k]) => ev.sets[k]).map(([k, label]) => { const s = ev.sets[k];
-      return `<tr><td>${label}</td><td>${s.n}</td><td>${pct(s.err.median)}</td><td>${pct(s.err.p90)}</td><td>${s.spearman.fft_err_rel.toFixed(2)}</td><td>${s.spearman.ens_spread == null ? "n/a" : s.spearman.ens_spread.toFixed(2)}</td><td>${pct(s.conformal_coverage_fft)}</td></tr>`; }).join("");
-    const t = ev.triage, tr = Object.entries(t).filter(([k]) => k.startsWith("recall")).map(([k, v]) =>
-      `<tr><td>${k.replace("recall_at_", "").replace("pct", "% of fields")}</td><td>${pct(v.random_expected)}</td><td>${pct(v.fft_err_rel)}</td><td>${pct(v.residual_rel)}</td><td>${v.ens_spread == null ? "n/a" : pct(v.ens_spread)}</td><td>${pct(v.oracle)}</td></tr>`).join("");
-    $("ev").innerHTML = `<h2>How accurate is the network, and do the checks know when it is wrong?</h2>
-      <p>Error is relative L2 against the finite-volume reference on the same grid, with the discretization the network was trained on. Rank correlation compares each cheap indicator with the true error. Coverage is how often the 90% bound held; it was calibrated on the PDEBench validation split, so it is only promised there.</p>
-      <table><thead><tr><th>Input set</th><th>Fields</th><th>Median error</th><th>90th pct.</th><th>Rank corr., residual estimate</th><th>Rank corr., ensemble</th><th>Bound coverage</th></tr></thead><tbody>${rows}</tbody></table>
-      <h2>Spending a budget of reference solves</h2>
-      <p>All test sets pooled: ${t.n} fields, ${t.n_bad_over_5pct} with error above 5%. The table shows the share of those found when solving the top fraction ranked by each indicator.</p>
-      <table><thead><tr><th>Budget</th><th>Random</th><th>Residual estimate</th><th>Raw residual</th><th>Ensemble</th><th>Perfect ranking</th></tr></thead><tbody>${tr}</tbody></table>
+    const names = { pdebench_test: "PDEBench test split", replica: "Fresh PDEBench-style fields", contrast100: "Contrast 100×",
+      grf: "Smooth log-normal", channels: "Thin channels", res64: "64×64 grid", res256: "256×256 grid",
+      contrast3000: "Contrast 3000× (held out from both)", layers: "Tilted layers (held out from both)" };
+    const head = ms.map(([, m]) => `<th>${m.label}</th>`).join("");
+    const rows = Object.entries(names).filter(([k]) => ms.every(([, m]) => m.reliability.sets[k])).map(([k, label]) =>
+      `<tr><td>${label}</td>${ms.map(([, m]) => `<td>${pct(m.reliability.sets[k].err.median)}</td>`).join("")}${ms.map(([, m]) => `<td>${m.reliability.sets[k].spearman.fft_err_rel.toFixed(2)}</td>`).join("")}</tr>`).join("");
+    $("ev").innerHTML = `<h2>How accurate is each network, and does the residual estimate know when it is wrong?</h2>
+      <p>Median relative L2 error against the finite-volume reference on the same grid, on held-out inputs. Rank correlation compares the residual-based estimate, available before any reference solve, with the measured error; 1 is a perfect ranking.</p>
+      <table><thead><tr><th rowspan="2">Inputs</th><th colspan="${ms.length}">Median error</th><th colspan="${ms.length}">Rank correlation</th></tr><tr>${head}${head}</tr></thead><tbody>${rows}</tbody></table>
+      ${ms.map(([, m]) => `<p><strong>${m.label}.</strong> ${m.description}</p>`).join("")}
+      <p>Adapting to broader fields costs about 0.2 percentage points on PDEBench-like fields, less than the reference's own discretization error, and removes most of the error on the families it saw. It helps on held-out layers but does not extend to contrast far beyond its training range.</p>
+      <h2>Indicators we tried and did not keep</h2>
+      <p>A three-network ensemble ranks errors well on PDEBench-like fields (0.84) but its spread stops tracking the error on smooth fields, channels and extreme contrast, where the networks agree while all being wrong. The spread of the network over the eight symmetries of the square behaves the same way. A two-level Galerkin estimate ranks almost perfectly but costs about half a reference solve, so solving directly is better.</p>
       <h2>What the network was trained on</h2>
-      <p>PDEBench's 10,000 Darcy fields, with targets re-solved to steady state. PDEBench's own labels are snapshots of a time-dependent run at t = 1.75; for slowly diffusing fields they still carry the random initial condition. A model trained on them was 4 times less accurate against the steady solution.</p>
+      <p>PDEBench's 10,000 Darcy fields, with targets re-solved to steady state. PDEBench's own labels are snapshots of a time-dependent run at t = 1.75; for slowly diffusing fields they still carry the random initial condition. A model trained on them had 4 times the mean error against the steady solution (3.3% versus 0.76%).</p>
       <p>The reference solver uses PDEBench's discretization so that network and reference solve the same discrete problem. That discretization is itself about 2.6% from a four-times finer solve on typical fields.</p>
       <p>Every number on this page, the scripts that produced it, and the full development history are in the <a href="https://github.com/G26karthik/flowguard">source repository</a>.</p>`;
   } catch (e) { $("ev").innerHTML = `<p class="err">${e.message}</p>`; }

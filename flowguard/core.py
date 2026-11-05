@@ -63,17 +63,22 @@ def make_fields(field, count, rng):
     return a
 
 
-def input_flags(a, reliability):
-    """Where this input sits relative to the training data (PDEBench: binary {0.1, 1}, 128x128)."""
+PDEBENCH_DOMAIN = {"grid": 128, "contrast_max": 10, "continuous": False, "eval_sets": {"contrast": "contrast100", "continuous": "grf"}}
+
+
+def input_flags(a, reliability, domain=PDEBENCH_DOMAIN):
+    """Where this input sits relative to the model's training data (`domain`, from models.json)."""
     flags = []
     n = a.shape[-1]
-    if n != 128:
-        flags.append({"code": "resolution", "msg": f"Trained at 128x128; this field is {n}x{n}.", "eval_set": f"res{n}"})
+    sets = domain.get("eval_sets", {})
+    if n != domain["grid"]:
+        flags.append({"code": "resolution", "msg": f"Trained at {domain['grid']}x{domain['grid']}; this field is {n}x{n}.", "eval_set": f"res{n}"})
     lo, hi = float(a.min()), float(a.max())
-    if hi / lo > 10.0 + 1e-9:
-        flags.append({"code": "contrast", "msg": f"Contrast {hi / lo:.0f}x exceeds the training contrast of 10x.", "eval_set": "contrast100"})
-    if np.unique(np.round(a, 6)).size > 2:
-        flags.append({"code": "continuous", "msg": "Training fields are two-valued; this one varies continuously.", "eval_set": "grf"})
+    if hi / lo > domain["contrast_max"] * (1 + 1e-9):
+        flags.append({"code": "contrast", "msg": f"Contrast {hi / lo:.0f}x exceeds the training range (up to {domain['contrast_max']:g}x).",
+                      "eval_set": sets.get("contrast")})
+    if not domain["continuous"] and np.unique(np.round(a, 6)).size > 2:
+        flags.append({"code": "continuous", "msg": "Training fields are two-valued; this one varies continuously.", "eval_set": sets.get("continuous")})
     frac = float((a > np.sqrt(lo * hi)).mean())
     if not 0.2 <= frac <= 0.8:
         flags.append({"code": "fraction", "msg": f"High-permeability area {frac:.0%} is outside the typical training range 20-80%.", "eval_set": None})
@@ -86,10 +91,11 @@ def input_flags(a, reliability):
 
 
 class Service:
-    def __init__(self, predictor, reliability=None, discretization=None):
+    def __init__(self, predictor, reliability=None, discretization=None, domain=PDEBENCH_DOMAIN):
         self.p = predictor
         self.rel = reliability
         self.disc = discretization  # results/discretization_error.json, shown next to the reference
+        self.domain = domain
 
     def _bound(self, est):
         return None if not self.rel else float(self.rel["conformal_q90_fft"] * est)
@@ -123,7 +129,7 @@ class Service:
             "err_est_field": enc(-e_est[0]), "discretisation": [self.p.face, self.p.bc],
             "rel_err_vs_ref": err, "fft_err_rel": float(ind["fft_err_rel"][0]), "residual_rel": float(ind["residual_rel"][0]),
             "ensemble_spread": spread, "bound90": self._bound(float(ind["fft_err_rel"][0])),
-            "flags": input_flags(a, self.rel), "ms": {"nn": 1e3 * t_nn, "reference": 1e3 * t_ref},
+            "flags": input_flags(a, self.rel, self.domain), "ms": {"nn": 1e3 * t_nn, "reference": 1e3 * t_ref},
             "reference_discretization_err": ((self.disc or {}).get(f"pixel_{self.p.face}_{self.p.bc}") or {}).get("rel_128_vs_512_median"),
             "qoi": {"mean_pred": float(u_hat.mean()), "mean_ref": float(u.mean()), "max_pred": float(u_hat.max()), "max_ref": float(u.max())},
         }
@@ -163,10 +169,43 @@ class Service:
                  "qoi_mean": float(u_hat[i].mean())} for i in range(count)]
         audit_err = [ref_err[int(i)] for i in audit]
         return {
-            "rows": rows, "flags": input_flags(a[0], self.rel),
+            "rows": rows, "flags": input_flags(a[0], self.rel, self.domain),
             "audit": {"n": len(audit_err), "median": float(np.median(audit_err)) if audit_err else None,
                       "max": float(np.max(audit_err)) if audit_err else None},
             "ms": {"nn_total": 1e3 * t_nn, "indicators_total": 1e3 * t_ind, "reference_total": 1e3 * t_ref,
                    "reference_per_solve": 1e3 * t_ref / max(1, len(ref_err))},
             "n": a.shape[-1],
         }
+
+
+class Registry:
+    """Several served models (models.json): each request names one with "model"; the first entry is the default."""
+
+    def __init__(self, registry, read_json, discretization=None, path=lambda p: p):
+        from flowguard.infer import Predictor
+
+        self.meta = {k: {"label": v["label"], "description": v["description"], "domain": v["domain"]} for k, v in registry.items()}
+        self.services = {k: Service(Predictor([path(w) for w in v["weights"]]), read_json(v.get("reliability")), discretization, v["domain"])
+                         for k, v in registry.items()}
+        self.default = next(iter(registry))
+
+    def _pick(self, req):
+        name = req.get("model") or self.default
+        if name not in self.services:
+            raise ValueError(f"unknown model {name!r}; available: {sorted(self.services)}")
+        return name, self.services[name]
+
+    def solve(self, req):
+        name, s = self._pick(req)
+        return {**s.solve(req), "model": name}
+
+    def batch(self, req):
+        name, s = self._pick(req)
+        return {**s.batch(req), "model": name}
+
+    def evidence(self, req=None):
+        return {"default": self.default,
+                "models": {k: {**self.meta[k], "reliability": s.rel} for k, s in self.services.items()}}
+
+    def info(self):
+        return {"default": self.default, "models": {k: {**self.meta[k], **s.info()} for k, s in self.services.items()}}

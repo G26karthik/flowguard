@@ -1,0 +1,18 @@
+{
+  "broad": {
+    "label": "Broad (adapted)",
+    "description": "Fine-tuned from the PDEBench model on PDEBench fields plus 5,700 broader fields: contrast 10 to 1000, thin channels, smooth log-normal fields.",
+    "weights": ["runs/fno_adapt_s0/weights.npz"],
+    "reliability": "results/reliability_fno_adapt_s0.json",
+    "domain": {"grid": 128, "contrast_max": 1000, "continuous": true,
+               "eval_sets": {"contrast": "contrast3000", "continuous": "grf"}}
+  },
+  "pdebench": {
+    "label": "PDEBench specialist",
+    "description": "Trained only on PDEBench's 8,000 training fields (two values, contrast 10). Most accurate on fields like those.",
+    "weights": ["runs/fno_steady_s0/weights.npz"],
+    "reliability": "results/reliability_fno_steady_s0_ens3.json",
+    "domain": {"grid": 128, "contrast_max": 10, "continuous": false,
+               "eval_sets": {"contrast": "contrast100", "continuous": "grf"}}
+  }
+}
