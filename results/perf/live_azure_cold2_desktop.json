@@ -1,0 +1,8 @@
+{
+ "phone": false,
+ "first_answer_s": 12.71649989997968,
+ "first_answer_runtime": "browser",
+ "server_in_use_s": 22.03696850000415,
+ "solve_after_switch_ms": 1103.9343999582343,
+ "solve_after_switch_went_to_server": true
+}

@@ -26,7 +26,8 @@ All measured results: README.md. This file: state and next steps only.
     ghcr.io/g26karthik/flowguard:sha-<commit> (public, built by .github/workflows/image.yml).
   - repo variable FLOWGUARD_API set to that URL; Pages uses the server, browser runtime races it while it wakes.
   - budget `flowguard-any-charge` on the resource group: amount 1 (billing currency), emails on any actual charge.
-  - live measurements: results/perf/live_azure_{desktop,phone,cold_desktop}.json; ui_check passes on the live site.
+  - live measurements: results/perf/live_azure_*.json (warm: first answer 0.6 s, 188 ms per field; cold: browser answers
+    at 11-13 s, server takes over at 22-24 s); ui_check passes on the live site.
 
 ## Running
 - Nothing.

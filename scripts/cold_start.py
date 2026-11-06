@@ -25,7 +25,8 @@ with sync_playwright() as p:
     page.wait_for_function("typeof state !== 'undefined' && state.last && !state.busy", timeout=120_000)
     r["first_answer_s"] = time.perf_counter() - t0
     r["first_answer_runtime"] = page.evaluate("backendReady.then(b => b.kind)")
-    page.wait_for_function("document.querySelector('#runtime').innerText.includes('server')", timeout=120_000)
+    page.evaluate("setInterval(() => backendReady.then(b => window.__kind = b.kind), 100)")
+    page.wait_for_function("window.__kind === 'server'", timeout=120_000)
     r["server_in_use_s"] = time.perf_counter() - t0
     page.evaluate("window.__prev = state.last")
     n = len(api)

@@ -250,7 +250,11 @@ viewport gives the same numbers within 30 ms, `live_azure_phone.json`):
 | batch of 32 / 64 fields | 9.8 s / 17.6 s | 2.2 s / 3.5 s | 2.5 s / 4.2 s |
 | investigation | not available | 0.86 s | 0.85 s |
 
-COLD_START_PARAGRAPH
+Cold start (`scripts/cold_start.py`, `results/perf/live_azure_cold*.json`): after about 5 minutes without requests
+the app has no replica, and the first request waits about 25 s for one to start. The page then answers from the
+in-browser runtime after 12.7 s (desktop) and 11.0 s (phone viewport), moves to the server at 22 s and 24 s, and the
+first solve there takes 1.1 to 1.3 s; later solves are as in the table. Before the hand-off was added, a cold
+session stayed on the browser runtime (batch of 32: 8.6 s instead of 2.5 s, `live_azure_cold_desktop.json`).
 
 Three problems were found while measuring: the previous image could not start (it never copied `models.json`);
 under a 1-vCPU quota OpenBLAS started one thread per host core and the network took 200 ms per field instead of
