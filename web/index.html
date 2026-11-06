@@ -309,7 +309,8 @@ function workerBackend() {
     else p.resolve(result);
   };
   const call = (method, payload) => new Promise((resolve, reject) => { const id = ++seq; pending.set(id, { resolve, reject }); w.postMessage({ id, method, payload }); });
-  return { kind: "browser", solve: b => call("solve", b), batch: b => call("batch", b), investigate: b => call("investigate", b), evidence: () => call("evidence") };
+  return { kind: "browser", solve: b => call("solve", b), batch: b => call("batch", b), investigate: b => call("investigate", b), evidence: () => call("evidence"),
+           boot: () => call("evidence"), stop: () => w.terminate() };
 }
 async function probe(base, ms) {
   const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), ms);
@@ -324,8 +325,15 @@ const backendReady = (async () => {
   if (new URLSearchParams(location.search).has("local")) return workerBackend();
   if (meta("flowguard-runtime") === "browser") {
     const api = meta("flowguard-api");
-    if (api) { setStatus(true, "Connecting to the FlowGuard server"); if (await probe(api, 4000)) return serverBackend(api); }
-    return workerBackend();
+    if (!api) return workerBackend();
+    setStatus(true, "Connecting to the FlowGuard server");
+    const server = probe(api, 45000).then(ok => ok ? serverBackend(api) : Promise.reject(new Error("no server")));
+    const quick = await Promise.race([server.catch(() => null), new Promise(r => setTimeout(r, 4000, null))]);
+    if (quick) return quick;
+    // the server sleeps when unused and takes about 25 s to wake: load the browser runtime meanwhile, use whichever is ready first
+    setStatus(true, "The server is waking up; loading the in-browser version meanwhile");
+    const w = workerBackend();
+    return Promise.any([server, w.boot().then(() => w)]).then(b => { if (b !== w) w.stop(); return b; }, () => w);
   }
   if (await probe("", 8000)) return serverBackend("");
   return workerBackend();
