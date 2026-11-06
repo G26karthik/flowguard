@@ -99,3 +99,26 @@ def test_investigate_returns_measured_experiments(client):
     assert first["experiment"] == "all" and set(first["undone"]) == {"grid", "contrast"}
     assert all("err_after" in e for e in j["evidence"] if e["applicable"])
     assert set(j["causes"]) <= {"grid", "contrast", "continuous", "geometry"} and j["cost"] >= 3
+
+
+def test_batch_work_cap(client):
+    # 256 fields at 256x256 took 140 s and 1.2 GiB: the cap scales the field count with the grid area
+    r = client.post("/api/batch", json={"field": {"family": "grf", "n": 256}, "count": 65, "verify_risky": 0, "verify_random": 0})
+    assert r.status_code == 400 and "at most 64" in r.json()["detail"]
+
+
+def test_body_limit(client):
+    assert client.post("/api/solve", content=b"x" * ((1 << 20) + 1), headers={"Content-Type": "application/json"}).status_code == 413
+
+
+def test_compute_budget_per_client_ignores_spoofed_forwarded_for(client):
+    import flowguard.api as api
+    api._buckets.clear()
+    body = {"field": {"family": "pdebench", "seed": 5, "n": 64}}
+    # the proxy appends the real address last; a caller rotating the first entry is still the same client
+    real = "203.0.113.7"
+    api._charge(real, api.BURST_S + 10)  # overspend the burst, as a long batch can
+    r = client.post("/api/solve", json=body, headers={"X-Forwarded-For": f"10.0.0.1, {real}"})
+    assert r.status_code == 429 and int(r.headers["Retry-After"]) >= 1
+    assert client.post("/api/solve", json=body, headers={"X-Forwarded-For": f"10.0.0.2, 198.51.100.9"}).status_code == 200
+    api._buckets.clear()

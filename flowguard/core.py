@@ -198,6 +198,9 @@ class Service:
         if field.get("values") is not None or field.get("family") is None:
             raise ValueError("batch mode needs a generator family")
         count = _num(req, "count", 128, 1, MAX_BATCH, int)
+        n = _num(field, "n", 128, 32, MAX_N, int)
+        if count * (n / 128) ** 2 > MAX_BATCH:  # work cap: 256 fields at 256x256 took 140 s and 1.2 GiB on one core
+            raise ValueError(f"at {n}x{n} a batch can hold at most {int(MAX_BATCH * (128 / n) ** 2)} fields")
         k_risky = _num(req, "verify_risky", 8, 0, MAX_VERIFY, int)
         k_audit = _num(req, "verify_random", 8, 0, MAX_VERIFY, int)
         if k_risky + k_audit > min(MAX_VERIFY, count):
