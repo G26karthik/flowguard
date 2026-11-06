@@ -1,0 +1,33 @@
+# Server image -> ghcr.io/<owner>/flowguard (public package), deployed to Azure Container Apps by hand:
+#   az containerapp update -n flowguard -g flowguard --image ghcr.io/g26karthik/flowguard:sha-<commit>
+name: image
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  packages: write
+concurrency:
+  group: image
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        run: echo "repo=ghcr.io/$(echo '${{ github.repository_owner }}' | tr A-Z a-z)/flowguard" >> "$GITHUB_OUTPUT"
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.repo }}:latest
+            ${{ steps.meta.outputs.repo }}:sha-${{ github.sha }}
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}

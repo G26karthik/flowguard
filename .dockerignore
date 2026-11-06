@@ -8,3 +8,6 @@ runs/**/*.npy
 runs_*.log
 runs_*.err
 results/*.npz
+.env
+.env.*
+*.env
