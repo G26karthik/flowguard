@@ -310,7 +310,18 @@ function workerBackend() {
   };
   const call = (method, payload) => new Promise((resolve, reject) => { const id = ++seq; pending.set(id, { resolve, reject }); w.postMessage({ id, method, payload }); });
   return { kind: "browser", solve: b => call("solve", b), batch: b => call("batch", b), investigate: b => call("investigate", b), evidence: () => call("evidence"),
-           boot: () => call("evidence"), stop: () => w.terminate() };
+           boot: () => call("evidence"), idle: () => pending.size === 0, stop: () => w.terminate() };
+}
+// browser runtime now, the server once it has woken up: calls go to whichever is current
+function handoff(w, server) {
+  const d = { cur: w, get kind() { return d.cur.kind; }, get base() { return d.cur.base; } };
+  for (const m of ["solve", "batch", "investigate", "evidence"]) d[m] = (b) => d.cur[m](b);
+  server.then(s => {
+    d.cur = s;
+    showRuntime(d);
+    const t = setInterval(() => { if (w.idle()) { clearInterval(t); w.stop(); } }, 500); // let running browser calls finish
+  }, () => {});
+  return d;
 }
 async function probe(base, ms) {
   const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), ms);
@@ -328,22 +339,24 @@ const backendReady = (async () => {
     if (!api) return workerBackend();
     setStatus(true, "Connecting to the FlowGuard server");
     const server = probe(api, 45000).then(ok => ok ? serverBackend(api) : Promise.reject(new Error("no server")));
-    const quick = await Promise.race([server.catch(() => null), new Promise(r => setTimeout(r, 4000, null))]);
+    const quick = await Promise.race([server.catch(() => null), new Promise(r => setTimeout(r, 2000, null))]);
     if (quick) return quick;
-    // the server sleeps when unused and takes about 25 s to wake: load the browser runtime meanwhile, use whichever is ready first
+    // the server sleeps when unused and takes about 25 s to wake: load the browser runtime meanwhile, use whichever is
+    // ready first, and move to the server when it answers
     setStatus(true, "The server is waking up; loading the in-browser version meanwhile");
     const w = workerBackend();
-    return Promise.any([server, w.boot().then(() => w)]).then(b => { if (b !== w) w.stop(); return b; }, () => w);
+    return Promise.any([server, w.boot().then(() => handoff(w, server))]).then(b => { if (b.kind === "server" && b !== w) w.stop(); return b; }, () => w);
   }
   if (await probe("", 8000)) return serverBackend("");
   return workerBackend();
 })();
-backendReady.then(b => {
+function showRuntime(b) {
   $("runtime").innerHTML = b.kind === "server"
     ? `Computation runs on the FlowGuard server (NumPy network, SciPy sparse solver).${b.base ? ` <a href="?local=1" id="golocal">Compute in this browser instead</a>.` : ""}`
     : "Computation runs in your browser: the same Python package, compiled to WebAssembly (Pyodide). It is slower than the server: about 0.3 s per field.";
-  if (b.kind === "browser") { $("bcount").value = 32; $("bcount").max = 128; }
-});
+  if (b.kind === "browser") { $("bcount").value = 32; $("bcount").max = 128; } else { $("bcount").max = 256; }
+}
+backendReady.then(showRuntime);
 
 // --- status line and tabs ----------------------------------------------------------------------------
 function setStatus(busy, text, el = "status") {

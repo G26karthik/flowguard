@@ -18,18 +18,28 @@ All measured results: README.md. This file: state and next steps only.
   - Investigator integrated (/api/investigate) and evaluated on the served models
     (results/investigator_study.json): rule 85% / 78% vs flags 35% / 41% against causal labels.
 
+- 2026-11-06 server live on Azure Container Apps (Railway trial had expired; user approved Azure, free grant only):
+  - subscription 434cb31e... (Pay-As-You-Go, no spending limit); everything in resource group `flowguard`
+    (centralindia): environment `flowguard-env` (Consumption profile only, logs destination none, no VNet) and app
+    `flowguard` (1 vCPU / 2 GiB, min 0, max 1 replica, FLOWGUARD_THREADS=1, CORS = Pages origin).
+  - URL https://flowguard.delightfulbay-9f598c7b.centralindia.azurecontainerapps.io/ ; image
+    ghcr.io/g26karthik/flowguard:sha-<commit> (public, built by .github/workflows/image.yml).
+  - repo variable FLOWGUARD_API set to that URL; Pages uses the server, browser runtime races it while it wakes.
+  - budget `flowguard-any-charge` on the resource group: amount 1 (billing currency), emails on any actual charge.
+  - live measurements: results/perf/live_azure_{desktop,phone,cold_desktop}.json; ui_check passes on the live site.
+
 ## Running
 - Nothing.
 
 ## Needs the user
-1. Railway: `railway login` (CLI 5.71.0 installed), then `railway init` + `railway up` from the repo, region
-   asia-southeast1. Trial: one-time $5 credit; anything paid needs the user's approval. After it is live, set the
-   repo variable FLOWGUARD_API=<railway url>/ so the Pages site uses the server.
-2. LLM arm of the investigator study: ANTHROPIC_API_KEY, then
+1. LLM arm of the investigator study: ANTHROPIC_API_KEY, then
    `python scripts/investigator_study.py --llm claude-opus-5-5` (~170 evaluation cases).
+2. Anything that adds Azure cost (min replicas > 0, more CPU, Log Analytics, a registry, metric alerts) needs the
+   user's approval. Free grant per month: 180k vCPU-s, 360k GiB-s, 2M requests = 50 replica-hours at 1 vCPU / 2 GiB.
 
 ## Next
-- After Railway is live: perf_browser.py and ui_check.py against the public URL (desktop and phone).
+- Check usage: `python scripts/azure_usage.py` (replica hours vs free grant, month-to-date cost).
+- Deploy a new image: `az containerapp update -n flowguard -g flowguard --image ghcr.io/g26karthik/flowguard:sha-<commit>`.
 - Known gaps: contrast > 1000x still fails (39%); held-out layers 4.6%; the residual estimate ranks poorly on the
   broad model's held-out sets (Spearman 0.16 / 0.25); investigator misses the weaker factor in dominated pairs.
 

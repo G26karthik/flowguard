@@ -12,7 +12,7 @@ RUN useradd -m -u 1000 app
 WORKDIR /app
 COPY --from=bundle --chown=app /bundle /app
 USER app
-# Railway and most hosts set PORT
+# most hosts set PORT; Azure Container Apps uses the ingress target port (8000)
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s CMD python -c "import urllib.request, os; urllib.request.urlopen(f'http://127.0.0.1:{os.environ.get(\"PORT\", \"8000\")}/api/health', timeout=4)"
 CMD ["sh", "-c", "exec uvicorn flowguard.api:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers --forwarded-allow-ips='*'"]

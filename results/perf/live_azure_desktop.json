@@ -1,0 +1,515 @@
+{
+ "url": "https://g26karthik.github.io/flowguard/",
+ "viewport": "desktop",
+ "runs": [
+  {
+   "cold": {
+    "first_verdict_ms": 531.8837890625,
+    "dom_content_loaded_ms": 271.19999998807907,
+    "load_ms": 386.10000002384186,
+    "phases": [
+     [
+      353,
+      "runtime",
+      "Computation runs on the FlowGuard server (NumPy network, SciPy sparse solver). Compute in "
+     ],
+     [
+      515,
+      "verdict",
+      "The network agrees with the solver\n\nThe network's pressure differs from the solver's by 0."
+     ]
+    ],
+    "first_solve_server_ms": {
+     "nn": 0.008400000069741509,
+     "reference": 0.0072999999929379555
+    },
+    "bytes_total": 261657,
+    "network": [
+     {
+      "url": "https://g26karthik.github.io/flowguard/",
+      "start_ms": 3.60888671875,
+      "end_ms": 29.79388671875,
+      "bytes": 16791
+     },
+     {
+      "url": "https://fonts.googleapis.com/css2",
+      "start_ms": 33.7158203125,
+      "end_ms": 255.2308203125,
+      "bytes": 910
+     },
+     {
+      "url": "d.delightfulbay-9f598c7b.centralindia.azurecontainerapps.io/api/health",
+      "start_ms": 258.237060546875,
+      "end_ms": 351.120060546875,
+      "bytes": 904
+     },
+     {
+      "url": "ic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9Gayo.woff2",
+      "start_ms": 271.12890625,
+      "end_ms": 390.91890625,
+      "bytes": 46784
+     },
+     {
+      "url": "rd.delightfulbay-9f598c7b.centralindia.azurecontainerapps.io/api/solve",
+      "start_ms": 380.885986328125,
+      "end_ms": 530.557986328125,
+      "bytes": 196268
+     }
+    ]
+   },
+   "warm": {
+    "render_single_ms": [
+     6.199999988079071,
+     4.900000035762787,
+     3.899999976158142,
+     6.100000023841858,
+     4.599999964237213
+    ],
+    "generate": [
+     {
+      "wall_ms": 190.96119998721406,
+      "server_ms": {
+       "nn": 35.95746299993152,
+       "reference": 50.12950900004398
+      }
+     },
+     {
+      "wall_ms": 187.4919999972917,
+      "server_ms": {
+       "nn": 40.33244699996885,
+       "reference": 62.251463000052354
+      }
+     },
+     {
+      "wall_ms": 166.87929996987805,
+      "server_ms": {
+       "nn": 34.77596800007632,
+       "reference": 50.55060699999103
+      }
+     }
+    ],
+    "paint": [
+     {
+      "wall_ms": 368.104699999094,
+      "server_ms": {
+       "nn": 35.058567000078256,
+       "reference": 49.12991300000158
+      }
+     },
+     {
+      "wall_ms": 223.9558000001125,
+      "server_ms": {
+       "nn": 0.006099999950492929,
+       "reference": 0.0036000000136482413
+      }
+     }
+    ],
+    "beta": {
+     "wall_ms": 3.800000011920929,
+     "server_ms": null
+    },
+    "model_switch": {
+     "wall_ms": 127.0793000003323,
+     "server_ms": {
+      "nn": 32.01617800004897,
+      "reference": 0.006699999971715442
+     }
+    },
+    "grid256": {
+     "wall_ms": 681.1383999884129,
+     "server_ms": {
+      "nn": 140.65726500007258,
+      "reference": 290.34869500003424
+     }
+    },
+    "render_single_256_ms": [
+     14.300000011920929,
+     13.599999964237213,
+     13.700000047683716,
+     13.599999964237213,
+     14
+    ],
+    "contrast_example": {
+     "wall_ms": 185.37870002910495,
+     "server_ms": {
+      "nn": 44.596630000000914,
+      "reference": 46.20712400003413
+     }
+    },
+    "investigate": {
+     "wall_ms": 850.0766000361182,
+     "text": "ressed to 1,000\u00d7, the training maximum), keeping the shape. Error: 5.9%.\nReplace the shape with training-like blobs that have the same rock values and grid (4 samples). Error: 7.2% (range 6.2% to 9.5%).\nMeasured cause: contrast. It raises the error clearly above the training-like version on its own."
+    },
+    "batch": {
+     "32": {
+      "wall_ms": 2321.7948999954388,
+      "ms": 1.100000023841858,
+      "server": {
+       "nn_total": 1479.4461689999707,
+       "indicators_total": 23.296711000057257,
+       "reference_total": 724.0849439999693,
+       "reference_per_solve": 45.25530899999808
+      }
+     },
+     "64": {
+      "wall_ms": 4627.581200038549,
+      "ms": 0.800000011920929,
+      "server": {
+       "nn_total": 3470.2590049999744,
+       "indicators_total": 88.3747979999896,
+       "reference_total": 903.1457029999785,
+       "reference_per_solve": 56.44660643749866
+      }
+     }
+    },
+    "evidence_ms": 105.27489997912198
+   },
+   "console": []
+  },
+  {
+   "cold": {
+    "first_verdict_ms": 599.198974609375,
+    "dom_content_loaded_ms": 268.39999997615814,
+    "load_ms": 369.5999999642372,
+    "phases": [
+     [
+      324,
+      "runtime",
+      "Computation runs on the FlowGuard server (NumPy network, SciPy sparse solver). Compute in "
+     ],
+     [
+      586,
+      "verdict",
+      "The network agrees with the solver\n\nThe network's pressure differs from the solver's by 0."
+     ]
+    ],
+    "first_solve_server_ms": {
+     "nn": 41.298466000000644,
+     "reference": 54.860719999993535
+    },
+    "bytes_total": 261648,
+    "network": [
+     {
+      "url": "https://g26karthik.github.io/flowguard/",
+      "start_ms": 2.567138671875,
+      "end_ms": 21.796138671875,
+      "bytes": 16782
+     },
+     {
+      "url": "https://fonts.googleapis.com/css2",
+      "start_ms": 28.032958984375,
+      "end_ms": 234.265958984375,
+      "bytes": 910
+     },
+     {
+      "url": "d.delightfulbay-9f598c7b.centralindia.azurecontainerapps.io/api/health",
+      "start_ms": 237.197021484375,
+      "end_ms": 322.539021484375,
+      "bytes": 904
+     },
+     {
+      "url": "ic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9Gayo.woff2",
+      "start_ms": 268.226806640625,
+      "end_ms": 390.556806640625,
+      "bytes": 46784
+     },
+     {
+      "url": "rd.delightfulbay-9f598c7b.centralindia.azurecontainerapps.io/api/solve",
+      "start_ms": 350.510009765625,
+      "end_ms": 599.275009765625,
+      "bytes": 196268
+     }
+    ]
+   },
+   "warm": {
+    "render_single_ms": [
+     4.5,
+     4,
+     4.100000023841858,
+     3.699999988079071,
+     3.300000011920929
+    ],
+    "generate": [
+     {
+      "wall_ms": 203.1421999563463,
+      "server_ms": {
+       "nn": 35.70930299997599,
+       "reference": 51.65638400001171
+      }
+     },
+     {
+      "wall_ms": 177.64280003029853,
+      "server_ms": {
+       "nn": 35.05509600000778,
+       "reference": 52.69099500000607
+      }
+     },
+     {
+      "wall_ms": 175.5747999995947,
+      "server_ms": {
+       "nn": 40.79026100001215,
+       "reference": 53.40770399999428
+      }
+     }
+    ],
+    "paint": [
+     {
+      "wall_ms": 360.35410000476986,
+      "server_ms": {
+       "nn": 46.172421999983726,
+       "reference": 59.963277000008475
+      }
+     },
+     {
+      "wall_ms": 236.15750001044944,
+      "server_ms": {
+       "nn": 0.007399999987001138,
+       "reference": 0.003999999989900971
+      }
+     }
+    ],
+    "beta": {
+     "wall_ms": 4.050000011920929,
+     "server_ms": null
+    },
+    "model_switch": {
+     "wall_ms": 159.12480000406504,
+     "server_ms": {
+      "nn": 48.929651999998214,
+      "reference": 0.007600000003549212
+     }
+    },
+    "grid256": {
+     "wall_ms": 746.9001000281423,
+     "server_ms": {
+      "nn": 182.01765699998873,
+      "reference": 318.9430029999869
+     }
+    },
+    "render_single_256_ms": [
+     17.400000035762787,
+     14.300000011920929,
+     15.299999952316284,
+     13.600000023841858,
+     13.699999988079071
+    ],
+    "contrast_example": {
+     "wall_ms": 241.25309998635203,
+     "server_ms": {
+      "nn": 48.47994700000413,
+      "reference": 53.94980999997756
+     }
+    },
+    "investigate": {
+     "wall_ms": 849.1473000030965,
+     "text": "ressed to 1,000\u00d7, the training maximum), keeping the shape. Error: 5.9%.\nReplace the shape with training-like blobs that have the same rock values and grid (4 samples). Error: 7.2% (range 6.2% to 9.5%).\nMeasured cause: contrast. It raises the error clearly above the training-like version on its own."
+    },
+    "batch": {
+     "32": {
+      "wall_ms": 2541.687599965371,
+      "ms": 1.100000023841858,
+      "server": {
+       "nn_total": 1561.7871440000215,
+       "indicators_total": 38.64033700000391,
+       "reference_total": 842.4577179999915,
+       "reference_per_solve": 52.65360737499947
+      }
+     },
+     "64": {
+      "wall_ms": 4121.24180002138,
+      "ms": 0.699999988079071,
+      "server": {
+       "nn_total": 3061.671689000008,
+       "indicators_total": 61.117489999986674,
+       "reference_total": 904.4754189999935,
+       "reference_per_solve": 56.529713687499594
+      }
+     }
+    },
+    "evidence_ms": 103.64250000566244
+   },
+   "console": []
+  },
+  {
+   "cold": {
+    "first_verdict_ms": 764.413330078125,
+    "dom_content_loaded_ms": 503.69999998807907,
+    "load_ms": 607.2999999523163,
+    "phases": [
+     [
+      574,
+      "runtime",
+      "Computation runs on the FlowGuard server (NumPy network, SciPy sparse solver). Compute in "
+     ],
+     [
+      750,
+      "verdict",
+      "The network agrees with the solver\n\nThe network's pressure differs from the solver's by 0."
+     ]
+    ],
+    "first_solve_server_ms": {
+     "nn": 0.005200000003924288,
+     "reference": 0.002700000010236181
+    },
+    "bytes_total": 261662,
+    "network": [
+     {
+      "url": "https://g26karthik.github.io/flowguard/",
+      "start_ms": 2.97412109375,
+      "end_ms": 282.68112109375,
+      "bytes": 16783
+     },
+     {
+      "url": "https://fonts.googleapis.com/css2",
+      "start_ms": 288.429931640625,
+      "end_ms": 471.513931640625,
+      "bytes": 910
+     },
+     {
+      "url": "d.delightfulbay-9f598c7b.centralindia.azurecontainerapps.io/api/health",
+      "start_ms": 474.304931640625,
+      "end_ms": 573.317931640625,
+      "bytes": 904
+     },
+     {
+      "url": "ic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9Gayo.woff2",
+      "start_ms": 503.58984375,
+      "end_ms": 627.53984375,
+      "bytes": 46784
+     },
+     {
+      "url": "rd.delightfulbay-9f598c7b.centralindia.azurecontainerapps.io/api/solve",
+      "start_ms": 604.16796875,
+      "end_ms": 766.23996875,
+      "bytes": 196281
+     }
+    ]
+   },
+   "warm": {
+    "render_single_ms": [
+     4.600000023841858,
+     3.699999988079071,
+     3.399999976158142,
+     4,
+     3.699999988079071
+    ],
+    "generate": [
+     {
+      "wall_ms": 204.24569997703657,
+      "server_ms": {
+       "nn": 43.485392000008005,
+       "reference": 53.68050600000629
+      }
+     },
+     {
+      "wall_ms": 187.58229998638853,
+      "server_ms": {
+       "nn": 48.22104500001956,
+       "reference": 58.20175700000618
+      }
+     },
+     {
+      "wall_ms": 195.12230000691488,
+      "server_ms": {
+       "nn": 51.143678000016735,
+       "reference": 59.47967200000903
+      }
+     }
+    ],
+    "paint": [
+     {
+      "wall_ms": 366.05409998446703,
+      "server_ms": {
+       "nn": 41.87527300001648,
+       "reference": 51.17127799999821
+      }
+     },
+     {
+      "wall_ms": 255.87249995442107,
+      "server_ms": {
+       "nn": 0.004799999999249849,
+       "reference": 0.0028009999937239627
+      }
+     }
+    ],
+    "beta": {
+     "wall_ms": 3.850000023841858,
+     "server_ms": null
+    },
+    "model_switch": {
+     "wall_ms": 151.31510002538562,
+     "server_ms": {
+      "nn": 45.92801900000154,
+      "reference": 0.0062000000013995304
+     }
+    },
+    "grid256": {
+     "wall_ms": 797.8692000033334,
+     "server_ms": {
+      "nn": 182.56486199999244,
+      "reference": 321.87843599999155
+     }
+    },
+    "render_single_256_ms": [
+     21.200000047683716,
+     20.69999998807907,
+     23.599999964237213,
+     20,
+     17.600000023841858
+    ],
+    "contrast_example": {
+     "wall_ms": 103.79129997454584,
+     "server_ms": {
+      "nn": 0.006700000000137152,
+      "reference": 0.0036000000136482413
+     }
+    },
+    "investigate": {
+     "wall_ms": 846.1051000049338,
+     "text": "ressed to 1,000\u00d7, the training maximum), keeping the shape. Error: 5.9%.\nReplace the shape with training-like blobs that have the same rock values and grid (4 samples). Error: 7.2% (range 6.2% to 9.5%).\nMeasured cause: contrast. It raises the error clearly above the training-like version on its own."
+    },
+    "batch": {
+     "32": {
+      "wall_ms": 2509.6655000234023,
+      "ms": 1.7000000476837158,
+      "server": {
+       "nn_total": 1533.1809210000245,
+       "indicators_total": 27.840015000009544,
+       "reference_total": 842.2606150000149,
+       "reference_per_solve": 52.64128843750093
+      }
+     },
+     "64": {
+      "wall_ms": 4213.103000016417,
+      "ms": 0.699999988079071,
+      "server": {
+       "nn_total": 3175.927779999995,
+       "indicators_total": 61.315492000005634,
+       "reference_total": 877.0490080000002,
+       "reference_per_solve": 54.81556300000001
+      }
+     }
+    },
+    "evidence_ms": 114.42840000381693
+   },
+   "console": []
+  }
+ ],
+ "summary": {
+  "first_verdict_ms": 599,
+  "bytes_total_MB": 0.3,
+  "generate_wall_ms": 188,
+  "generate_server_nn_ms": 40,
+  "generate_server_ref_ms": 53,
+  "paint_wall_ms": 308,
+  "beta_wall_ms": 4,
+  "model_switch_wall_ms": 151,
+  "grid256_wall_ms": 747,
+  "render_128_ms": 4,
+  "render_256_ms": 14,
+  "batch32_wall_ms": 2510,
+  "batch64_wall_ms": 4213,
+  "evidence_ms": 105,
+  "investigate_wall_ms": 849
+ }
+}

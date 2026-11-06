@@ -187,7 +187,7 @@ as fast as the solve, so there the value is the reliability workflow, and screen
 | `flowguard/fields.py` | PDEBench sampler replica and shifted families (`layers` is held out from all training) |
 | `flowguard/core.py`, `flowguard/api.py`, `models.json` | service logic and caches, model registry, FastAPI wrapper |
 | `web/` | front end; `worker.js` runs the same package in the browser via Pyodide |
-| `Dockerfile`, `scripts/served_files.py`, `railway.json` | server image; `models.json` decides which weights ship |
+| `Dockerfile`, `scripts/served_files.py` | server image; `models.json` decides which weights ship |
 | `scripts/` | every experiment in this README; `ui_check.py` and `perf_browser.py` drive the app in Microsoft Edge |
 
 ## Reproduce
@@ -223,32 +223,40 @@ of that, which moved the test median from 0.54% to 0.56%).
 
 ## Deployment
 
-The app is built to run as one FastAPI service that also serves the front end (`Dockerfile`, `railway.json`). The
-static GitHub Pages site runs the same `flowguard` package in the browser through Pyodide, and uses the hosted server
-instead when its build is given one (`FLOWGUARD_API`) and it answers; "Compute in this browser instead" forces the
-browser runtime.
+The server is one FastAPI service that also serves the front end (`Dockerfile`). It runs on Azure Container Apps
+(Central India, 1 vCPU and 2 GiB, scaling between 0 and 1 replica, so it costs nothing inside the monthly free
+grant) from the public image `ghcr.io/g26karthik/flowguard`, which `.github/workflows/image.yml` builds on every push:
+https://flowguard.delightfulbay-9f598c7b.centralindia.azurecontainerapps.io/. The GitHub Pages site is built with
+that address (repository variable `FLOWGUARD_API`) and calls it, with CORS limited to the Pages origin. The same
+`flowguard` package also runs in the browser through Pyodide: when the server does not answer within 4 s (it is
+waking from zero), the page starts the in-browser runtime and uses whichever is ready first; "Compute in this
+browser instead" (`?local=1`) forces it. `scripts/azure_usage.py` reports month-to-date replica time against the free
+grant and the subscription's cost; a resource-group budget emails on any actual charge.
 
-Measured with `scripts/perf_browser.py` in Microsoft Edge (median; `results/perf/`). Before: the live Pages site,
-browser runtime. After: the Docker image limited to 1 vCPU and 512 MB, a fresh container per run, served on
-localhost (so without internet latency):
+Measured with `scripts/perf_browser.py` in Microsoft Edge (median of 3 runs; `results/perf/`). Before: the live Pages
+site, browser runtime. Server, local: the Docker image limited to 1 vCPU and 512 MB, a fresh container per run, on
+localhost. Live: the Pages site calling the Azure server from a laptop in India, server already awake (desktop; the phone
+viewport gives the same numbers within 30 ms, `live_azure_phone.json`):
 
-| | before (browser runtime) | after (server, 1 vCPU) |
-|---|---|---|
-| first answer after opening the page | 10.2 s | 0.31 s |
-| downloaded on first visit | 37.6 MB | 0.26 MB |
-| new field (network + solver) | 404 ms | 123 ms |
-| paint a stroke, re-solve | 511 ms | 179 ms |
-| change the source β | 387 ms | 4 ms (local rescale) |
-| switch network | 389 ms | 64 ms (solver result reused) |
-| 256 x 256 field | 1.9 s | 0.54 s |
-| batch of 32 / 64 fields | 9.8 s / 17.6 s | 2.2 s / 3.5 s |
-| investigation | not available | 0.86 s |
+| | before (browser runtime) | server, local | live (Pages + Azure) |
+|---|---|---|---|
+| first answer after opening the page | 10.2 s | 0.31 s | 0.60 s |
+| downloaded on first visit | 37.6 MB | 0.26 MB | 0.3 MB |
+| new field (network + solver) | 404 ms | 123 ms | 188 ms |
+| paint a stroke, re-solve | 511 ms | 179 ms | 308 ms |
+| change the source β | 387 ms | 4 ms (local rescale) | 4 ms |
+| switch network | 389 ms | 64 ms (solver result reused) | 151 ms |
+| 256 x 256 field | 1.9 s | 0.54 s | 0.75 s |
+| batch of 32 / 64 fields | 9.8 s / 17.6 s | 2.2 s / 3.5 s | 2.5 s / 4.2 s |
+| investigation | not available | 0.86 s | 0.85 s |
+
+COLD_START_PARAGRAPH
 
 Three problems were found while measuring: the previous image could not start (it never copied `models.json`);
 under a 1-vCPU quota OpenBLAS started one thread per host core and the network took 200 ms per field instead of
 43 ms (the API now sizes BLAS threads from the cgroup quota); and the GELU and FFTs dominated the forward pass.
-Hugging Face Docker Spaces need a paid plan (`402 Payment Required`). `scripts/ui_check.py` checks both runtimes on
-desktop and phone widths: examples, painting, beta, model switch, investigation, batch, evidence, a failed request,
+Hugging Face Docker Spaces need a paid plan (`402 Payment Required`), and the Railway trial had expired.
+`scripts/ui_check.py` checks both runtimes on desktop and phone widths: examples, painting, beta, model switch, investigation, batch, evidence, a failed request,
 and horizontal overflow.
 
 ## Data and licences
