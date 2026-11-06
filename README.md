@@ -153,12 +153,32 @@ An earlier version of this study, on the PDEBench-scheme model with a fixed geom
 (`scripts/agent_study.py`, `results/agent_study_fno_steady_s0.json`, 72 cases), gave flags 75%, a first rule that
 undid each axis alone 56%, and the ablation rule 85%.
 
-**LLM policy.** `scripts/investigator_study.py --llm MODEL` gives a language model the same experiments as tools,
-one at a time, and asks it to name the causes. It has not been run: it needs an Anthropic API key, which this
-session does not have. Until it is run, the app uses the rule, and nothing in the app is described as agentic. The
-decision space is small (at most four experiments; on the 1-vCPU server the geometry swap takes about 0.4 s and
-each other one about 0.1 s), which limits what an LLM could add; the two-factor cases above are where a better
-experiment choice could help.
+**LLM policy: pilot** (`scripts/llm_pilot.py`, `results/llm_pilot_claude-haiku-5-5_medium.json`). The protocol was
+committed (091b94f) before the first pilot call: 10 fresh cases (seed 20261106, 5 per served model), the same
+experiments and an 8-unit budget for both policies. Truth is per case and by intervention: for every subset of the
+factors applied to a case, the error with the others undone (geometry: 16 training-family shapes neither policy
+sees); a factor is a cause when its Shapley effect on log error is at least ln 2 (adding it doubles the error on
+average). Secondary truth: the population-level labels above. Claude Haiku 5.5, effort medium, adaptive thinking:
+
+| | flags | rule (served) | Haiku 5.5 |
+|---|---|---|---|
+| exact match, per-case truth | 5/10 | 10/10 | 8/10 |
+| exact match, population truth | 5/10 | 9/10 | 7/10 |
+| precision / recall of named causes | 0.55 / 0.86 | 1.00 / 1.00 | 0.78 / 1.00 |
+| experiments requested per case | 0 | 1.9 | 3.1 |
+| unnecessary (not applicable, repeated, unseen) | 0 | 0.3 | 1.2 |
+| experiment cost per case (units) | 0 | 3.7 | 4.3 |
+| latency per case | 0 | 0.51 s | 8.4 s (7.8 s in the API) |
+| tokens, 10 cases (input / output incl. thinking) | | | 44,976 / 10,507 |
+| API cost, 10 cases (list price) | | | $0.0098 |
+
+Both Haiku errors name geometry when it is not a cause. On an in-domain smooth field for the broad model, the input's
+error (0.067) lay inside the range of the training-shape comparators (0.028 to 0.084), and Haiku's note says
+"training fields were two-valued", which the prompt states is false for that model. On a smoothed PDEBench field, the
+thresholded baseline was 3.8x the comparators, just under the rule's calibrated 4x; the LLM is given no threshold.
+By the pre-registered decision rule (at least the rule's exact matches, or within one at lower cost) the LLM is
+not scaled up, and the app keeps the rule. 10 cases cannot separate the policies statistically, and the truth uses
+the same edit operators as the tools, which may favour the rule.
 
 ### 6. Is the network worth it here?
 
@@ -228,10 +248,24 @@ The server is one FastAPI service that also serves the front end (`Dockerfile`).
 grant) from the public image `ghcr.io/g26karthik/flowguard`, which `.github/workflows/image.yml` builds on every push:
 https://flowguard.delightfulbay-9f598c7b.centralindia.azurecontainerapps.io/. The GitHub Pages site is built with
 that address (repository variable `FLOWGUARD_API`) and calls it, with CORS limited to the Pages origin. The same
-`flowguard` package also runs in the browser through Pyodide: when the server does not answer within 4 s (it is
+`flowguard` package also runs in the browser through Pyodide: when the server does not answer within 2 s (it is
 waking from zero), the page starts the in-browser runtime and uses whichever is ready first; "Compute in this
 browser instead" (`?local=1`) forces it. `scripts/azure_usage.py` reports month-to-date replica time against the free
 grant and the subscription's cost; a resource-group budget emails on any actual charge.
+
+Abuse limits (`flowguard/api.py`). CORS stops other web pages, not direct calls, and the largest request the API
+accepted (256 fields at 256 x 256) took 140 s and 1.2 GiB on one core, so two at once could exhaust the 2 GiB
+replica. Now: a batch holds at most 256 fields at 128 x 128, scaled down with grid area (64 at 256 x 256, at most
+about 27 s); request bodies over 1 MiB are refused; one computation runs at a time, with up to 4 queued for at most
+30 s and later ones refused with 503; and each client address has a compute budget of 120 s, refilled at 0.2 s
+per second (12 s of compute per minute), after which it gets 429 with `Retry-After`. The address is the last
+`X-Forwarded-For` entry, the one Azure's ingress appends. Checked live: 7 simultaneous 64-field batches ran one
+after another (4 to 20 s) with 2 refused at once; after about 120 s of compute the address got 429 even when the
+caller rotated a fake first `X-Forwarded-For` entry; the health endpoint kept answering. Ordinary use (solves of
+0.2 s, batches of 64 in 4 s) stays far below the budget. Users behind one shared address share one budget. These
+limits protect memory and responsiveness, not the bill: Azure charges for the time a replica is running, and any
+request every few minutes keeps it running. That is capped by max replicas = 1 (about $79 a month if it never
+stopped, of which the free grant covers the first 50 hours).
 
 Measured with `scripts/perf_browser.py` in Microsoft Edge (median of 3 runs; `results/perf/`). Before: the live Pages
 site, browser runtime. Server, local: the Docker image limited to 1 vCPU and 512 MB, a fresh container per run, on

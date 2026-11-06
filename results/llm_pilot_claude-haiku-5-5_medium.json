@@ -1,0 +1,892 @@
+{
+ "protocol_commit": "091b94f40ca68c8c1d585726668fc7ac26ed9141 2026-11-06T21:33:35+05:30",
+ "protocol_modified_after_commit": false,
+ "model": "claude-haiku-5-5",
+ "effort": "medium",
+ "budget": 8,
+ "summary": {
+  "flags": {
+   "n": 10,
+   "exact": 5,
+   "exact_secondary": 5,
+   "precision": 0.5454545454545454,
+   "recall": 0.8571428571428571,
+   "mean_tool_calls": 0.0,
+   "total_tool_calls": 0.0,
+   "mean_unnecessary": 0.0,
+   "total_unnecessary": 0.0,
+   "mean_cost": 0.0,
+   "total_cost": 0.0
+  },
+  "rule": {
+   "n": 10,
+   "exact": 10,
+   "exact_secondary": 9,
+   "precision": 1.0,
+   "recall": 1.0,
+   "mean_tool_calls": 1.9,
+   "total_tool_calls": 19.0,
+   "mean_unnecessary": 0.3,
+   "total_unnecessary": 3.0,
+   "mean_cost": 3.7,
+   "total_cost": 37.0,
+   "mean_latency_s": 0.5127282500034198,
+   "total_latency_s": 5.127282500034198
+  },
+  "llm": {
+   "n": 10,
+   "exact": 8,
+   "exact_secondary": 7,
+   "precision": 0.7777777777777778,
+   "recall": 1.0,
+   "mean_tool_calls": 3.1,
+   "total_tool_calls": 31.0,
+   "mean_unnecessary": 1.2,
+   "total_unnecessary": 12.0,
+   "mean_cost": 4.3,
+   "total_cost": 43.0,
+   "mean_latency_s": 8.44595827999874,
+   "total_latency_s": 84.4595827999874,
+   "mean_api_s": 7.814031329978024,
+   "total_api_s": 78.14031329978025,
+   "mean_cost_usd": 0.0009751100000000001,
+   "total_cost_usd": 0.0097511,
+   "tokens": {
+    "input_tokens": 44976,
+    "output_tokens": 10507,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0
+   },
+   "failures": 0
+  }
+ },
+ "rows": [
+  {
+   "model": "broad",
+   "category": "grid",
+   "shape": "pdebench",
+   "grid": 256,
+   "contrast": 10.0,
+   "err": 0.007692631010601635,
+   "id_err": 0.007314649359424188,
+   "truth": [],
+   "truth_population": [],
+   "oracle_errors": {
+    "none": 0.007498579570531187,
+    "grid": 0.007692631010601635
+   },
+   "oracle_phi": {
+    "grid": 0.025549247011714904
+   },
+   "flags": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 0,
+    "tool_calls": 0,
+    "unnecessary": 0
+   },
+   "rule": {
+    "causes": [],
+    "cost": 1,
+    "tool_calls": 1,
+    "unnecessary": 0,
+    "experiments": [
+     "all"
+    ],
+    "latency_s": 0.6193848999682814
+   },
+   "llm": {
+    "causes": [],
+    "cost": 0,
+    "tool_calls": 0,
+    "unnecessary": 0,
+    "experiments": [],
+    "api_calls": 1,
+    "api_s": 3.526560500031337,
+    "stop_reasons": [
+     "tool_use"
+    ],
+    "turns": [
+     [
+      "conclude"
+     ]
+    ],
+    "text": [
+     "The measured error is 0.77%, close to the in-distribution median of 0.73%. Contrast 10 is inside the training range, so the only off-training axis is grid (256 vs 128). I'll conclude without spending more budget, since the input already performs like training data."
+    ],
+    "usage": {
+     "input_tokens": 1069,
+     "output_tokens": 408,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 0
+    },
+    "cost_usd": 0.00031089999999999997,
+    "latency_s": 4.232578600000124
+   }
+  },
+  {
+   "model": "broad",
+   "category": "contrast",
+   "shape": "pdebench",
+   "grid": 128,
+   "contrast": 25563.3806228543,
+   "err": 0.8573082934991495,
+   "id_err": 0.007314649359424188,
+   "truth": [
+    "contrast"
+   ],
+   "truth_population": [
+    "contrast"
+   ],
+   "oracle_errors": {
+    "none": 0.04229674523128999,
+    "contrast": 0.8573082934991495
+   },
+   "oracle_phi": {
+    "contrast": 3.009087451408302
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0,
+    "tool_calls": 0,
+    "unnecessary": 0
+   },
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 5,
+    "tool_calls": 2,
+    "unnecessary": 0,
+    "experiments": [
+     "all",
+     "geometry"
+    ],
+    "latency_s": 0.6299437000416219
+   },
+   "llm": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 5,
+    "tool_calls": 3,
+    "unnecessary": 1,
+    "experiments": [
+     "contrast",
+     "grid",
+     "geometry"
+    ],
+    "api_calls": 3,
+    "api_s": 11.923321699898224,
+    "stop_reasons": [
+     "tool_use",
+     "tool_use",
+     "tool_use"
+    ],
+    "turns": [
+     [
+      "contrast",
+      "grid"
+     ],
+     [
+      "geometry"
+     ],
+     [
+      "conclude"
+     ]
+    ],
+    "text": [],
+    "usage": {
+     "input_tokens": 4746,
+     "output_tokens": 1939,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 0
+    },
+    "cost_usd": 0.0014440999999999998,
+    "latency_s": 12.617533699958585
+   }
+  },
+  {
+   "model": "broad",
+   "category": "variety",
+   "shape": "grf",
+   "grid": 128,
+   "contrast": 430.4434594540209,
+   "err": 0.06744420277006745,
+   "id_err": 0.007314649359424188,
+   "truth": [],
+   "truth_population": [],
+   "oracle_errors": {
+    "none": 0.06744420277006745
+   },
+   "oracle_phi": {},
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0,
+    "tool_calls": 0,
+    "unnecessary": 0
+   },
+   "rule": {
+    "causes": [],
+    "cost": 4,
+    "tool_calls": 2,
+    "unnecessary": 1,
+    "experiments": [
+     "all",
+     "geometry"
+    ],
+    "latency_s": 0.49251800001366064
+   },
+   "llm": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 4,
+    "tool_calls": 3,
+    "unnecessary": 2,
+    "experiments": [
+     "contrast",
+     "grid",
+     "geometry"
+    ],
+    "api_calls": 3,
+    "api_s": 8.266616999928374,
+    "stop_reasons": [
+     "tool_use",
+     "tool_use",
+     "tool_use"
+    ],
+    "turns": [
+     [
+      "contrast",
+      "grid"
+     ],
+     [
+      "geometry"
+     ],
+     [
+      "conclude"
+     ]
+    ],
+    "text": [
+     "Contrast (430) and grid (128) are both already inside the training range, so those experiments are free and show nothing to correct. The remaining candidate is geometry, which the 99 distinct values hint at, since training fields were two-valued. I'll test that directly."
+    ],
+    "usage": {
+     "input_tokens": 4387,
+     "output_tokens": 1235,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 0
+    },
+    "cost_usd": 0.0010562,
+    "latency_s": 8.827151499979664
+   }
+  },
+  {
+   "model": "broad",
+   "category": "geometry",
+   "shape": "layers",
+   "grid": 128,
+   "contrast": 10.0,
+   "err": 0.054805685472726635,
+   "id_err": 0.007314649359424188,
+   "truth": [
+    "geometry"
+   ],
+   "truth_population": [
+    "geometry"
+   ],
+   "oracle_errors": {
+    "none": 0.007081815965490013,
+    "geometry": 0.054805685472726635
+   },
+   "oracle_phi": {
+    "geometry": 2.0462635709567225
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0,
+    "tool_calls": 0,
+    "unnecessary": 0
+   },
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 4,
+    "tool_calls": 2,
+    "unnecessary": 1,
+    "experiments": [
+     "all",
+     "geometry"
+    ],
+    "latency_s": 0.5166891000117175
+   },
+   "llm": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 4,
+    "tool_calls": 3,
+    "unnecessary": 2,
+    "experiments": [
+     "contrast",
+     "grid",
+     "geometry"
+    ],
+    "api_calls": 3,
+    "api_s": 7.894556000013836,
+    "stop_reasons": [
+     "tool_use",
+     "tool_use",
+     "tool_use"
+    ],
+    "turns": [
+     [
+      "contrast",
+      "grid"
+     ],
+     [
+      "geometry"
+     ],
+     [
+      "conclude"
+     ]
+    ],
+    "text": [
+     "Contrast (10) and grid (128) are both already inside the training range, so only geometry remains to test."
+    ],
+    "usage": {
+     "input_tokens": 4284,
+     "output_tokens": 940,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 0
+    },
+    "cost_usd": 0.0008984,
+    "latency_s": 8.45350810000673
+   }
+  },
+  {
+   "model": "broad",
+   "category": "contrast+grid",
+   "shape": "pdebench",
+   "grid": 64,
+   "contrast": 9839.025158829234,
+   "err": 0.6903843991273038,
+   "id_err": 0.007314649359424188,
+   "truth": [
+    "contrast"
+   ],
+   "truth_population": [
+    "contrast"
+   ],
+   "oracle_errors": {
+    "none": 0.04904237983284403,
+    "contrast": 0.6874656365023765,
+    "grid": 0.05325886510706749,
+    "contrast+grid": 0.6903843991273038
+   },
+   "oracle_phi": {
+    "contrast": 2.601205648602818,
+    "grid": 0.04335807519759366
+   },
+   "flags": {
+    "causes": [
+     "contrast",
+     "grid"
+    ],
+    "cost": 0,
+    "tool_calls": 0,
+    "unnecessary": 0
+   },
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 7,
+    "tool_calls": 4,
+    "unnecessary": 0,
+    "experiments": [
+     "all",
+     "keep_grid",
+     "keep_contrast",
+     "geometry"
+    ],
+    "latency_s": 0.6903888999950141
+   },
+   "llm": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 7,
+    "tool_calls": 4,
+    "unnecessary": 0,
+    "experiments": [
+     "contrast",
+     "grid",
+     "all",
+     "geometry"
+    ],
+    "api_calls": 4,
+    "api_s": 11.596970399958082,
+    "stop_reasons": [
+     "tool_use",
+     "tool_use",
+     "tool_use",
+     "tool_use"
+    ],
+    "turns": [
+     [
+      "contrast",
+      "grid"
+     ],
+     [
+      "all"
+     ],
+     [
+      "geometry"
+     ],
+     [
+      "conclude"
+     ]
+    ],
+    "text": [],
+    "usage": {
+     "input_tokens": 7061,
+     "output_tokens": 1515,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 0
+    },
+    "cost_usd": 0.0014636,
+    "latency_s": 12.29477819998283
+   }
+  },
+  {
+   "model": "pdebench",
+   "category": "contrast",
+   "shape": "pdebench",
+   "grid": 128,
+   "contrast": 229.73964105920388,
+   "err": 0.9029630472510725,
+   "id_err": 0.005187978109795465,
+   "truth": [
+    "contrast"
+   ],
+   "truth_population": [
+    "contrast"
+   ],
+   "oracle_errors": {
+    "none": 0.004995701549260253,
+    "contrast": 0.9029630472510725
+   },
+   "oracle_phi": {
+    "contrast": 5.197103777836422
+   },
+   "flags": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 0,
+    "tool_calls": 0,
+    "unnecessary": 0
+   },
+   "rule": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 1,
+    "tool_calls": 1,
+    "unnecessary": 0,
+    "experiments": [
+     "all"
+    ],
+    "latency_s": 0.21166979998815805
+   },
+   "llm": {
+    "causes": [
+     "contrast"
+    ],
+    "cost": 2,
+    "tool_calls": 2,
+    "unnecessary": 0,
+    "experiments": [
+     "contrast",
+     "all"
+    ],
+    "api_calls": 2,
+    "api_s": 4.767715099907946,
+    "stop_reasons": [
+     "tool_use",
+     "tool_use"
+    ],
+    "turns": [
+     [
+      "contrast",
+      "all"
+     ],
+     [
+      "conclude"
+     ]
+    ],
+    "text": [],
+    "usage": {
+     "input_tokens": 2589,
+     "output_tokens": 625,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 0
+    },
+    "cost_usd": 0.0005714000000000001,
+    "latency_s": 5.143027700018138
+   }
+  },
+  {
+   "model": "pdebench",
+   "category": "geometry",
+   "shape": "channels",
+   "grid": 128,
+   "contrast": 10.0,
+   "err": 0.15609900907912272,
+   "id_err": 0.005187978109795465,
+   "truth": [
+    "geometry"
+   ],
+   "truth_population": [
+    "geometry"
+   ],
+   "oracle_errors": {
+    "none": 0.005162262165869173,
+    "geometry": 0.15609900907912272
+   },
+   "oracle_phi": {
+    "geometry": 3.409115591852933
+   },
+   "flags": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 0,
+    "tool_calls": 0,
+    "unnecessary": 0
+   },
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 4,
+    "tool_calls": 2,
+    "unnecessary": 1,
+    "experiments": [
+     "all",
+     "geometry"
+    ],
+    "latency_s": 0.5458555999794044
+   },
+   "llm": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 4,
+    "tool_calls": 5,
+    "unnecessary": 4,
+    "experiments": [
+     "continuous",
+     "all",
+     "contrast",
+     "grid",
+     "geometry"
+    ],
+    "api_calls": 3,
+    "api_s": 7.501971099991351,
+    "stop_reasons": [
+     "tool_use",
+     "tool_use",
+     "tool_use"
+    ],
+    "turns": [
+     [
+      "continuous",
+      "all"
+     ],
+     [
+      "contrast",
+      "grid",
+      "geometry"
+     ],
+     [
+      "conclude"
+     ]
+    ],
+    "text": [],
+    "usage": {
+     "input_tokens": 4800,
+     "output_tokens": 1077,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 0
+    },
+    "cost_usd": 0.0010185,
+    "latency_s": 8.107053900021128
+   }
+  },
+  {
+   "model": "pdebench",
+   "category": "continuous",
+   "shape": "pdebench",
+   "grid": 128,
+   "contrast": 9.999999999999998,
+   "err": 0.0488342394617939,
+   "id_err": 0.005187978109795465,
+   "truth": [
+    "continuous"
+   ],
+   "truth_population": [
+    "continuous"
+   ],
+   "oracle_errors": {
+    "none": 0.022948403870435355,
+    "continuous": 0.0488342394617939
+   },
+   "oracle_phi": {
+    "continuous": 0.7551833091896842
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0,
+    "tool_calls": 0,
+    "unnecessary": 0
+   },
+   "rule": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 5,
+    "tool_calls": 2,
+    "unnecessary": 0,
+    "experiments": [
+     "all",
+     "geometry"
+    ],
+    "latency_s": 0.661853900004644
+   },
+   "llm": {
+    "causes": [
+     "continuous",
+     "geometry"
+    ],
+    "cost": 6,
+    "tool_calls": 4,
+    "unnecessary": 1,
+    "experiments": [
+     "continuous",
+     "contrast",
+     "all",
+     "geometry"
+    ],
+    "api_calls": 4,
+    "api_s": 6.4463616000139154,
+    "stop_reasons": [
+     "tool_use",
+     "tool_use",
+     "tool_use",
+     "tool_use"
+    ],
+    "turns": [
+     [
+      "continuous",
+      "contrast"
+     ],
+     [
+      "all"
+     ],
+     [
+      "geometry"
+     ],
+     [
+      "conclude"
+     ]
+    ],
+    "text": [],
+    "usage": {
+     "input_tokens": 6239,
+     "output_tokens": 758,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 0
+    },
+    "cost_usd": 0.0010029000000000001,
+    "latency_s": 7.219880499993451
+   }
+  },
+  {
+   "model": "pdebench",
+   "category": "continuous+geometry",
+   "shape": "channels",
+   "grid": 128,
+   "contrast": 9.599700030191427,
+   "err": 0.07528442490445339,
+   "id_err": 0.005187978109795465,
+   "truth": [
+    "geometry"
+   ],
+   "truth_population": [
+    "continuous",
+    "geometry"
+   ],
+   "oracle_errors": {
+    "none": 0.01811895812089357,
+    "continuous": 0.0211130468537499,
+    "geometry": 0.08449846166535331,
+    "continuous+geometry": 0.07528442490445339
+   },
+   "oracle_phi": {
+    "continuous": 0.01873616367885589,
+    "geometry": 1.4055783090394431
+   },
+   "flags": {
+    "causes": [
+     "continuous"
+    ],
+    "cost": 0,
+    "tool_calls": 0,
+    "unnecessary": 0
+   },
+   "rule": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 5,
+    "tool_calls": 2,
+    "unnecessary": 0,
+    "experiments": [
+     "all",
+     "geometry"
+    ],
+    "latency_s": 0.6325990000041202
+   },
+   "llm": {
+    "causes": [
+     "geometry"
+    ],
+    "cost": 6,
+    "tool_calls": 3,
+    "unnecessary": 0,
+    "experiments": [
+     "all",
+     "continuous",
+     "geometry"
+    ],
+    "api_calls": 3,
+    "api_s": 7.10221460001776,
+    "stop_reasons": [
+     "tool_use",
+     "tool_use",
+     "tool_use"
+    ],
+    "turns": [
+     [
+      "all",
+      "continuous"
+     ],
+     [
+      "geometry"
+     ],
+     [
+      "conclude"
+     ]
+    ],
+    "text": [],
+    "usage": {
+     "input_tokens": 4750,
+     "output_tokens": 1032,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 0
+    },
+    "cost_usd": 0.000991,
+    "latency_s": 7.869307400018442
+   }
+  },
+  {
+   "model": "pdebench",
+   "category": "grid",
+   "shape": "pdebench",
+   "grid": 64,
+   "contrast": 10.0,
+   "err": 0.006481740338915485,
+   "id_err": 0.005187978109795465,
+   "truth": [],
+   "truth_population": [],
+   "oracle_errors": {
+    "none": 0.00760086975758111,
+    "grid": 0.006481740338915485
+   },
+   "oracle_phi": {
+    "grid": -0.1592736374055237
+   },
+   "flags": {
+    "causes": [
+     "grid"
+    ],
+    "cost": 0,
+    "tool_calls": 0,
+    "unnecessary": 0
+   },
+   "rule": {
+    "causes": [],
+    "cost": 1,
+    "tool_calls": 1,
+    "unnecessary": 0,
+    "experiments": [
+     "all"
+    ],
+    "latency_s": 0.1263796000275761
+   },
+   "llm": {
+    "causes": [],
+    "cost": 5,
+    "tool_calls": 4,
+    "unnecessary": 2,
+    "experiments": [
+     "grid",
+     "contrast",
+     "continuous",
+     "geometry"
+    ],
+    "api_calls": 3,
+    "api_s": 9.11402530001942,
+    "stop_reasons": [
+     "tool_use",
+     "tool_use",
+     "tool_use"
+    ],
+    "turns": [
+     [
+      "grid",
+      "contrast",
+      "continuous"
+     ],
+     [
+      "geometry"
+     ],
+     [
+      "conclude"
+     ]
+    ],
+    "text": [],
+    "usage": {
+     "input_tokens": 5051,
+     "output_tokens": 978,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 0
+    },
+    "cost_usd": 0.0009941,
+    "latency_s": 9.69476320000831
+   }
+  }
+ ]
+}

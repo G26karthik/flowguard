@@ -28,17 +28,27 @@ All measured results: README.md. This file: state and next steps only.
   - budget `flowguard-any-charge` on the resource group: amount 1 (billing currency), emails on any actual charge.
   - live measurements: results/perf/live_azure_*.json (warm: first answer 0.6 s, 188 ms per field; cold: browser answers
     at 11-13 s, server takes over at 22-24 s); ui_check passes on the live site.
+- 2026-11-06 API abuse limits live (revision flowguard--0000004 or later; flowguard/api.py, README Deployment):
+  batch work cap (count x grid area), 1 MiB bodies, one computation at a time + 4 queued, per-client compute budget
+  (120 s burst, 0.2 s/s) keyed on the last X-Forwarded-For entry. Verified live, including spoofed XFF.
+- 2026-11-06 LLM investigator pilot (scripts/llm_pilot.py, protocol commit 091b94f before the run;
+  results/llm_pilot_claude-haiku-5-5_medium.json): 10 fresh cases, rule 10/10, Haiku 5.5 medium 8/10, flags 5/10;
+  Haiku 3.1 experiments/case (1.2 unnecessary), 8.4 s/case, $0.0098 total. Not scaled (pre-registered rule).
 
 ## Running
 - Nothing.
 
 ## Needs the user
-1. LLM arm of the investigator study: ANTHROPIC_API_KEY, then
-   `python scripts/investigator_study.py --llm claude-opus-5-5` (~170 evaluation cases).
-2. Anything that adds Azure cost (min replicas > 0, more CPU, Log Analytics, a registry, metric alerts) needs the
+1. Optional: Sonnet 5.5 (low effort) on the same 10 pilot cases, about $0.2. Only worth it to learn whether Haiku's
+   misreading is a model-size issue; at best it ties the rule (10/10).
+2. Optional cost cap: a scheduled GitHub Action (OIDC login, role limited to resource group `flowguard`) that
+   disables ingress when month-to-date replica time passes ~40 of the 50 free hours; the site then computes in the
+   browser. Creates an Entra app registration with write access to that resource group: needs approval.
+3. Anything that adds Azure cost (min replicas > 0, more CPU, Log Analytics, a registry, metric alerts) needs the
    user's approval. Free grant per month: 180k vCPU-s, 360k GiB-s, 2M requests = 50 replica-hours at 1 vCPU / 2 GiB.
 
 ## Next
+- LLM pilot rerun: `uv run --with anthropic python scripts/llm_pilot.py --model M --effort E` (key from .env, never printed).
 - Check usage: `python scripts/azure_usage.py` (replica hours vs free grant, month-to-date cost).
 - Deploy a new image: `az containerapp update -n flowguard -g flowguard --image ghcr.io/g26karthik/flowguard:sha-<commit>`.
 - Known gaps: contrast > 1000x still fails (39%); held-out layers 4.6%; the residual estimate ranks poorly on the

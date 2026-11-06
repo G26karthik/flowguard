@@ -101,7 +101,7 @@ def _call(name, req, request=None):
     if client and (left := _charge(client)) <= 0:
         wait = int(-left / REFILL) + 1
         raise HTTPException(429, f"This address has used a lot of server time in the last few minutes. Try again in {wait} s, "
-                                 "or compute in your browser instead (link under the results).", headers={"Retry-After": str(wait)})
+                                 "or choose \"Compute in this browser instead\" at the bottom of the page.", headers={"Retry-After": str(wait)})
     with _state:
         if _waiting >= MAX_WAITING:
             raise HTTPException(503, "The server is busy with other requests. Try again in a few seconds.", headers={"Retry-After": "10"})
